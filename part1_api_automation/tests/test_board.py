@@ -2,6 +2,7 @@ import pytest
 import os
 from utils.board_api_client import BoardApiClient
 from dotenv import load_dotenv
+from tests.board_data import CREATE_ARTICLE_DATA
 
 # 환경 변수 로드 및 Fixture 정의
 load_dotenv()
@@ -84,3 +85,16 @@ def test_get_article_list_by_filter(api, keyword, expected_count_min):
         # 결과가 없어야 하는 경우
         assert len(articles) == 0, f"'{keyword}' 검색 결과가 없어야 하는데 {len(articles)}개가 발견되었습니다."
         assert article_count == 0, "board_article_count가 0이 아닙니다."
+
+def test_create_article_success(api):
+    """STU_BOARD_02_001: 게시글 작성"""
+    
+    response = api.create_article(CREATE_ARTICLE_DATA)
+
+    assert response.status_code == 200, f"작성 실패: {response.status_code}"
+    
+    res_data = response.json()
+    assert res_data["_result"]["status"] == "ok"
+    
+    article_id = res_data.get("board_article_id")
+    assert article_id is not None, "게시글 ID가 생성되지 않았습니다."

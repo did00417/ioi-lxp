@@ -29,3 +29,9 @@ class BoardApiClient:
             "count": count
         }
         return self.session.get(self.classroom_url, params=params)
+
+    def create_article(self, data):
+        """게시글 작성 API (POST)"""
+        url = "https://api-rest.elice.io/org/qatrack/board/article/edit/" 
+        # form-data 형식이므로 json= 대신 data= 를 사용
+        return self.session.post(url, data=data)
