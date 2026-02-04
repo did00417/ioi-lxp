@@ -1,34 +1,36 @@
 import pytest
-import os
-from utils.board_api_client import BoardApiClient
-from dotenv import load_dotenv
-from tests.board_data import CREATE_ARTICLE_DATA
 
-# 환경 변수 로드 및 Fixture 정의
-load_dotenv()
-
-@pytest.fixture(scope="session")
-def api():
-    token = os.getenv("ELICE_TOKEN")
-    if not token:
-        pytest.fail(".env 파일에 ELICE_TOKEN이 설정되어 있지 않습니다!")
-    return BoardApiClient(token=token)
-
-
-def test_get_article_list(api):
+def test_get_article_list(rest_client, valid_headers, board_id):
     """STU_BOARD_01-001: 게시글 목록 조회"""
 
-    response = api.get_article_list(board_id=9307, count=15)
+    response = rest_client.get(
+        endpoint="/org/qatrack/board/article/list/",
+        headers=valid_headers,
+        params={
+            "board_id": board_id,
+            "offset": 0,
+            "count": 15
+        }
+    )
     assert response.status_code == 200, f"예상치 못한 상태 코드: {response.status_code}"
 
-    data = response.json()
+    body = response.json()
     
-    assert "board_articles" in data, "응답에 게시글 목록(board_articles)이 포함되어 있지 않습니다."
+    assert "board_articles" in body, "응답에 게시글 목록(board_articles)이 포함되어 있지 않습니다."
 
-def test_articles_sorted_by_latest(api):
+def test_articles_sorted_by_latest(classroom_client, valid_headers, classroom_id):
     """STU_BOARD_01-002: 게시글 최신순 정렬 조회"""
     
-    response = api.get_classroom_articles(sort_by="created_desc")
+    response = classroom_client.get(
+        endpoint=f"/classroom/{classroom_id}/article",
+        headers=valid_headers,
+        params={
+            "sort_by": "created_desc",
+            "skip": 0,
+            "count": 10,
+            "filter_title": "%%"
+        }
+    )
     
     assert response.status_code == 200, f"예상치 못한 상태 코드: {response.status_code}"
     articles = response.json()
@@ -42,10 +44,19 @@ def test_articles_sorted_by_latest(api):
             assert current_date >= next_date, \
                 f"정렬 오류: {i}번({current_date})보다 {i+1}번({next_date})이 더 최신입니다!"
 
-def test_articles_sorted_by_likes(api):
+def test_articles_sorted_by_likes(classroom_client, valid_headers, classroom_id):
     """STU_BOARD_01-003: 게시글 좋아요순 정렬 조회"""
     
-    response = api.get_classroom_articles(sort_by="like_desc")
+    response = classroom_client.get(
+        endpoint=f"/classroom/{classroom_id}/article",
+        headers=valid_headers,
+        params={
+            "sort_by": "like_desc",
+            "skip": 0,
+            "count": 10,
+            "filter_title": "%%"
+        }
+    )
     assert response.status_code == 200, f"조회 실패: {response.status_code}"
     
     articles = response.json()
@@ -63,16 +74,31 @@ def test_articles_sorted_by_likes(api):
     ("%커리큘럼%", 1),  # 1. 검색 결과가 있어야 하는 케이스
     ("%바나나%", 0)    # 2. 검색 결과가 없어야 하는 케이스
 ])
-def test_get_article_list_by_filter(api, keyword, expected_count_min):
+def test_get_article_list_by_filter(
+    rest_client,
+    valid_headers,
+    board_id,
+    keyword,
+    expected_count_min
+):
     """STU_BOARD_01-004: 제목 키워드 검색"""
     """STU_BOARD_01-005: 제목 키워드 일치하는 검색 결과 없음"""
     
-    response = api.get_article_list(filter_title=keyword)
+    response = rest_client.get(
+        endpoint="/org/qatrack/board/article/list/",
+        headers=valid_headers,
+        params={
+            "board_id": board_id,
+            "filter_title": keyword,
+            "offset": 0,
+            "count": 15
+        }
+    )
     assert response.status_code == 200
     
-    data = response.json()
-    articles = data.get("board_articles", [])
-    article_count = data.get("board_article_count", 0)
+    body = response.json()
+    articles = body.get("board_articles", [])
+    article_count = body.get("board_article_count", 0)
     
     if expected_count_min > 0:
         # 결과가 있어야 하는 경우
@@ -86,10 +112,24 @@ def test_get_article_list_by_filter(api, keyword, expected_count_min):
         assert len(articles) == 0, f"'{keyword}' 검색 결과가 없어야 하는데 {len(articles)}개가 발견되었습니다."
         assert article_count == 0, "board_article_count가 0이 아닙니다."
 
-def test_create_article_success(api):
+# ---------------- STU_BOARD_02 ----------------
+
+def test_create_article_success(rest_client, valid_headers, classroom_id, create_article_data):
     """STU_BOARD_02_001: 게시글 작성"""
     
-    response = api.create_article(CREATE_ARTICLE_DATA)
+    payload = {
+        **create_article_data,
+        "classroom_id": classroom_id
+    }
+    
+    headers = valid_headers.copy()
+    headers.pop("Content-Type", None)
+
+    response = rest_client.post(
+        endpoint="/org/qatrack/board/article/edit/",
+        headers=headers,
+        data=payload
+    )
 
     assert response.status_code == 200, f"작성 실패: {response.status_code}"
     

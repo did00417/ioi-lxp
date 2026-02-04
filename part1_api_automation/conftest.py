@@ -65,3 +65,15 @@ def invalid_headers(test_data):
 @pytest.fixture(scope="session")
 def params(test_data):
     return test_data["params"]
+
+@pytest.fixture(scope="session")
+def board_id(params):
+    return params["board_id"]
+
+@pytest.fixture(scope="session")
+def classroom_id(params):
+    return params["classroom_id"]
+
+@pytest.fixture(scope="session")
+def create_article_data(test_data):
+    return test_data["board"]["create_article"]

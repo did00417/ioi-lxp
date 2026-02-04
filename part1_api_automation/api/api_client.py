@@ -5,7 +5,7 @@ class APIClient:
         self.base_url = base_url
         self.session = requests.Session()
 
-    def request(self, method, endpoint, headers=None, params=None, payload=None):
+    def request(self, method, endpoint, headers=None, params=None, payload=None, data=None):
         url = f"{self.base_url}{endpoint}"
 
         response = self.session.request(
@@ -13,7 +13,8 @@ class APIClient:
             url=url,
             headers=headers,
             params=params,
-            json=payload
+            json=payload,
+            data=data
         )
         return response
 
@@ -25,13 +26,14 @@ class APIClient:
             params=params
         )
 
-    def post(self, endpoint, headers=None, params=None, payload=None):
+    def post(self, endpoint, headers=None, params=None, payload=None, data=None):
         return self.request(
             method="POST",
             endpoint=endpoint,
             headers=headers,
             params=params,
-            payload=payload
+            payload=payload,
+            data=data
         )
 
     def patch(self, endpoint, headers=None, params=None, payload=None):
