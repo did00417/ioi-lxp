@@ -9,12 +9,13 @@ class BoardApiClient:
         # 헤더에 토큰 설정
         self.session.headers.update({"Authorization": f"Bearer {token}"})
 
-    def get_article_list(self, board_id=9307, offset=0, count=15):
+    def get_article_list(self, board_id=9307, offset=0, count=15, filter_title=""):
         """게시글 목록 조회 API"""
         params = {
             "board_id": board_id,
             "offset": offset,
-            "count": count
+            "count": count,
+            "filter_title": filter_title
         }
         # GET https://api-rest.elice.io/org/qatrack/board/article/list/ 호출
         return self.session.get(f"{self.base_url}/list/", params=params)

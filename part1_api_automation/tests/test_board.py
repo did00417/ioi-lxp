@@ -57,3 +57,30 @@ def test_articles_sorted_by_likes(api):
             # 앞의 글 좋아요 수가 뒤의 글보다 크거나 같아야 함
             assert current_likes >= next_likes, \
                 f"정렬 오류: {i}번({current_likes}개)보다 {i+1}번({next_likes}개)의 좋아요가 더 많습니다!"
+
+@pytest.mark.parametrize("keyword, expected_count_min", [
+    ("%커리큘럼%", 1),  # 1. 검색 결과가 있어야 하는 케이스
+    ("%바나나%", 0)    # 2. 검색 결과가 없어야 하는 케이스
+])
+def test_get_article_list_by_filter(api, keyword, expected_count_min):
+    """STU_BOARD_01-004: 제목 키워드 검색"""
+    """STU_BOARD_01-005: 제목 키워드 일치하는 검색 결과 없음"""
+    
+    response = api.get_article_list(filter_title=keyword)
+    assert response.status_code == 200
+    
+    data = response.json()
+    articles = data.get("board_articles", [])
+    article_count = data.get("board_article_count", 0)
+    
+    if expected_count_min > 0:
+        # 결과가 있어야 하는 경우
+        assert len(articles) >= expected_count_min, f"'{keyword}' 검색 결과가 없습니다."
+        # 모든 결과에 키워드가 포함되어 있는지
+        for article in articles:
+            clean_keyword = keyword.replace("%", "") # % 제거 후 실제 텍스트만 비교
+            assert clean_keyword in article['title'], f"제목에 '{clean_keyword}'가 포함되어 있지 않습니다: {article['title']}"
+    else:
+        # 결과가 없어야 하는 경우
+        assert len(articles) == 0, f"'{keyword}' 검색 결과가 없어야 하는데 {len(articles)}개가 발견되었습니다."
+        assert article_count == 0, "board_article_count가 0이 아닙니다."
