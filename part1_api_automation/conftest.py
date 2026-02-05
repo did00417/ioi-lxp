@@ -46,13 +46,12 @@ def test_dash_data():
     return load_test_data("dash")
 
 @pytest.fixture(scope="session")
-<<<<<<< HEAD
+
 def test_classhome_data():
     return load_test_data("classhome")
-=======
+
 def test_subject_data():
     return load_test_data("subject")
->>>>>>> 9cc8d0a47e3654de080e0b14d6d650c2ae7972be
 
 #-------------- <수진> 간편하게 사용할 학습 대시보드 메뉴 데이터 -----------------------
 
