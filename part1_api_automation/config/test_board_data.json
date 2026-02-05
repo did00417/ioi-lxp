@@ -1,0 +1,19 @@
+{
+  "params": {
+    "classroom_id": "a6bd98a3-83ff-4e5d-ba9e-6c04c69592fc",
+    "board_id": 9307
+  },
+  "queries": {
+    "article_list": { "offset": 0, "count": 15 },
+    "sort_latest": { "sort_by": "created_desc", "skip": 0, "count": 10, "filter_title": "%%" },
+    "sort_likes": { "sort_by": "like_desc", "skip": 0, "count": 10, "filter_title": "%%" },
+    "course_query": { "filter_title": "%%", "skip": 0, "count": 40 }
+  },
+  "articles": {
+    "create_article": {
+      "title": "api 자동화로 제목",
+      "content": "api 자동화 코드로 작성함",
+      "is_secret": "false"
+    }
+  }
+}
