@@ -1,6 +1,8 @@
- { 
-  "classhome": {
-    "invalid_classroom_id" : "00000000-0000-0000-0000-000000000000"
+{
+  "params": {
+    "classroom_id": "a6bd98a3-83ff-4e5d-ba9e-6c04c69592fc",
+    "valid_classroom_id": "123e4567-e89b-12d3-a456-426614174000",
+    "invalid_classroom_id": "00000000-0000-0000-0000-000000000000"
   },
 
   "schedule_common_data": {
@@ -11,21 +13,25 @@
 
   "schedule_cases_data": {
     "STU-CHM-03-001": {
-        "dt_start_ge": "2026-02-01",
-        "dt_start_le": "2026-02-02"
+      "dt_start_ge": "2026-02-01",
+      "dt_start_le": "2026-02-02"
     },
+
     "STU-CHM-03-002": {
-        "dt_start_ge": "2026-01-31",
-        "dt_start_le": "2026-02-01"
+      "dt_start_ge": "2026-01-31",
+      "dt_start_le": "2026-02-01"
     },
+
     "STU-CHM-03-003": {
-        "dt_start_ge": "2026-02-01",
-        "dt_start_le": "2026-02-02"
+      "dt_start_ge": "2026-02-01",
+      "dt_start_le": "2026-02-02"
     },
+
     "STU-CHM-03-004": {},
+
     "STU-CHM-03-005": {
-        "dt_start_ge": "2026-02-30",
-        "dt_start_le": "2026-02-31"
+      "dt_start_ge": "2026-02-30",
+      "dt_start_le": "2026-02-31"
     }
-}
+  }
 }

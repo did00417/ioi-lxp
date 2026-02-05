@@ -95,8 +95,9 @@ def test_get_continue_learning_lecture_without_classroom_id(dashboard_client, va
     
 # 테스트 케이스: STU-CHM-02-003(잘못된 classroom_id 사용 시 에러 발생 확인)
     
-def test_get_continue_learning_lecture_invalid_classroom_id(dashboard_client, valid_headers, classhome_data):
-    endpoint = f"/classroom/{classhome_data['classhome']['invalid_classroom_id']}/next_lecture_page"
+def test_get_continue_learning_lecture_invalid_classroom_id(dashboard_client, valid_headers, classhome_params):
+    # 🔧 수정: classhome_data fixture 사용 (params → classhome_data 구조 분리)
+    endpoint = f"/classroom/{classhome_params['invalid_classroom_id']}/next_lecture_page"
     
     response = dashboard_client.get(
         endpoint, 
@@ -113,28 +114,30 @@ def test_get_continue_learning_lecture_invalid_classroom_id(dashboard_client, va
     classroom_detail = error_data["detail"]["Classroom"]
     assert "id" in classroom_detail
 
-import pytest
+
 
 # 테스트 케이스: STU-CHM-03-001(수강생의 수업 일정 정보를 정상적으로 조회하는지 확인)
 
 def test_get_class_schedule(
     classroom_client,
     valid_headers,
-    params,
+    classhome_params,
     schedule_common,
     schedule_cases
     ):
     
     endpoint = "/schedule/ics"
-    params = {
-        "classroom_id": params["classroom_id"],
+    
+    params = { 
+        "classroom_id": classhome_params["classroom_id"],
         **schedule_common,
         **schedule_cases["STU-CHM-03-001"]
     }
     response = classroom_client.get(
         endpoint, 
         headers=valid_headers, 
-        params=params)
+        params=params
+        )
         
     assert response.status_code == 200
 
@@ -143,7 +146,7 @@ def test_get_class_schedule(
 def test_get_no_class_schedule(
     classroom_client,
     valid_headers,
-    params,
+    classhome_params,
     schedule_common,
     schedule_cases
     ):
@@ -151,7 +154,7 @@ def test_get_no_class_schedule(
     endpoint = "/schedule/ics"
     
     params = {
-        "classroom_id": params["classroom_id"],
+        "classroom_id": classhome_params["classroom_id"],
         **schedule_common,
         **schedule_cases["STU-CHM-03-002"]
         }
@@ -171,14 +174,14 @@ def test_get_no_class_schedule(
       
 def test_get_class_schedule_no_token(
     classroom_client,
-    params,
+    classhome_params,
     schedule_common,
     schedule_cases
     ):
     endpoint = "/schedule/ics"
     
     params = {
-        "classroom_id": params["classroom_id"],
+        "classroom_id": classhome_params["classroom_id"],
         **schedule_common,
         **schedule_cases["STU-CHM-03-003"]
         }
@@ -203,7 +206,7 @@ def test_get_class_schedule_no_token(
 def test_get_schedule_fails_when_date_parameters_missing(
     classroom_client,
     valid_headers,
-    params,
+    classhome_params,
     schedule_common,
     schedule_cases
     ):
@@ -211,7 +214,7 @@ def test_get_schedule_fails_when_date_parameters_missing(
     
     # dt_start_ge 파라미터 누락
     params = {
-        "classroom_id": params["classroom_id"],
+        "classroom_id": classhome_params["classroom_id"],
         **schedule_common,
         **schedule_cases["STU-CHM-03-004"]
     }
@@ -239,7 +242,7 @@ def test_get_schedule_fails_when_date_parameters_missing(
 def test_get_schedule_fails_when_date_format_invalid(
     classroom_client,
     valid_headers,
-    params,
+    classhome_params,
     schedule_common,
     schedule_cases
     ):
@@ -247,7 +250,7 @@ def test_get_schedule_fails_when_date_format_invalid(
     
     # dt_start_ge 파라미터 잘못된 포맷
     params = {
-        "classroom_id": params["classroom_id"],
+        "classroom_id": classhome_params["classroom_id"],
         **schedule_common,
         **schedule_cases["STU-CHM-03-005"]
     }
