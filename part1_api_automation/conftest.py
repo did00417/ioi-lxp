@@ -40,7 +40,9 @@ def test_data():
     )
     
     return data
-
+@pytest.fixture(scope="session")
+def file_manager():
+    return FileManager()
 @pytest.fixture(scope="session")
 def valid_headers(test_data):
     return test_data["headers"]
@@ -50,17 +52,17 @@ def invalid_headers(test_data):
     return test_data["invalid_headers"]
 
 @pytest.fixture(scope="session")
-def params(test_data):
-    return test_data["params"]
+def test_board_data(file_manager):
+    return file_manager.read_json("test_board_data.json")
 
 @pytest.fixture(scope="session")
-def board_id(params):
-    return params["board_id"]
+def board_id(test_board_data):
+    return test_board_data["params"]["board_id"]
 
 @pytest.fixture(scope="session")
-def classroom_id(params):
-    return params["classroom_id"]
+def classroom_id(test_board_data):
+    return test_board_data["params"]["classroom_id"]
 
 @pytest.fixture(scope="session")
-def create_article_data(test_data):
-    return test_data["board"]["create_article"]
+def create_article_data(test_board_data):
+    return test_board_data["articles"]["create_article"]
