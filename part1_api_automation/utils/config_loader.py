@@ -20,3 +20,4 @@ def get_rest_url(service="rest"):
     config = fm.read_json("url.json")
     
     return config[service][env]
+
