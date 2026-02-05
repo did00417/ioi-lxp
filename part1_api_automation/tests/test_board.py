@@ -221,4 +221,30 @@ def test_get_article_detail_cases(
         assert body["fail_code"] == expected_fail_code
         assert body["fail_message"] == "bad request"
         assert "board_article" not in body
+
+@pytest.mark.parametrize("article_id", [
+    67176,  # 타인A의 비밀글 ID
+    67183   # 타인B의 비밀글 ID
+])
+@pytest.mark.xfail(reason="보안 버그: 타인의 비밀글이 권한 체크 없이 조회됨")
+def test_get_others_private_article_security_bug(rest_client, valid_headers, article_id):
+    """
+    STU_BOARD_02_006: 타인 비밀글 조회
+    기대 결과: status 'fail', fail_code 'insufficient_permission' 반환하며 차단되어야 함
+    현재 현상: 200 OK와 함께 게시글 내용이 반환됨
+    """
+    
+    response = rest_client.get(
+        endpoint="/org/qatrack/board/article/get/",
+        headers=valid_headers,
+        params={"board_article_id": article_id}
+    )
+    
+    body = response.json()
+    
+    # 실패해야 정상
+    # 현재는 AssertionError가 발생하여 xfail 처리
+    assert body["_result"]["status"] == "fail", f"보안 취약점: ID {article_id} 비밀글이 조회됨"
+    assert body["_result"]["status_code"] == 409
+    assert body["fail_code"] == "insufficient_permission"
         
