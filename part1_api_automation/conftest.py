@@ -64,3 +64,22 @@ def classroom_id(params):
 @pytest.fixture(scope="session")
 def create_article_data(test_data):
     return test_data["board"]["create_article"]
+
+# classhome 관련 테스트 데이터 로드 시작
+
+@pytest.fixture(scope="session")
+def classhome_data():
+    fm = FileManager()
+    return fm.read_json("classhome_test_data.json")
+
+@pytest.fixture(scope="session")
+def schedule_common(classhome_data):
+    return classhome_data["schedule_common_data"]
+
+@pytest.fixture(scope="session")
+def schedule_cases(classhome_data):
+    return classhome_data["schedule_cases_data"]
+
+# classhoeme 관련 테스트 데이터 로드 끝
+
+    
