@@ -1,0 +1,31 @@
+ { 
+  "classhome": {
+    "invalid_classroom_id" : "00000000-0000-0000-0000-000000000000"
+  },
+
+  "schedule_common_data": {
+    "offset": 0,
+    "count": 40,
+    "timezone": "Asia/Seoul"
+  },
+
+  "schedule_cases_data": {
+    "STU-CHM-03-001": {
+        "dt_start_ge": "2026-02-01",
+        "dt_start_le": "2026-02-02"
+    },
+    "STU-CHM-03-002": {
+        "dt_start_ge": "2026-01-31",
+        "dt_start_le": "2026-02-01"
+    },
+    "STU-CHM-03-003": {
+        "dt_start_ge": "2026-02-01",
+        "dt_start_le": "2026-02-02"
+    },
+    "STU-CHM-03-004": {},
+    "STU-CHM-03-005": {
+        "dt_start_ge": "2026-02-30",
+        "dt_start_le": "2026-02-31"
+    }
+}
+}
