@@ -1,27 +1,32 @@
 import pytest
 
-
-# 주간 일정 데이터 호출 및 출력 검증 테스트
-def test_weekly_schedule_load_success(classroom_client, valid_headers, params):
+def test_weekly_schedule_load_success(classroom_client, test_schedule_data, valid_headers):
     endpoint = "/schedule/ics"
+    
+   
+    params = test_schedule_data["params"]
+    case = test_schedule_data["cases"]["weekly"]
 
     response = classroom_client.get(
         endpoint,
-        headers=valid_headers,
+        headers=valid_headers, 
         params={
             "classroom_id": params["classroom_id"],
-            "dt_start_ge": "2026-01-17T15:00:00.000Z", # 시작 범위
-            "dt_start_le": "2026-03-14T14:59:59.999Z", # 종료 범위
-            "offset": 0,
-            "count": 40
+            "dt_start_ge": case["dt_start_ge"],
+            "dt_start_le": case["dt_start_le"],
+            "offset": case["offset"],
+            "count": case["count"]
         }
     )
-    
-    #응답 검증
-    body = response.json()
+
     assert response.status_code == 200
-    assert "events" in body
     
-    print(f"\n[성공] 조회된 일정 개수: {len(body['events'])}개")
-    if len(body['events']) > 0:
-        print(f"[데이터 샘플] 첫 번째 일정 제목: {body['events'][0].get('summary')}")
+    # JSON 대신 text로 데이터를 받습니다.
+    content = response.text
+    
+    # 캘린더 데이터가 맞는지 검증
+    assert "BEGIN:VCALENDAR" in content
+    assert "VERSION:2.0" in content
+    
+    print(f"\n[성공] 캘린더 데이터를 정상적으로 수신했습니다.")
+    print(f"[데이터 샘플]\n{content[:200]}...") 
