@@ -34,7 +34,7 @@ def test_fetch_sbj_list_invalid_classid(classroom_client, valid_headers, subject
     assert response.status_code == 403
     assert "permission" in data["code"]
 
-def test_fetch_sbj_list_no_parameter(classroom_client, valid_headers, subject_params):
+def test_fetch_sbj_list_without_parameter(classroom_client, valid_headers, subject_params):
     """STU-SBJ-01-003: 필수 파라미터가 제공되지 않았을 때 학습 목록 조회"""
     classroom_id = subject_params['classroom_id']
 
@@ -62,7 +62,6 @@ def test_fetch_sbj_detail(classroom_client, valid_headers, subject_params):
 
 def test_fetch_sbj_map(dashboard_client, valid_headers, subject_params):
     """STU-SBJ-03-001: 학습 맵 정상 조회"""
-
     response = dashboard_client.get(
         endpoint=f"/student/{subject_params['student_id']}/lecture",
         headers=valid_headers,
@@ -72,6 +71,20 @@ def test_fetch_sbj_map(dashboard_client, valid_headers, subject_params):
             "count":40
         }
     )
-    data = response.json()
     assert response.status_code == 200, f"요청이 올바르게 처리되지 않았습니다. 상태 코드: {response.status_code}"
     
+def test_fetch_sbj_map_without_parameter(dashboard_client, valid_headers, subject_params):
+    """STU-SBJ-03-002: 필수 파라미터가 제공되지 않았을 때 학습 맵 조회"""
+    response = dashboard_client.get(
+        endpoint=f"/student/{subject_params['student_id']}/lecture",
+        headers=valid_headers,
+        params={
+            "classroom_id" : subject_params['classroom_id'],
+        }
+    )
+    data = response.json()
+    assert response.status_code == 422
+    assert data["detail"][0]["msg"] == "Field required"
+
+def test_fetch_child_lectures():
+    """STU-SBJ-05-001: 특정 과목의 하위 강의 목록 조회"""
