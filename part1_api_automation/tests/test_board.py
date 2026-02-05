@@ -187,3 +187,38 @@ def test_get_linked_courses(classroom_client, valid_headers, classroom_id, test_
         # 첫 번째 과목에 필수 필드가 있는지 확인
         assert "id" in courses[0], "과목 ID 필드가 없습니다."
         assert "title" in courses[0], "과목 제목 필드가 없습니다."
+
+@pytest.mark.parametrize("article_id, expected_status, expected_result, expected_fail_code", [
+    (65912, 200, "ok", None),                  # 정상 조회
+    (99999, 400, "fail", "resource_not_found")  # 존재하지 않는 게시글
+])
+def test_get_article_detail_cases(
+    rest_client, 
+    valid_headers, 
+    article_id, 
+    expected_status, 
+    expected_result,
+    expected_fail_code
+):
+    """STU_BOARD_02_004: 특정 게시글 조회"""
+    """STU_BOARD_02_005: 존재하지 않는 게시글 상세 조회"""
+    
+    response = rest_client.get(
+        endpoint="/org/qatrack/board/article/get/",
+        headers=valid_headers,
+        params={"board_article_id": article_id}
+    )
+    
+    body = response.json()
+    
+    assert body["_result"]["status"] == expected_result
+    assert body["_result"]["status_code"] == expected_status
+    
+    if expected_result == "ok":
+        assert body["board_article"]["id"] == article_id
+        assert "title" in body["board_article"]
+    else:
+        assert body["fail_code"] == expected_fail_code
+        assert body["fail_message"] == "bad request"
+        assert "board_article" not in body
+        
