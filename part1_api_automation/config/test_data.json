@@ -16,7 +16,9 @@
     "invalid_classroom_id": "5e320225-8e8b-4d3e-892b-3bd60d327619",
     "student_id": "{STUDENT_ID}",
     "board_id": 9307,
-    "course_id": "{COURSE_ID}"
+    "invalid_student_id": "0000000",
+    "course_id": 766477,
+    "invalid_course_id": 766000
   },
 
   "board": {

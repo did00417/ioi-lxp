@@ -3,20 +3,8 @@ import os
 
 fm = FileManager()
 
-def get_dashboard_url(service="dashboard"):
+# config 폴더의 url 불러오는 함수
+def get_service_url(service: str):
     env = os.getenv("TEST_ENV", "base_url")
     config = fm.read_json("url.json")
-    
-    return config[service][env]
-
-def get_classroom_url(service="classroom"):
-    env = os.getenv("TEST_ENV", "base_url")
-    config = fm.read_json("url.json")
-    
-    return config[service][env]
-
-def get_rest_url(service="rest"):
-    env = os.getenv("TEST_ENV", "base_url")
-    config = fm.read_json("url.json")
-    
     return config[service][env]
