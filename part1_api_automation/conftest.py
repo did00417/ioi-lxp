@@ -46,8 +46,13 @@ def test_dash_data():
     return load_test_data("dash")
 
 @pytest.fixture(scope="session")
+<<<<<<< HEAD
 def test_classhome_data():
     return load_test_data("classhome")
+=======
+def test_subject_data():
+    return load_test_data("subject")
+>>>>>>> 9cc8d0a47e3654de080e0b14d6d650c2ae7972be
 
 #-------------- <수진> 간편하게 사용할 학습 대시보드 메뉴 데이터 -----------------------
 
@@ -85,7 +90,8 @@ def schedule_common(test_classhome_data):
 @pytest.fixture(scope="session")
 def schedule_cases(test_classhome_data):
     return test_classhome_data["schedule_cases_data"]
+#-------------------- <효진> 학습 과목 데이터 ------------------------------
 
-# classhoeme 관련 테스트 데이터 로드 끝
-
-    
+@pytest.fixture(scope="session")
+def subject_params(test_subject_data):
+    return test_subject_data["params"]

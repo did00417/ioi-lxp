@@ -2,12 +2,12 @@
   "headers": {
     "Authorization": "Bearer {ELICE_VALID_TOKEN}",
     "x-elice-org-name-short": "qatrack",
-    "Content-Type" : "application/json"
+    "Content-Type": "application/json"
   },
 
   "invalid_headers": {
     "Authorization": "Bearer {ELICE_INVALID_TOKEN}",
     "x-elice-org-name-short": "qatrack",
-    "Content-Type" : "application/json"
+    "Content-Type": "application/json"
   }
 }
