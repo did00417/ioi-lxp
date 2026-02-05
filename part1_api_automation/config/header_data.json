@@ -9,11 +9,5 @@
     "Authorization": "Bearer {ELICE_INVALID_TOKEN}",
     "x-elice-org-name-short": "qatrack",
     "Content-Type" : "application/json"
-  },
-
-  "params": {
-    "classroom_id": "a6bd98a3-83ff-4e5d-ba9e-6c04c69592fc",
-    "invalid_classroom_id" : "5e320225-8e8b-4d3e-892b-3bd60d327619",
-    "student_id": "{STUDENT_ID}"
   }
 }
