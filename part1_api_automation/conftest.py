@@ -46,6 +46,10 @@ def test_dash_data():
     return load_test_data("dash")
 
 @pytest.fixture(scope="session")
+
+def test_classhome_data():
+    return load_test_data("classhome")
+
 def test_subject_data():
     return load_test_data("subject")
 
@@ -68,7 +72,23 @@ def classroom_id(test_board_data):
 @pytest.fixture(scope="session")
 def create_article_data(test_board_data):
     return test_board_data["articles"]["create_article"]
+def create_article_data(test_data):
+    return test_data["board"]["create_article"]
 
+#-------------- <정은> 클래스 홈 사용 데이터 -----------------------
+
+# @pytest.fixture(scope="session")
+# def classhome_data():
+#     fm = FileManager()
+#     return fm.read_json("classhome_test_data.json")
+
+@pytest.fixture(scope="session")
+def schedule_common(test_classhome_data):
+    return test_classhome_data["schedule_common_data"]
+
+@pytest.fixture(scope="session")
+def schedule_cases(test_classhome_data):
+    return test_classhome_data["schedule_cases_data"]
 #-------------------- <효진> 학습 과목 데이터 ------------------------------
 
 @pytest.fixture(scope="session")
