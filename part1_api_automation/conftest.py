@@ -49,6 +49,7 @@ def test_dash_data():
 def test_classhome_data():
     return load_test_data("classhome")
 
+@pytest.fixture(scope="session")
 def test_subject_data():
     return load_test_data("subject")
 
@@ -71,9 +72,6 @@ def classroom_id(test_board_data):
 @pytest.fixture(scope="session")
 def create_article_data(test_board_data):
     return test_board_data["articles"]["create_article"]
-
-def create_article_data(test_data):
-    return test_data["board"]["create_article"]
 
 #-------------- <정은> 클래스 홈 사용 데이터 -----------------------
 @pytest.fixture
