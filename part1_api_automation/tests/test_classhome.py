@@ -269,4 +269,19 @@ def test_get_schedule_fails_when_date_format_invalid(
     assert detail[1]["type"] == "datetime_from_date_parsing"
     assert detail[1]["loc"] == ["query", "dt_start_le"]
     
-      
+# 테스트 케이스: STU-CHM-04-001(수강생이 강의실의 위치를 정상 조회할 수 있는지 확인)
+
+# def test_get_classroom_location(
+#     rest_client,
+#     valid_headers,
+#     params,
+#     lecture_common
+#     ):
+#     endpoint = f"/org/qatrack/course/lectureroom/get/{lecture_common}"
+    
+#     }"
+#     params = {
+        
+#     }
+    
+    

@@ -18,3 +18,12 @@
 
 브랜치 테스트
 develop
+
+### config - 테스트 데이터 파일 규칙
+1. header_data.jon -> 공용으로 사용할 헤더 데이터
+2. test_<도메인명>_data.json -> 각자 테스트할 도메인에서 사용할 데이터
+3. url.json -> 공용으로 사용할 url 모아둔 파일
+
+### conftest.py 규칙
+1. 헤더, url은 공용으로 사용
+2. test_<도메인명>_data.json 에서 저장한 테스트 데이터 불러오는 fixture 함수 각자 만들어서 사용
