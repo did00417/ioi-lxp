@@ -45,6 +45,10 @@ def test_board_data():
 def test_dash_data():
     return load_test_data("dash")
 
+@pytest.fixture(scope="session")
+def test_subject_data():
+    return load_test_data("subject")
+
 #-------------- <수진> 간편하게 사용할 학습 대시보드 메뉴 데이터 -----------------------
 
 @pytest.fixture
@@ -64,3 +68,9 @@ def classroom_id(test_board_data):
 @pytest.fixture(scope="session")
 def create_article_data(test_board_data):
     return test_board_data["articles"]["create_article"]
+
+#-------------------- <효진> 학습 과목 데이터 ------------------------------
+
+@pytest.fixture(scope="session")
+def subject_params(test_subject_data):
+    return test_subject_data["params"]
