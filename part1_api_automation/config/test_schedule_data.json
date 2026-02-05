@@ -1,0 +1,18 @@
+{
+  "headers": {
+    "Authorization": "Bearer {ELICE_VALID_TOKEN}",
+    "x-elice-org-name-short": "qatrack",
+    "Content-Type": "application/json"
+  },
+  "params": {
+    "classroom_id": "a6bd98a3-83ff-4e5d-ba9e-6c04c69592fc"
+  },
+  "cases": {
+    "weekly": {
+      "dt_start_ge": "2026-01-17T15:00:00.000Z",
+      "dt_start_le": "2026-03-14T14:59:59.999Z",
+      "offset": 0,
+      "count": 40
+    }
+  }
+}

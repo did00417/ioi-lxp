@@ -90,3 +90,8 @@ def schedule_cases(test_classhome_data):
 @pytest.fixture(scope="session")
 def subject_params(test_subject_data):
     return test_subject_data["params"]
+
+#-------------------- <동빈> 학습 과목 데이터 ------------------------------
+@pytest.fixture(scope="session")
+def test_schedule_data():
+    return load_test_data("schedule")
