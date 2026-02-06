@@ -1,9 +1,4 @@
 {
-  "headers": {
-    "Authorization": "Bearer {ELICE_VALID_TOKEN}",
-    "x-elice-org-name-short": "qatrack",
-    "Content-Type": "application/json"
-  },
   "params": {
     "classroom_id": "a6bd98a3-83ff-4e5d-ba9e-6c04c69592fc"
   },
@@ -13,6 +8,11 @@
       "dt_start_le": "2026-03-14T14:59:59.999Z",
       "offset": 0,
       "count": 40
+    },
+    "detail_view": {
+      "schedule_id": "bf440c62-cd8b-40ce-b9c9-092a89690618",
+      "expected_title": "2팀 회의실 👨‍💻 👩‍💻 👨‍💻",
+      "expected_lectureroom_id": 135109
     }
   }
 }
