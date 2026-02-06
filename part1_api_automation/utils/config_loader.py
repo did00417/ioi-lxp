@@ -1,30 +1,42 @@
-from .file_manager import FileManager
+from .json_reader import JsonReader
 import os
 import copy
 from dotenv import load_dotenv
 
-fm = FileManager()
+jr = JsonReader()
 load_dotenv()
 
 # config 폴더의 url 불러오는 함수
 def get_service_url(service: str):
     env = os.getenv("TEST_ENV", "base_url")
-    config = fm.read_json("url.json")
-    return config[service][env]
+    config = jr.read_json("url.json")
+
+    try:
+        return config[service][env]
+    except KeyError as e:
+        raise KeyError(
+            f"[CONFIG ERROR] url.json에 service='{service}', env='{env}' 설정이 없습니다"
+        ) from e
 
 # 헤더 불러오는 함수
 def get_header():
-    raw = fm.read_json("header_data.json")
+    raw = jr.read_json("header_data.json")
     data = copy.deepcopy(raw)
     
+    valid_token = os.getenv("ELICE_VALID_TOKEN")
+    invalid_token = os.getenv("ELICE_INVALID_TOKEN")
+
+    if not valid_token or not invalid_token:
+        raise RuntimeError("[CONFIG ERROR] ELICE 토큰 환경변수가 설정되지 않았습니다")
+
     # 토큰 플레이스홀더 교체
     data["headers"]["Authorization"] = data["headers"]["Authorization"].format(
-        ELICE_VALID_TOKEN=os.getenv("ELICE_VALID_TOKEN")
+        ELICE_VALID_TOKEN=valid_token
     )
     data["invalid_headers"]["Authorization"] = data["invalid_headers"]["Authorization"].format(
-        ELICE_INVALID_TOKEN=os.getenv("ELICE_INVALID_TOKEN")
+        ELICE_INVALID_TOKEN=invalid_token
     )
-    
+
     return data
 
 # 각자 파라미터 불러오는 함수
@@ -35,11 +47,7 @@ def load_test_data(domain: str):
     - "dash"  → test_dash_data.json
     """
     file_name = f"test_{domain}_data.json"
-    raw = fm.read_json(file_name)
-
-    if raw is None:
-        raise FileNotFoundError(f"{file_name} 파일을 찾을 수 없습니다")
-
+    raw = jr.read_json(file_name)
     data = copy.deepcopy(raw)
 
     # 플레이스홀더 치환
