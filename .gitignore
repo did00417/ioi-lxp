@@ -11,3 +11,5 @@ __pycache__
 **/.pytest_cache
 
 report.html
+
+part1_api_automation/logs
