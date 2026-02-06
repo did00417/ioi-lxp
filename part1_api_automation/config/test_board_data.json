@@ -24,6 +24,15 @@
       "content": "수정하겠습니다.",
       "is_secret": "false"
     }
+  },
+
+  "edit_others_article": {
+  "board_article_id": 67250,
+  "update_payload": {
+    "title": "타인 게시글 제목 수정 시도",
+    "content": "타인 게시글 내용 수정 시도",
+    "is_secret": "false"
   }
+}
 
 }

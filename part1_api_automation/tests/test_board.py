@@ -313,3 +313,35 @@ def test_update_article_success(rest_client, valid_headers, classroom_id, test_b
     assert res_data["board_article_id"] == article_id
 
     logger.info(f"=== STU_BOARD_03_001: ID {article_id} 수정 검증 완료 ===")
+
+def test_update_others_article_fail(rest_client, valid_headers, classroom_id, test_board_data):
+    """STU_BOARD_02_008: 타인 게시글 수정 시도"""
+    logger.info("=== STU_BOARD_02_008: 타인 게시글 수정 시도 테스트 시작 ===")
+
+    edit_data = test_board_data["edit_others_article"]
+    article_id = edit_data["board_article_id"]
+    
+    payload = {
+        "board_article_id": article_id,
+        **edit_data["update_payload"],
+        "classroom_id": classroom_id
+    }
+    
+    headers = valid_headers.copy()
+    headers.pop("Content-Type", None)
+
+    response = rest_client.post(
+        endpoint="/org/qatrack/board/article/edit/",
+        headers=headers,
+        data=payload
+    )
+
+    res_data = response.json()
+    logger.debug(f"타인 글 수정 시도 응답: {res_data}")
+
+    assert res_data["_result"]["status"] == "fail", f"보안 취약점: 타인의 게시글({article_id})이 수정되었습니다!"
+
+    assert res_data["_result"]["status_code"] == 400
+    assert res_data["fail_code"] == "resource_not_found"
+
+    logger.info(f"=== STU_BOARD_03_002: 타인 게시글({article_id}) 수정 차단 확인 완료 ===")
