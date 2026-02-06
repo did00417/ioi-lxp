@@ -345,3 +345,38 @@ def test_update_others_article_fail(rest_client, valid_headers, classroom_id, te
     assert res_data["fail_code"] == "resource_not_found"
 
     logger.info(f"=== STU_BOARD_03_002: 타인 게시글({article_id}) 수정 차단 확인 완료 ===")
+
+def test_delete_article_success(rest_client, valid_headers, classroom_id, create_article_data):
+    """STU_BOARD_02_009: 게시글 삭제 """
+    """반복 테스트를 위해 게시글 생성 후 삭제 로직"""
+    logger.info("=== STU_BOARD_02_009: 게시글 삭제 테스트 시작 ===")
+
+    # 1. ID 확보용 게시글 생성
+    create_payload = {**create_article_data, "classroom_id": classroom_id}
+    headers = valid_headers.copy()
+    headers.pop("Content-Type", None)
+
+    create_res = rest_client.post(
+        endpoint="/org/qatrack/board/article/edit/",
+        headers=headers,
+        data=create_payload
+    )
+    
+    # 생성된 글의 ID를 가져옵니다.
+    article_id = create_res.json().get("board_article_id")
+    logger.info(f"삭제 테스트를 위한 임시 게시글 생성 완료 (ID: {article_id})")
+
+    # 2. 방금 생성된 ID로 삭제 요청
+    delete_payload = {"board_article_id": article_id}
+
+    response = rest_client.post(
+        endpoint="/org/qatrack/board/article/delete/",
+        headers=headers,
+        data=delete_payload
+    )
+
+    res_data = response.json()
+    assert res_data["_result"]["status"] == "ok"
+    assert res_data["_result"]["status_code"] == 200
+    
+    logger.info(f"=== ID {article_id} 삭제 검증 완료 ===")
