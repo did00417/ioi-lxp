@@ -62,9 +62,13 @@ def test_subject_data():
 
 #-------------- <수진> 간편하게 사용할 학습 대시보드 메뉴 데이터 -----------------------
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def dash_params(test_dash_data):
     return test_dash_data["params"]
+
+@pytest.fixture(scope="session")
+def dash_page(test_dash_data):
+    return test_dash_data["page"]
 
 #-------------------- <유진> 게시판 메뉴 데이터 ------------------------------
 

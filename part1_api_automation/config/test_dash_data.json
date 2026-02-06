@@ -6,5 +6,9 @@
     "invalid_student_id" : 1000000,
     "course_id" : 766477,
     "invalid_course_id" : 766000
+  },
+  "page" : {
+    "one_course_ids" : [762843, 762844, 759075, 763817, 759074],
+    "two_course_ids" : [764580, 764630, 764763, 764632, 765299]
   }
 }
