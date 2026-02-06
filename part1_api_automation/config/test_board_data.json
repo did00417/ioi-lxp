@@ -43,5 +43,12 @@
       "content": "제목 글자수 제한 테스트 중",
       "is_secret": false
     }
+  },
+  "like_article_data": {
+    "like_test": {
+      "title": "좋아요 테스트용 게시글",
+      "content": "좋아요 추가 및 취소를 테스트하기 위한 글입니다.",
+      "is_secret": false
+    }
   }
 }
