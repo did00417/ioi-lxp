@@ -282,4 +282,163 @@ def test_get_others_private_article_security_bug(rest_client, valid_headers, art
     assert body["_result"]["status_code"] == 409
     assert body["fail_code"] == "insufficient_permission"
     logger.info("=== 보안 테스트 시나리오 종료 ===")
-        
+
+def test_update_article_success(rest_client, valid_headers, classroom_id, test_board_data):
+    """STU_BOARD_02_007: 게시글 수정"""
+    logger.info("=== STU_BOARD_02_007: 게시글 수정 테스트 시작 ===")
+
+    edit_data = test_board_data["edit_article"]
+    article_id = edit_data["board_article_id"]
+    
+    payload = {
+        "board_article_id": article_id,
+        **edit_data["update_payload"],
+        "classroom_id": classroom_id
+    }
+    
+    headers = valid_headers.copy()
+    headers.pop("Content-Type", None)
+    
+    response = rest_client.post(
+        endpoint="/org/qatrack/board/article/edit/",
+        headers=headers,
+        data=payload
+    )
+
+    res_data = response.json()
+    logger.debug(f"API 응답 데이터: {res_data}")
+
+    assert res_data["_result"]["status"] == "ok"
+    assert res_data["_result"]["status_code"] == 200
+    assert res_data["board_article_id"] == article_id
+
+    logger.info(f"=== STU_BOARD_03_001: ID {article_id} 수정 검증 완료 ===")
+
+def test_update_others_article_fail(rest_client, valid_headers, classroom_id, test_board_data):
+    """STU_BOARD_02_008: 타인 게시글 수정 시도"""
+    logger.info("=== STU_BOARD_02_008: 타인 게시글 수정 시도 테스트 시작 ===")
+
+    edit_data = test_board_data["edit_others_article"]
+    article_id = edit_data["board_article_id"]
+    
+    payload = {
+        "board_article_id": article_id,
+        **edit_data["update_payload"],
+        "classroom_id": classroom_id
+    }
+    
+    headers = valid_headers.copy()
+    headers.pop("Content-Type", None)
+
+    response = rest_client.post(
+        endpoint="/org/qatrack/board/article/edit/",
+        headers=headers,
+        data=payload
+    )
+
+    res_data = response.json()
+    logger.debug(f"타인 글 수정 시도 응답: {res_data}")
+
+    assert res_data["_result"]["status"] == "fail", f"보안 취약점: 타인의 게시글({article_id})이 수정되었습니다!"
+
+    assert res_data["_result"]["status_code"] == 400
+    assert res_data["fail_code"] == "resource_not_found"
+
+    logger.info(f"=== STU_BOARD_03_002: 타인 게시글({article_id}) 수정 차단 확인 완료 ===")
+
+def test_delete_article_success(rest_client, valid_headers, classroom_id, create_article_data):
+    """STU_BOARD_02_009: 게시글 삭제 """
+    """반복 테스트를 위해 게시글 생성 후 삭제 로직"""
+    logger.info("=== STU_BOARD_02_009: 게시글 삭제 테스트 시작 ===")
+
+    # 1. ID 확보용 게시글 생성
+    create_payload = {**create_article_data, "classroom_id": classroom_id}
+    headers = valid_headers.copy()
+    headers.pop("Content-Type", None)
+
+    create_res = rest_client.post(
+        endpoint="/org/qatrack/board/article/edit/",
+        headers=headers,
+        data=create_payload
+    )
+    
+    # 생성된 글의 ID를 가져옵니다.
+    article_id = create_res.json().get("board_article_id")
+    logger.info(f"삭제 테스트를 위한 임시 게시글 생성 완료 (ID: {article_id})")
+
+    # 2. 방금 생성된 ID로 삭제 요청
+    delete_payload = {"board_article_id": article_id}
+
+    response = rest_client.post(
+        endpoint="/org/qatrack/board/article/delete/",
+        headers=headers,
+        data=delete_payload
+    )
+
+    res_data = response.json()
+    assert res_data["_result"]["status"] == "ok"
+    assert res_data["_result"]["status_code"] == 200
+    
+    logger.info(f"=== STU_BOARD_02_009: 게시글 삭제 테스트 ID {article_id} 삭제 검증 완료 ===")
+
+@pytest.mark.xfail(reason="보안 버그: 타인의 게시글이 권한 체크 없이 삭제됨")
+def test_delete_others_article_xfail(rest_client, valid_headers, board_id, test_board_data):
+    """
+    STU_BOARD_02_010: 타인 게시글 삭제 시도
+    기대 결과: status 'fail', fail_code 'insufficient_permission' 반환하며 차단되어야 함
+    현재 현상: 200 OK와 함께 타인의 게시글이 삭제됨 (보안 취약점)
+    """
+    logger.info("=== STU_BOARD_02_010 타인 게시글 삭제 시도 ===")
+
+    # 1. 게시글 목록 조회
+    query = test_board_data["queries"]["article_list"]
+    response = rest_client.get(
+        endpoint="/org/qatrack/board/article/list/",
+        headers=valid_headers,
+        params={**query, "board_id": board_id}
+    )
+    
+    body = response.json()
+    articles = body.get("board_articles", [])
+
+    # 2. JSON에서 설정한 타인 리스트 가져오기
+    others_list = test_board_data["security_test"]["others_list"]
+    
+    # 목록 중 작성자 이름이 others_list에 포함된 게시글 찾기
+    target_article = next(
+        (a for a in articles if a.get("user", {}).get("fullname") in others_list), 
+        None
+    )
+
+    if not target_article:
+        logger.warning("테스트 가능한 타인이 작성한 게시글이 목록에 없어 테스트를 건너띔.")
+        pytest.skip("테스트 가능한 타인의 게시글이 목록에 없습니다.")
+
+    target_id = target_article.get("id") 
+    target_writer = target_article.get("user", {}).get("fullname")
+    
+    logger.info(f"타겟 게시글 확인 - ID: {target_id}, 작성자: {target_writer}, 제목: {target_article.get('title')}")
+
+    # 3. 삭제 시도
+    headers = valid_headers.copy()
+    headers.pop("Content-Type", None)
+
+    # 현재 로그인된 유효 토큰으로 타인의 글 삭제 요청
+    response = rest_client.post(
+        endpoint="/org/qatrack/board/article/delete/",
+        headers=headers,
+        data={"board_article_id": target_id}
+    )
+
+    body = response.json()
+    logger.debug(f"API 응답 데이터: {body}")
+
+    if body["_result"]["status"] == "ok":
+        logger.critical(f"보안 경고: 타인의 게시글(ID: {target_id})이 권한 없이 삭제됨!")
+
+    # 실패해야 정상 (삭제가 성공하면 AssertionError 발생 -> xfail 처리)
+    assert body["_result"]["status"] == "fail", f"보안 취약점: 타인의 글(ID: {target_id})이 삭제됨"
+    assert body["_result"]["status_code"] in [403, 409]  # 차단 시 발생해야 할 코드
+    assert body["fail_code"] == "insufficient_permission"
+    
+    logger.info("=== STU_BOARD_02_010: 타인 게시글 삭제 시도 종료 ===")
