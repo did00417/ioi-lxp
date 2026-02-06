@@ -5,7 +5,9 @@ from dotenv import load_dotenv
 from utils.file_manager import FileManager
 from utils.config_loader import get_service_url, get_header, load_test_data
 from api.api_client import APIClient
+import logging
 
+logger = logging.getLogger(__name__)
 
 #--------------- 각 url 받아서 클라이언트 생성하기 ----------------
 
@@ -34,6 +36,14 @@ def valid_headers(header_data):
 @pytest.fixture
 def invalid_headers(header_data):
     return header_data["invalid_headers"]
+
+#------------------ <공용> logger 설정 --------------------------
+
+@pytest.fixture(scope="session", autouse=True)
+def setup_api_client():
+    logger.info("=== 전체 API 테스트 세션 시작 ===")
+    yield
+    logger.info("=== 전체 API 테스트 세션 종료 ===")
 
 #--------------------- 각자 사용할 테스트 데이터 받기 ------------------------
 

@@ -1,21 +1,36 @@
 import logging
 
+logger = logging.getLogger(__name__)
+
 def test_fetch_sbj_list(classroom_client, valid_headers, subject_params):
     """STU-SBJ-01-001: 클래스 학습 목록 정상 조회"""
+    logger.info("=== STU-SBJ-01-001: 클래스 학습 목록 정상 조회 ===")
     classroom_id = subject_params['classroom_id']
     count = 10
+    endpoint = f"/classroom/{classroom_id}/course"
 
+    logger.info(f"API 요청 시작: {classroom_client.base_url}{endpoint}")
     response = classroom_client.get(
-        endpoint=f"/classroom/{classroom_id}/course",
+        endpoint=endpoint,
         headers=valid_headers,
         params={
             "skip": 0,
             "count": count
         }
     )
+    logger.debug(f"응답 헤더: {response.headers}")
+    logger.debug(f"응답 바디: {response.text}")
     response_count = len(response.json())
-    assert response.status_code == 200, f"요청이 올바르게 처리되지 않았습니다. 상태 코드: {response.status_code}"
-    assert response_count <= count, f"요청한 count({count})보다 많은 데이터({response_count})가 반환되었습니다."
+
+    if response.status_code != 200:
+        logger.error(f"요청이 올바르게 처리되지 않았습니다. 상태 코드: {response.status_code}")
+    assert response.status_code == 200
+
+    if response_count > count:
+        logger.error(f"요청한 count({count})보다 많은 데이터({response_count})가 반환되었습니다.")
+    assert response_count <= count
+
+    logger.info("=== STU-SBJ-01-001 테스트 완료 ===")
 
 def test_fetch_sbj_list_invalid_classid(classroom_client, valid_headers, subject_params):
     """STU-SBJ-01-002: 올바르지 않은 클래스 id로 학습 목록 조회"""
