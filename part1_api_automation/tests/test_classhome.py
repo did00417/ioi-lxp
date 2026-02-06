@@ -522,3 +522,105 @@ def test_get_student_course_slides_no_params(
     assert detail[1]["loc"] == ["query", "count"]
     
     logger.info("=== STU-CHM-06-006 테스트 완료 ===")
+
+# 테스트 케이스 : STU-CHM-07-001(최신 게시판 공지 정상 조회)    
+def test_get_latest_board_articles(
+    classroom_client,
+    valid_headers,
+    classhome_params):
+    
+    logger.info("=== STU-CHM-07-001: 최신 게시판 공지 정상 조회 ===")
+    endpoint = f"/classroom/{classhome_params['classroom_id']}/article"
+    
+    params = {
+       "filter_title": "%%",
+       "skip": 0,
+       "count": 3  
+    }
+    
+    response = classroom_client.get(
+        endpoint,
+        headers=valid_headers,
+        params=params
+    )
+    
+    assert response.status_code == 200
+    
+    data = response.json()[0]
+    
+    assert "title" in data
+    assert isinstance(data["title"], str)
+    assert data["title"].strip() != ""
+
+    assert "content" in data
+    assert isinstance(data["content"], str)
+    assert data["content"].strip() != ""
+    
+    logger.info("=== STU-CHM-07-001 테스트 완료 ===")
+
+# 테스트 케이스 : STU-CHM-07-002(필수 파라미터 누락시 조회 차단)    
+def test_get_board_articles_no_classroom_id(
+    classroom_client,
+    valid_headers,
+    classhome_params
+    ):
+    
+    logger.info("=== STU-CHM-07-002: 필수 파라미터 누락시 게시판 조회 차단 ===")
+    endpoint = f"/classroom/{classhome_params['classroom_id']}/article"
+    
+    params = {
+        "filter_title": "%%"
+    }
+    
+    response = classroom_client.get(
+        endpoint,
+        headers=valid_headers,
+        params=params
+    )
+    
+    assert response.status_code == 422
+    
+    error_data = response.json()
+    
+    detail = error_data["detail"]
+    assert detail[0]["type"] == "missing"
+    assert detail[0]["loc"] == ["query", "skip"]
+    assert detail[1]["type"] == "missing"
+    assert detail[1]["loc"] == ["query", "count"]
+    
+    
+    logger.info("=== STU-CHM-07-002 테스트 완료 ===")
+
+
+# 테스트 케이스 : STU-CHM-07-003(skip/conut 값 오류시 조회 차단)
+def test_get_board_articles_with_invalid_skip_count(
+    classroom_client,
+    valid_headers,
+    classhome_params
+):
+    logger.info("=== STU-CHM-07-003: skip/conut 값 오류시 게시판 조회 차단 확인 ===")
+    endpoint = f"/classroom/{classhome_params['classroom_id']}/article"
+    
+    params = {
+        "filter_title": "%%",
+        "skip": -12,
+        "count": -34
+    }
+    
+    response = classroom_client.get(
+        endpoint,
+        headers = valid_headers,
+        params = params
+    )
+    
+    assert response.status_code == 422
+    
+    error_data = response.json()
+    
+    detail = error_data["detail"]
+    assert detail[0]["type"] == "greater_than_equal"
+    assert detail[0]["loc"] == ["query", "skip"]
+    assert detail[1]["type"] == "greater_than_equal"
+    assert detail[1]["loc"] == ["query", "count"]
+    
+    logger.info("=== STU-CHM-07-003 테스트 완료 ===")
