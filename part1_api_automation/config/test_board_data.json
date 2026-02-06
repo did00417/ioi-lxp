@@ -15,5 +15,15 @@
       "content": "api 자동화 코드로 작성함",
       "is_secret": "false"
     }
+  },
+
+  "edit_article": {
+    "board_article_id": 67135,
+    "update_payload": {
+      "title": "api 자동화로 수정",
+      "content": "수정하겠습니다.",
+      "is_secret": "false"
+    }
   }
+
 }

@@ -282,4 +282,34 @@ def test_get_others_private_article_security_bug(rest_client, valid_headers, art
     assert body["_result"]["status_code"] == 409
     assert body["fail_code"] == "insufficient_permission"
     logger.info("=== 보안 테스트 시나리오 종료 ===")
-        
+
+def test_update_article_success(rest_client, valid_headers, classroom_id, test_board_data):
+    """STU_BOARD_02_007: 게시글 수정"""
+    logger.info("=== STU_BOARD_02_007: 게시글 수정 테스트 시작 ===")
+
+    edit_data = test_board_data["edit_article"]
+    article_id = edit_data["board_article_id"]
+    
+    payload = {
+        "board_article_id": article_id,
+        **edit_data["update_payload"],
+        "classroom_id": classroom_id
+    }
+    
+    headers = valid_headers.copy()
+    headers.pop("Content-Type", None)
+    
+    response = rest_client.post(
+        endpoint="/org/qatrack/board/article/edit/",
+        headers=headers,
+        data=payload
+    )
+
+    res_data = response.json()
+    logger.debug(f"API 응답 데이터: {res_data}")
+
+    assert res_data["_result"]["status"] == "ok"
+    assert res_data["_result"]["status_code"] == 200
+    assert res_data["board_article_id"] == article_id
+
+    logger.info(f"=== STU_BOARD_03_001: ID {article_id} 수정 검증 완료 ===")
