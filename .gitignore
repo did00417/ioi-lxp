@@ -13,3 +13,4 @@ __pycache__
 report.html
 
 part1_api_automation/logs
+*.log
