@@ -2,7 +2,10 @@
   "params": {
     "classroom_id": "a6bd98a3-83ff-4e5d-ba9e-6c04c69592fc",
     "valid_classroom_id": "123e4567-e89b-12d3-a456-426614174000",
-    "invalid_classroom_id": "00000000-0000-0000-0000-000000000000"
+    "invalid_classroom_id": "00000000-0000-0000-0000-000000000000",
+    "lectureroom_id": "135111",
+    "invalid_lectureroom_id": "000000",
+    "student_id": "{STUDENT_ID}"
   },
 
   "schedule_common_data": {
