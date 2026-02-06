@@ -206,89 +206,151 @@ def test_all_courses_delete(classroom_client,valid_headers,dash_params):
     
     logger.info("=== STU-DAB-01-007 테스트 완료 ===")
     
-# # STU-DAB-02-001
-# def test_one_course(dashboard_client,valid_headers,dash_params):
-#     endpoint = f"/student/{dash_params['student_id']}/lecture"
+#---------------------------- 테스트 시나리오 STU-DAB-02 ------------------------------------
+# STU-DAB-02-001
+def test_one_course(dashboard_client,valid_headers,dash_params):
+    logger.info("=== STU-DAB-02-001: 과목 선택 후 학습 현황 페이지 정상 조회 ===")
     
-#     response = dashboard_client.get(
-#         endpoint,
-#         headers = valid_headers,
-#         params={
-#             "classroom_id": dash_params["classroom_id"],
-#             "course_id" : dash_params["course_id"],
-#             "filter_parent_lecture_id" : "null",
-#             "offset" : 0,
-#             "count" : 40
-#         }
-#     )
-#     body = response.json()
-#     assert response.status_code == 200
-#     assert body[0]["lecture"]["course_id"] == dash_params["course_id"]
-#     assert len(body[0]["learning_progress"]) > 0
+    endpoint = f"/student/{dash_params['student_id']}/lecture" 
+    response = dashboard_client.get(
+        endpoint,
+        headers = valid_headers,
+        params={
+            "classroom_id": dash_params["classroom_id"],
+            "course_id" : dash_params["course_id"],
+            "filter_parent_lecture_id" : "null",
+            "offset" : 0,
+            "count" : 40
+        }
+    )
+    body = response.json()
     
-# # STU-DAB-02-002
-# def test_one_course_invalid_token(dashboard_client,invalid_headers,dash_params):
-#     endpoint = f"/student/{dash_params['student_id']}/lecture"
+    try :
+        assert response.status_code == 200, "Step 1 실패: status_code != 200"
+        logger.info("Step 1 성공: 예상대로 200 OK 반환됨")
+        assert body[0]["lecture"]["course_id"] == dash_params["course_id"], "Step 2 실패: course id 불일치"
+        logger.info("Step 2 성공: 올바른 course id 반환됨")
+        assert len(body[0]["learning_progress"]) > 0, "Step 3 실패: learning_progress 데이터 존재하지 않음"
+        logger.info("Step 3 성공: learning_progress 데이터 존재")
+    except AssertionError as e:
+        logger.error(f"❌ 테스트 실패 : {e}")
+        logger.error(f"응답 status_code: {response.status_code}")
+        logger.error(f"응답 body: {body}")
+        raise
     
-#     response = dashboard_client.get(
-#         endpoint,
-#         headers = invalid_headers,
-#         params={
-#             "classroom_id": dash_params["classroom_id"],
-#             "course_id" : dash_params["course_id"],
-#             "filter_parent_lecture_id" : "null",
-#             "offset" : 0,
-#             "count" : 40
-#         }
-#     )
-#     body = response.json()
-#     assert response.status_code == 403
-#     assert "permission" in body["message"]
+    logger.info("=== STU-DAB-02-001 테스트 완료 ===")
     
-# # STU-DAB-02-003
-# def test_one_course_invalid_classroom(dashboard_client,valid_headers,dash_params):
-#     endpoint = f"/student/{dash_params['student_id']}"
+# STU-DAB-02-002
+def test_one_course_invalid_token(dashboard_client,invalid_headers,dash_params):
+    logger.info("=== STU-DAB-02-002: 유효하지 않은 토큰으로 한 과목의 학습 현황 조회 ===")
     
-#     response = dashboard_client.get(
-#         endpoint,
-#         headers = valid_headers,
-#         params={
-#             "classroom_id": dash_params["invalid_classroom_id"],
-#             "course_id" : dash_params["course_id"],
-#         }
-#     )
-#     body = response.json()
-#     assert response.status_code == 409
-#     assert "model" in body["message"]
+    endpoint = f"/student/{dash_params['student_id']}/lecture"
+    response = dashboard_client.get(
+        endpoint,
+        headers = invalid_headers,
+        params={
+            "classroom_id": dash_params["classroom_id"],
+            "course_id" : dash_params["course_id"],
+            "filter_parent_lecture_id" : "null",
+            "offset" : 0,
+            "count" : 40
+        }
+    )
+    body = response.json()
     
-# # STU-DAB-02-004
-# def test_one_course_invalid_student(dashboard_client,valid_headers,dash_params):
-#     endpoint = f"/student/{dash_params['invalid_student_id']}"
+    try : 
+        assert response.status_code == 403, "Step 1 실패: status_code != 403"
+        logger.info("Step 1 성공: 예상대로 200 Forbidden 반환됨")
+        assert "permission" in body["message"], "Step 2 실패: 적절한 요청 거부 메시지가 제공되지 않음"
+        logger.info("Step 2 성공: 적절한 요청 거부 메시지가 제공됨")
+    except AssertionError as e:
+        logger.error(f"❌ 테스트 실패 : {e}")
+        logger.error(f"응답 status_code: {response.status_code}")
+        logger.error(f"응답 body: {body}")
+        raise
     
-#     response = dashboard_client.get(
-#         endpoint,
-#         headers = valid_headers,
-#         params={
-#             "classroom_id": dash_params["classroom_id"],
-#             "course_id" : dash_params["course_id"],
-#         }
-#     )
-#     body = response.json()
-#     assert response.status_code == 409
-#     assert "model" in body["message"]
+    logger.info("=== STU-DAB-02-002 테스트 완료 ===")
     
-# # STU-DAB-02-005
-# def test_one_course_invalid_course(dashboard_client,valid_headers,dash_params):
-#     endpoint = f"/student/{dash_params['student_id']}"
+# STU-DAB-02-003
+def test_one_course_invalid_classroom(dashboard_client,valid_headers,dash_params):
+    logger.info("=== STU-DAB-02-003: 소속되지 않은 클래스 홈으로 한 과목의 학습 현황 조회 ===")
     
-#     response = dashboard_client.get(
-#         endpoint,
-#         headers = valid_headers,
-#         params={
-#             "classroom_id": dash_params["classroom_id"],
-#             "course_id" : dash_params["invalid_course_id"],
-#         }
-#     )
-#     body = response.json()
-#     assert response.status_code == 409
-#     assert "model" in body["message"]
+    endpoint = f"/student/{dash_params['student_id']}"
+    response = dashboard_client.get(
+        endpoint,
+        headers = valid_headers,
+        params={
+            "classroom_id": dash_params["invalid_classroom_id"],
+            "course_id" : dash_params["course_id"],
+        }
+    )
+    body = response.json()
+    
+    try : 
+        assert response.status_code == 409, "Step 1 실패: status_code != 409"
+        logger.info("Step 1 성공: 예상대로 409 Conflict 반환됨")
+        assert "model" in body["message"], "Step 2 실패: 적절한 요청 거부 메시지가 제공되지 않음"
+        logger.info("Step 2 성공: 적절한 요청 거부 메시지가 제공됨")
+    except AssertionError as e:
+        logger.error(f"❌ 테스트 실패 : {e}")
+        logger.error(f"응답 status_code: {response.status_code}")
+        logger.error(f"응답 body: {body}")
+        raise
+    
+    logger.info("=== STU-DAB-02-003 테스트 완료 ===")
+    
+# STU-DAB-02-004
+def test_one_course_invalid_student(dashboard_client,valid_headers,dash_params):
+    logger.info("=== STU-DAB-02-004: 유효하지 않은 student id로 한 과목의 학습 현황 조회 ===")
+    
+    endpoint = f"/student/{dash_params['invalid_student_id']}"
+    response = dashboard_client.get(
+        endpoint,
+        headers = valid_headers,
+        params={
+            "classroom_id": dash_params["classroom_id"],
+            "course_id" : dash_params["course_id"],
+        }
+    )
+    body = response.json()
+    
+    try : 
+        assert response.status_code == 409, "Step 1 실패: status_code != 409"
+        logger.info("Step 1 성공: 예상대로 409 Conflict 반환됨")
+        assert "model" in body["message"], "Step 2 실패: 적절한 요청 거부 메시지가 제공되지 않음"
+        logger.info("Step 2 성공: 적절한 요청 거부 메시지가 제공됨")
+    except AssertionError as e:
+        logger.error(f"❌ 테스트 실패 : {e}")
+        logger.error(f"응답 status_code: {response.status_code}")
+        logger.error(f"응답 body: {body}")
+        raise
+    
+    logger.info("=== STU-DAB-02-004 테스트 완료 ===")
+    
+# STU-DAB-02-005
+def test_one_course_invalid_course(dashboard_client,valid_headers,dash_params):
+    logger.info("=== STU-DAB-02-005: 소속된 클래스 홈과 맞지 않는 과목의 학습 현황 조회 ===")
+    
+    endpoint = f"/student/{dash_params['student_id']}"
+    response = dashboard_client.get(
+        endpoint,
+        headers = valid_headers,
+        params={
+            "classroom_id": dash_params["classroom_id"],
+            "course_id" : dash_params["invalid_course_id"],
+        }
+    )
+    body = response.json()
+    
+    try : 
+        assert response.status_code == 409, "Step 1 실패: status_code != 409"
+        logger.info("Step 1 성공: 예상대로 409 Conflict 반환됨")
+        assert "model" in body["message"], "Step 2 실패: 적절한 요청 거부 메시지가 제공되지 않음"
+        logger.info("Step 2 성공: 적절한 요청 거부 메시지가 제공됨")
+    except AssertionError as e:
+        logger.error(f"❌ 테스트 실패 : {e}")
+        logger.error(f"응답 status_code: {response.status_code}")
+        logger.error(f"응답 body: {body}")
+        raise
+    
+    logger.info("=== STU-DAB-02-005 테스트 완료 ===")
