@@ -27,15 +27,21 @@
   },
 
   "edit_others_article": {
-  "board_article_id": 67250,
-  "update_payload": {
-    "title": "타인 게시글 제목 수정 시도",
-    "content": "타인 게시글 내용 수정 시도",
-    "is_secret": "false"
-  }
-},
-"security_test": {
+    "board_article_id": 67250,
+    "update_payload": {
+      "title": "타인 게시글 제목 수정 시도",
+      "content": "타인 게시글 내용 수정 시도",
+      "is_secret": "false"
+    }
+  },
+  "security_test": {
     "others_list": ["이수진", "양정은", "안효진", "신동빈"]
+  },
+  "invalid_articles": {
+    "max_title_over": {
+      "title": "10글자내용입니다20글자내용입니다30글자내용입니다40글자내용입니다50글자내용입니다60글자내용입니다70글자내용입니다80글자내용입니다90글자내용입니다100글자내용입니다110글자내용입니다120글자내용입니다130글자내용입니다140글자내용입니다",
+      "content": "제목 글자수 제한 테스트 중",
+      "is_secret": false
+    }
   }
-
 }

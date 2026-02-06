@@ -442,3 +442,32 @@ def test_delete_others_article_xfail(rest_client, valid_headers, board_id, test_
     assert body["fail_code"] == "insufficient_permission"
     
     logger.info("=== STU_BOARD_02_010: 타인 게시글 삭제 시도 종료 ===")
+
+def test_create_article_max_title_over_fail(rest_client, valid_headers, classroom_id, test_board_data):
+    """STU_BOARD_02_011: 제목 최대 글자수 초과 테스트"""
+    logger.info("=== STU_BOARD_02_011: 제목 최대 글자수 초과 테스트 시작 ===")
+
+    invalid_data = test_board_data["invalid_articles"]["max_title_over"]
+    
+    payload = {
+        "classroom_id": classroom_id,
+        **invalid_data
+    }
+
+    headers = valid_headers.copy()
+    headers.pop("Content-Type", None)
+
+    response = rest_client.post(
+        endpoint="/org/qatrack/board/article/edit/",
+        headers=headers,
+        data=payload
+    )
+
+    res_data = response.json()
+    logger.debug(f"서버 응답: {res_data}")
+
+    assert res_data["_result"]["status"] == "fail", "글자수 초과 제목이 차단되지 않았습니다."
+    assert res_data["_result"]["status_code"] == 400
+    assert res_data["fail_code"] == "invalid_parameter"
+    
+    logger.info("=== STU_BOARD_02_011: 글자수 제한 정책 적용 확인 완료 ===")
