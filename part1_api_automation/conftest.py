@@ -1,8 +1,5 @@
 import pytest
-import os
-from dotenv import load_dotenv
 
-from utils.file_manager import FileManager
 from utils.config_loader import get_service_url, get_header, load_test_data
 from api.api_client import APIClient
 import logging
