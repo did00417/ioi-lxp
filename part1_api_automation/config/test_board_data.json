@@ -33,6 +33,9 @@
     "content": "타인 게시글 내용 수정 시도",
     "is_secret": "false"
   }
-}
+},
+"security_test": {
+    "others_list": ["이수진", "양정은", "김나라", "이원기"]
+  }
 
 }
