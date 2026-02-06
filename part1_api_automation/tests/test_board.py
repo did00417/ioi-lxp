@@ -471,3 +471,55 @@ def test_create_article_max_title_over_fail(rest_client, valid_headers, classroo
     assert res_data["fail_code"] == "invalid_parameter"
     
     logger.info("=== STU_BOARD_02_011: 글자수 제한 정책 적용 확인 완료 ===")
+
+# ---------------- STU_BOARD_03 ----------------
+
+def test_article_like_add_and_delete_flow(rest_client, valid_headers, classroom_id, test_board_data):
+    """
+    STU_BOARD_03-001: 게시글 좋아요 정상 동작
+    STU_BOARD_03-002: 게시글 좋아요 취소 확인
+    순서: 새 글 작성 -> 좋아요 추가 -> 좋아요 취소
+    """
+    logger.info("=== STU_BOARD_03-001,002: 좋아요 추가/취소 테스트 시작 ===")
+
+    like_test_data = test_board_data["like_article_data"]["like_test"]
+    
+    headers = valid_headers.copy()
+    headers.pop("Content-Type", None)
+
+    create_res = rest_client.post(
+        endpoint="/org/qatrack/board/article/edit/",
+        headers=headers,
+        data={
+            "classroom_id": classroom_id,
+            **like_test_data 
+        }
+    )
+    article_id = create_res.json().get("board_article_id")
+    logger.info(f"테스트용 게시글 생성 완료 (ID: {article_id})")
+
+    # 좋아요 추가
+    like_add_res = rest_client.post(
+        endpoint="/org/qatrack/board/article/like/add/",
+        headers=headers,
+        data={"board_article_id": article_id}
+    )
+    
+    like_add_body = like_add_res.json()
+    assert like_add_body["_result"]["status"] == "ok"
+    assert like_add_body["_result"]["status_code"] == 200
+    logger.info(f"ID {article_id} 게시글 좋아요 추가 성공")
+
+    # 좋아요 취소
+    like_del_res = rest_client.post(
+        endpoint="/org/qatrack/board/article/like/delete/",
+        headers=headers,
+        data={"board_article_id": article_id}
+    )
+    
+    like_del_body = like_del_res.json()
+    assert like_del_body["_result"]["status"] == "ok"
+    assert like_del_body["_result"]["status_code"] == 200
+    logger.info(f"ID {article_id} 게시글 좋아요 취소 성공")
+
+    logger.info("=== STU_BOARD_03-001,002: 모든 좋아요 시나리오 검증 완료 ===")
