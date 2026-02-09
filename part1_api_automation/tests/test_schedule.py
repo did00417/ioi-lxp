@@ -103,7 +103,7 @@ def test_schedule_all_data_loaded(classroom_client, valid_headers, schedule_para
     assert "BEGIN:VCALENDAR" in content
     
 def test_schedule_date_update_on_move(classroom_client, valid_headers, schedule_params, test_schedule_data):
-    logger.info("증분 이동(12월) 시 날짜 파라미터 갱신 및 데이터 로드 테스트 시작")
+    logger.info("증분 이동시 날짜 파라미터 갱신 및 데이터 로드 테스트 시작")
     
     # 1. 12월 이동 케이스 데이터 가져오기
     dec_case = test_schedule_data["cases"]["december_move"]
