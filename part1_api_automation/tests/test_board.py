@@ -523,3 +523,42 @@ def test_article_like_add_and_delete_flow(rest_client, valid_headers, classroom_
     logger.info(f"ID {article_id} 게시글 좋아요 취소 성공")
 
     logger.info("=== STU_BOARD_03-001,002: 모든 좋아요 시나리오 검증 완료 ===")
+
+@pytest.mark.parametrize("case_name, data_key, expected_status, expected_code, expected_fail_code", [
+    ("STU_BOARD_03-003", "valid_comment", "ok", 200, None),
+    ("STU_BOARD_03-004", "invalid_article_comment", "fail", 400, "resource_not_found")
+])
+def test_create_comment(rest_client, valid_headers, test_board_data, 
+                                    case_name, data_key, expected_status, expected_code, expected_fail_code):
+    """
+    STU_BOARD_03-003: 댓글 작성 가능 확인
+    STU_BOARD_03-004: 존재하지 않는 게시글 댓글 작성
+    """
+    logger.info(f"=== {case_name} 테스트 시작 ===")
+
+    payload = test_board_data["comment_data"][data_key]
+    
+    headers = valid_headers.copy()
+    headers.pop("Content-Type", None)
+
+    response = rest_client.post(
+        endpoint="/org/qatrack/board/article/comment/edit/",
+        headers=headers,
+        data=payload
+    )
+
+    res_data = response.json()
+    logger.debug(f"응답 데이터: {res_data}")
+
+    assert res_data["_result"]["status"] == expected_status
+    assert res_data["_result"]["status_code"] == expected_code
+
+    if expected_fail_code:
+        assert res_data["fail_code"] == expected_fail_code
+        assert res_data["_result"]["reason"] == "param"
+        logger.info(f"예상대로 {expected_fail_code} 에러 발생 확인")
+    else:
+        assert "article_comment_id" in res_data
+        logger.info(f"댓글 작성 성공 (ID: {res_data['article_comment_id']})")
+
+    logger.info(f"=== {case_name} 테스트 종료 ===")
