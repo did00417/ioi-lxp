@@ -49,10 +49,9 @@ class APIClient:
                 timeout=request_timeout,
             )
 
-            logger.info(
-                f"API 응답 완료: {method} {url} "
-                f"Status={response.status_code}"
-            )
+            logger.info(f"API 응답 완료: {method} {url}")
+            logger.info(f"Status code = {response.status_code}")
+            
             logger.debug(
                 f"Headers={headers}, Params={params}, Payload={payload}, Data={data}"
             )
