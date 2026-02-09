@@ -118,3 +118,10 @@ def subject_params(test_subject_data):
 @pytest.fixture(scope="session")
 def test_schedule_data():
     return load_test_data("schedule")
+@pytest.fixture(scope="session")
+def schedule_params(test_schedule_data):
+    return test_schedule_data["params"]
+
+@pytest.fixture(scope="session")
+def weekly_case(test_schedule_data):
+    return test_schedule_data["cases"]["weekly"]
