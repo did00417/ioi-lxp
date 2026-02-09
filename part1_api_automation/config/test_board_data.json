@@ -72,6 +72,16 @@
       "board_article_id": 67135,
       "count": 10,
       "offset": 0
+    },
+    "sort_test": {
+      "board_article_id": 67135,
+      "cases": {
+        "valid_desc": {"key": "created_datetime", "order": "desc"},
+        "valid_asc": {"key": "created_datetime", "order": "asc"},
+        "invalid_key": {"key": "user_name", "order": "desc"},
+        "invalid_order": {"key": "created_datetime", "order": "top"},
+        "missing_field": {"key": "created_datetime"}
+      }
     }
   }
 }

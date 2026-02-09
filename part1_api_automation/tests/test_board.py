@@ -1,4 +1,5 @@
 import pytest
+import json
 import logging
 
 logger = logging.getLogger(__name__)
@@ -710,3 +711,50 @@ def test_get_comment_list_success(rest_client, valid_headers, test_board_data):
         logger.warning("조회는 성공했으나 댓글이 비어있습니다.")
 
     logger.info("=== STU_BOARD_03-009 댓글 목록 조회 테스트 종료 ===")
+
+@pytest.mark.parametrize("sort_key, expected_status, expected_code", [
+    ("valid_desc", "ok", 200),
+    ("valid_asc", "ok", 200),
+    ("invalid_key", "fail", 400),
+    ("invalid_order", "fail", 400),
+    ("missing_field", "fail", 400)
+])
+def test_get_comment_list_sort_parametrize(rest_client, valid_headers, test_board_data,
+                                           sort_key, expected_status, expected_code):
+    """
+    STU_BOARD_03-010: 댓글 최신순 정렬 조회
+    STU_BOARD_03-011: 댓글 작성순 정렬 조회
+    STU_BOARD_03-012: 댓글 정렬 비정상 입력 검증
+    """
+    logger.info(f"=== STU_BOARD_03-010,011,012 테스트 시작 ===")
+
+    base_query = test_board_data["queries"]["article_list"] 
+    sort_config = test_board_data["comment_data"]["sort_test"]
+    sort_value = sort_config["cases"][sort_key]
+    
+    params = {
+        **base_query, 
+        "board_article_id": sort_config["board_article_id"],
+        "sort_by": json.dumps(sort_value)
+    }
+
+    response = rest_client.get(
+        endpoint="/org/qatrack/board/article/comment/list/",
+        headers=valid_headers,
+        params=params
+    )
+
+    res_data = response.json()
+    logger.debug(f"응답 데이터: {res_data}")
+
+    assert res_data["_result"]["status"] == expected_status
+    assert res_data["_result"]["status_code"] == expected_code
+
+    if expected_status == "fail":
+        assert res_data["fail_code"] == "invalid_parameter"
+        assert res_data["_result"]["reason"] == "param"
+    else:
+        assert "article_comments" in res_data
+        logger.info(f"정렬 조회 성공: {len(res_data['article_comments'])}개의 댓글 반환")
+
+    logger.info(f"=== STU_BOARD_03-010,011,012 테스트 종료 ===")
