@@ -613,3 +613,69 @@ def test_comment_like_add_and_delete(rest_client, valid_headers, test_board_data
     logger.info(f"ID {comment_id} 댓글 좋아요 취소 성공")
 
     logger.info("=== STU_BOARD_03-005, 006: 댓글 좋아요 시나리오 검증 완료 ===")
+
+def test_comment_update_delete(rest_client, valid_headers, test_board_data):
+    """
+    STU_BOARD_03-007: 댓글 수정 반영 확인
+    STU_BOARD_03-008: 댓글 삭제 확인
+    흐름: 댓글 작성 -> 작성된 댓글 수정 -> 해당 댓글 삭제
+    """
+    logger.info("=== STU_BOARD_03-007,008: 댓글 수정, 삭제 테스트 시작 ===")
+    
+    test_data = test_board_data["comment_data"]["update_delete_test"]
+    article_id = test_data["article_id"]
+    
+    headers = valid_headers.copy()
+    headers.pop("Content-Type", None)
+
+    # --- 1. 댓글 작성 ---
+    create_payload = {
+        "board_article_id": article_id,
+        "content": test_data["create_content"]
+    }
+    logger.debug(f"댓글 작성 요청: {create_payload}")
+    
+    create_res = rest_client.post(
+        endpoint="/org/qatrack/board/article/comment/edit/",
+        headers=headers,
+        data=create_payload
+    )
+    
+    create_body = create_res.json()
+    assert create_body["_result"]["status"] == "ok"
+    comment_id = create_body["article_comment_id"]
+    logger.info(f"댓글 작성 성공 (ID: {comment_id})")
+
+    # --- 2. 댓글 수정 ---
+    update_payload = {
+        "board_article_id": article_id,
+        "article_comment_id": comment_id,
+        "content": test_data["update_content"]
+    }
+    logger.debug(f"댓글 수정 요청: {update_payload}")
+    
+    update_res = rest_client.post(
+        endpoint="/org/qatrack/board/article/comment/edit/",
+        headers=headers,
+        data=update_payload
+    )
+    
+    assert update_res.json()["_result"]["status"] == "ok"
+    logger.info(f" ID {comment_id} 댓글 수정 완료")
+
+    # --- 3. 댓글 삭제 ---
+    delete_payload = {
+        "article_comment_id": comment_id
+    }
+    logger.debug(f"댓글 삭제 요청: {delete_payload}")
+    
+    delete_res = rest_client.post(
+        endpoint="/org/qatrack/board/article/comment/delete/",
+        headers=headers,
+        data=delete_payload
+    )
+    
+    assert delete_res.json()["_result"]["status"] == "ok"
+    logger.info(f" ID {comment_id} 댓글 삭제 완료")
+
+    logger.info("=== STU_BOARD_03-007,008: 댓글 수정, 삭제 검증 완료 ===")
