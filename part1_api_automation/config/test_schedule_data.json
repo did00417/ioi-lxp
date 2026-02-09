@@ -9,10 +9,23 @@
       "offset": 0,
       "count": 40
     },
+    "december_move": {
+    "dt_start_ge": "2025-12-17T15:00:00.000Z",
+    "dt_start_le": "2026-02-14T14:59:59.999Z",
+    "expected_event_keyword": "🎄성탄절☃️"
+    },
     "detail_view": {
       "schedule_id": "bf440c62-cd8b-40ce-b9c9-092a89690618",
-      "expected_title": "2팀 회의실 👨‍💻 👩‍💻 👨‍💻",
+      "expected_title": "2팀 회의실🧑‍💻👩‍💻👨‍💻",
       "expected_lectureroom_id": 135109
+    },
+    "pagination": {
+     "count": 10,
+     "first_offset": 0,
+     "second_offset": 10
+    },
+    "plus_more_view": {
+    "hidden_schedule_title": "🦁 [코치]이상엽 메인코치님 상주 강의실"
     }
   }
 }
