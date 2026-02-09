@@ -525,7 +525,8 @@ def test_get_student_course_slides(
     dashboard_client, 
     valid_headers, 
     classhome_params, 
-    offset
+    offset,
+    student_course_case
     ):
     logger.info("=== STU-CHM-06-001 ~ 004: 슬라이드 학습 현황 내용 확인 ===")
     endpoint = f"/student/{classhome_params['student_id']}/course"
@@ -533,7 +534,7 @@ def test_get_student_course_slides(
     params = {
         "classroom_id": classhome_params['classroom_id'],
         "offset": offset,
-        "count":  5
+        **student_course_case["STU-CHM-06"]
     }
     
     response = dashboard_client.get(
@@ -569,12 +570,13 @@ def test_get_student_course_slides(
 def test_get_student_course_slides_no_params(
     dashboard_client, 
     valid_headers, 
-    classhome_params
+    classhome_params, 
+    student_course_case
  ):
     logger.info("=== STU-CHM-06-005: 필수 파라미터 값 누락시 학습 현황 조회 차단 확인 ===")
     endpoint = endpoint = f"/student/{classhome_params['student_id']}/course"
     
-    params = {"offset": 15, "count":  5}
+    params = {**student_course_case["STU-CHM-06-005"]}
     
     response = dashboard_client.get(
         endpoint,
@@ -601,17 +603,18 @@ def test_get_student_course_slides_no_params(
     
 
 # 테스트 케이스 : STU-CHM-06-006(offset/count 값 오류시 학습 현황 조회 차단 확인)
-def test_get_student_course_slides_no_params(
+def test_get_learning_status_invalid_offset_count(
     dashboard_client, 
     valid_headers, 
-    classhome_params
+    classhome_params,
+    student_course_case
  ):
     logger.info("=== STU-CHM-06-006: offset/count 값 오류시 학습 현황 조회 차단 확인 ===")
     endpoint = endpoint = f"/student/{classhome_params['student_id']}/course"
     
     params = {
         "classroom_id":classhome_params["classroom_id"],
-        "offset": -12, "count":  -34
+        **student_course_case["STU-CHM-06-006"]
     }
     
     response = dashboard_client.get(
@@ -642,15 +645,15 @@ def test_get_student_course_slides_no_params(
 def test_get_latest_board_articles(
     classroom_client,
     valid_headers,
-    classhome_params):
+    classhome_params,
+    board_case
+    ):
     
     logger.info("=== STU-CHM-07-001: 최신 게시판 공지 정상 조회 ===")
     endpoint = f"/classroom/{classhome_params['classroom_id']}/article"
     
     params = {
-       "filter_title": "%%",
-       "skip": 0,
-       "count": 3  
+       **board_case["STU-CHM-07-001"]
     }
     
     response = classroom_client.get(
@@ -678,14 +681,15 @@ def test_get_latest_board_articles(
 def test_get_board_articles_no_classroom_id(
     classroom_client,
     valid_headers,
-    classhome_params
+    classhome_params,
+    board_case
     ):
     
     logger.info("=== STU-CHM-07-002: 필수 파라미터 누락시 게시판 조회 차단 ===")
     endpoint = f"/classroom/{classhome_params['classroom_id']}/article"
     
     params = {
-        "filter_title": "%%"
+        **board_case["STU-CHM-07-002"]
     }
     
     response = classroom_client.get(
@@ -717,15 +721,14 @@ def test_get_board_articles_no_classroom_id(
 def test_get_board_articles_with_invalid_skip_count(
     classroom_client,
     valid_headers,
-    classhome_params
+    classhome_params,
+    board_case
 ):
     logger.info("=== STU-CHM-07-003: skip/conut 값 오류시 게시판 조회 차단 확인 ===")
     endpoint = f"/classroom/{classhome_params['classroom_id']}/article"
     
     params = {
-        "filter_title": "%%",
-        "skip": -12,
-        "count": -34
+        **board_case["STU-CHM-07-003"]
     }
     
     response = classroom_client.get(

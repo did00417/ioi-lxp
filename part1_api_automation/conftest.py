@@ -84,7 +84,7 @@ def classroom_id(test_board_data):
 def create_article_data(test_board_data):
     return test_board_data["articles"]["create_article"]
 
-#-------------- <정은> 클래스 홈 사용 데이터 -----------------------
+#-------------------- <정은> 클래스 홈 사용 데이터 ------------------------------
 @pytest.fixture
 def classhome_params(test_classhome_data):
     return test_classhome_data["params"]
@@ -96,6 +96,14 @@ def schedule_common(test_classhome_data):
 @pytest.fixture(scope="session")
 def schedule_cases(test_classhome_data):
     return test_classhome_data["schedule_cases_data"]
+
+@pytest.fixture(scope="session")
+def student_course_case(test_classhome_data):
+    return test_classhome_data["student_course_data"]
+
+@pytest.fixture(scope="session")
+def board_case(test_classhome_data):
+    return test_classhome_data["board_data"]
 #-------------------- <효진> 학습 과목 데이터 ------------------------------
 
 @pytest.fixture(scope="session")
