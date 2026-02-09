@@ -3,6 +3,143 @@
     "classroom_id": "a6bd98a3-83ff-4e5d-ba9e-6c04c69592fc",
     "invalid_classroom_id": "5e320225-8e8b-4d3e-892b-3bd60d327619",
     "student_id": "{STUDENT_ID}",
-    "course_id": 766557
-  }
+    "course_id": 766557,
+    "user_id": "{USER_ID}",
+    "invalid_course_id": 766558,
+    "invalid_user_id": "{INVALID_USER_ID}",
+    "quiz_id": 54569309,
+    "invalid_quiz_id": 54569307,
+    "assignment_id": 54704617,
+    "invalid_assignment_id": 54704612,
+    "exercise_id": 54569324,
+    "invalid_exercise_id": 54569563,
+    "note_id": 54481713,
+    "invalid_note_id": 54481714,
+    "pdf_id": 54399844,
+    "invalid_pdf_id": 54399843,
+    "video_id": 54719079,
+    "invalid_video_id": 54719090,
+    "external_id": 54179386,
+    "invalid_external_id": 54179388,
+    "lecture_id_with_prev": 6657779,
+    "lecture_id_without_prev": 6657778,
+    "course_id_test_prev": 768550,
+    "lecture_id_with_next": 6644273,
+    "lecture_id_without_next": 6644280,
+    "course_id_test_next": 766557
+  },
+  "lecture_cases": [
+    {
+      "test_id": "STU-SBJ-06-001",
+      "endpoint": "/org/qatrack/material_quiz/get/",
+      "param_key": "material_quiz_id",
+      "id_key": "quiz_id",
+      "expected_status_code": 200,
+      "expected_result": "success"
+    },
+    {
+      "test_id": "STU-SBJ-06-002",
+      "endpoint": "/org/qatrack/material_quiz/get/",
+      "param_key": "material_quiz_id",
+      "id_key": "invalid_quiz_id",
+      "expected_status_code": 409,
+      "expected_result": "fail"
+    },
+    {
+      "test_id": "STU-SBJ-06-003",
+      "endpoint": "/org/qatrack/material_assignment/get/",
+      "param_key": "material_assignment_id",
+      "id_key": "assignment_id",
+      "expected_status_code": 200,
+      "expected_result": "success"
+    },
+    {
+      "test_id": "STU-SBJ-06-004",
+      "endpoint": "/org/qatrack/material_assignment/get/",
+      "param_key": "material_assignment_id",
+      "id_key": "invalid_assignment_id",
+      "expected_status_code": 409,
+      "expected_result": "fail"
+    },
+    {
+      "test_id": "STU-SBJ-06-005",
+      "endpoint": "/org/qatrack/material_exercise/get/",
+      "param_key": "material_exercise_id",
+      "id_key": "exercise_id",
+      "expected_status_code": 200,
+      "expected_result": "success"
+    },
+    {
+      "test_id": "STU-SBJ-06-006",
+      "endpoint": "/org/qatrack/material_exercise/get/",
+      "param_key": "material_exercise_id",
+      "id_key": "invalid_exercise_id",
+      "expected_status_code": 409,
+      "expected_result": "fail"
+    },
+    {
+      "test_id": "STU-SBJ-06-007",
+      "endpoint": "/org/qatrack/material_note/get/",
+      "param_key": "material_note_id",
+      "id_key": "note_id",
+      "expected_status_code": 200,
+      "expected_result": "success"
+    },
+    {
+      "test_id": "STU-SBJ-06-008",
+      "endpoint": "/org/qatrack/material_note/get/",
+      "param_key": "material_note_id",
+      "id_key": "invalid_note_id",
+      "expected_status_code": 409,
+      "expected_result": "fail"
+    },
+    {
+      "test_id": "STU-SBJ-06-009",
+      "endpoint": "/org/qatrack/material_pdf/get/",
+      "param_key": "material_pdf_id",
+      "id_key": "pdf_id",
+      "expected_status_code": 200,
+      "expected_result": "success"
+    },
+    {
+      "test_id": "STU-SBJ-06-010",
+      "endpoint": "/org/qatrack/material_pdf/get/",
+      "param_key": "material_pdf_id",
+      "id_key": "invalid_pdf_id",
+      "expected_status_code": 409,
+      "expected_result": "fail"
+    },
+    {
+      "test_id": "STU-SBJ-06-015",
+      "endpoint": "/org/qatrack/material_video_file/get/",
+      "param_key": "material_video_file_id",
+      "id_key": "video_id",
+      "expected_status_code": 200,
+      "expected_result": "success"
+    },
+    {
+      "test_id": "STU-SBJ-06-016",
+      "endpoint": "/org/qatrack/material_video_file/get/",
+      "param_key": "material_video_file_id",
+      "id_key": "invalid_video_id",
+      "expected_status_code": 409,
+      "expected_result": "fail"
+    },
+    {
+      "test_id": "STU-SBJ-06-017",
+      "endpoint": "/org/qatrack/material_external/get/",
+      "param_key": "material_external_id",
+      "id_key": "external_id",
+      "expected_status_code": 200,
+      "expected_result": "success"
+    },
+    {
+      "test_id": "STU-SBJ-06-018",
+      "endpoint": "/org/qatrack/material_external/get/",
+      "param_key": "material_external_id",
+      "id_key": "invalid_external_id",
+      "expected_status_code": 409,
+      "expected_result": "fail"
+    }
+  ]
 }
