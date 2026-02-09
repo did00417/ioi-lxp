@@ -25,8 +25,6 @@ def test_all_courses_success(dashboard_client,valid_headers,dash_params):
         logger.info("Step 3 성공: learning_progress 데이터 존재")
     except AssertionError as e:
         logger.error(f"❌ 테스트 실패 : {e}")
-        logger.error(f"응답 status_code: {response.status_code}")
-        logger.error(f"응답 body: {body}")
         raise
 
     logger.info("=== STU-DAB-01-001 테스트 완료 ===")
@@ -60,8 +58,6 @@ def test_all_courses_first_page(dashboard_client,valid_headers,dash_params, dash
         logger.info("Step 2 성공: 1 페이지 과목 리스트 정상 반환됨")
     except AssertionError as e:
         logger.error(f"❌ 테스트 실패 : {e}")
-        logger.error(f"응답 status_code: {response.status_code}")
-        logger.error(f"응답 body: {body}")
         raise
 
     logger.info("=== STU-DAB-01-002 테스트 완료 ===")
@@ -95,8 +91,6 @@ def test_all_courses_second_page(dashboard_client,valid_headers,dash_params, das
         logger.info("Step 2 성공: 2 페이지 과목 리스트 정상 반환됨")
     except AssertionError as e:
         logger.error(f"❌ 테스트 실패 : {e}")
-        logger.error(f"응답 status_code: {response.status_code}")
-        logger.error(f"응답 body: {body}")
         raise
     
     logger.info("=== STU-DAB-01-003 테스트 완료 ===")
@@ -122,8 +116,6 @@ def test_all_courses_invalid_header(dashboard_client,invalid_headers,dash_params
         logger.info("Step 2 성공: 적절한 요청 거부 메시지가 제공됨")
     except AssertionError as e:
         logger.error(f"❌ 테스트 실패 : {e}")
-        logger.error(f"응답 status_code: {response.status_code}")
-        logger.error(f"응답 body: {body}")
         raise
     
     logger.info("=== STU-DAB-01-004 테스트 완료 ===")
@@ -149,8 +141,6 @@ def test_all_courses_invalid_classroom(dashboard_client,valid_headers,dash_param
         logger.info("Step 2 성공: 적절한 요청 거부 메시지가 제공됨")
     except AssertionError as e:
         logger.error(f"❌ 테스트 실패 : {e}")
-        logger.error(f"응답 status_code: {response.status_code}")
-        logger.error(f"응답 body: {body}")
         raise
     
     logger.info("=== STU-DAB-01-005 테스트 완료 ===")
@@ -176,8 +166,6 @@ def test_all_courses_invalid_student(dashboard_client,valid_headers,dash_params)
         logger.info("Step 2 성공: 적절한 요청 거부 메시지가 제공됨")
     except AssertionError as e:
         logger.error(f"❌ 테스트 실패 : {e}")
-        logger.error(f"응답 status_code: {response.status_code}")
-        logger.error(f"응답 body: {body}")
         raise
     
     logger.info("=== STU-DAB-01-006 테스트 완료 ===")
@@ -200,8 +188,6 @@ def test_all_courses_delete(classroom_client,valid_headers,dash_params):
         logger.info("Step 2 성공: 적절한 요청 거부 메시지가 제공됨")
     except AssertionError as e:
         logger.error(f"❌ 테스트 실패 : {e}")
-        logger.error(f"응답 status_code: {response.status_code}")
-        logger.error(f"응답 body: {body}")
         raise
     
     logger.info("=== STU-DAB-01-007 테스트 완료 ===")
@@ -234,8 +220,6 @@ def test_one_course(dashboard_client,valid_headers,dash_params):
         logger.info("Step 3 성공: learning_progress 데이터 존재")
     except AssertionError as e:
         logger.error(f"❌ 테스트 실패 : {e}")
-        logger.error(f"응답 status_code: {response.status_code}")
-        logger.error(f"응답 body: {body}")
         raise
     
     logger.info("=== STU-DAB-02-001 테스트 완료 ===")
@@ -265,8 +249,6 @@ def test_one_course_invalid_token(dashboard_client,invalid_headers,dash_params):
         logger.info("Step 2 성공: 적절한 요청 거부 메시지가 제공됨")
     except AssertionError as e:
         logger.error(f"❌ 테스트 실패 : {e}")
-        logger.error(f"응답 status_code: {response.status_code}")
-        logger.error(f"응답 body: {body}")
         raise
     
     logger.info("=== STU-DAB-02-002 테스트 완료 ===")
@@ -293,8 +275,6 @@ def test_one_course_invalid_classroom(dashboard_client,valid_headers,dash_params
         logger.info("Step 2 성공: 적절한 요청 거부 메시지가 제공됨")
     except AssertionError as e:
         logger.error(f"❌ 테스트 실패 : {e}")
-        logger.error(f"응답 status_code: {response.status_code}")
-        logger.error(f"응답 body: {body}")
         raise
     
     logger.info("=== STU-DAB-02-003 테스트 완료 ===")
@@ -321,8 +301,6 @@ def test_one_course_invalid_student(dashboard_client,valid_headers,dash_params):
         logger.info("Step 2 성공: 적절한 요청 거부 메시지가 제공됨")
     except AssertionError as e:
         logger.error(f"❌ 테스트 실패 : {e}")
-        logger.error(f"응답 status_code: {response.status_code}")
-        logger.error(f"응답 body: {body}")
         raise
     
     logger.info("=== STU-DAB-02-004 테스트 완료 ===")
@@ -349,8 +327,6 @@ def test_one_course_invalid_course(dashboard_client,valid_headers,dash_params):
         logger.info("Step 2 성공: 적절한 요청 거부 메시지가 제공됨")
     except AssertionError as e:
         logger.error(f"❌ 테스트 실패 : {e}")
-        logger.error(f"응답 status_code: {response.status_code}")
-        logger.error(f"응답 body: {body}")
         raise
     
     logger.info("=== STU-DAB-02-005 테스트 완료 ===")
@@ -373,8 +349,6 @@ def test_one_course_delete(classroom_client,valid_headers,dash_params):
         logger.info("Step 2 성공: 적절한 요청 거부 메시지가 제공됨")
     except AssertionError as e:
         logger.error(f"❌ 테스트 실패 : {e}")
-        logger.error(f"응답 status_code: {response.status_code}")
-        logger.error(f"응답 body: {body}")
         raise
     
     logger.info("=== STU-DAB-02-006 테스트 완료 ===")
@@ -407,8 +381,6 @@ def test_one_lecture(dashboard_client, valid_headers, dash_params) :
         logger.info("Step 4 성공: learning_progress 데이터 존재")
     except AssertionError as e:
         logger.error(f"❌ 테스트 실패 : {e}")
-        logger.error(f"응답 status_code: {response.status_code}")
-        logger.error(f"응답 body: {body}")
         raise
     
     logger.info("=== STU-DAB-03-001 테스트 완료 ===")
@@ -436,8 +408,6 @@ def test_one_lecture_invvalid_header(dashboard_client, invalid_headers, dash_par
         logger.info("Step 2 성공: 적절한 요청 거부 메시지가 제공됨")
     except AssertionError as e:
         logger.error(f"❌ 테스트 실패 : {e}")
-        logger.error(f"응답 status_code: {response.status_code}")
-        logger.error(f"응답 body: {body}")
         raise
     
     logger.info("=== STU-DAB-03-002 테스트 완료 ===")
@@ -465,8 +435,6 @@ def test_one_lecture_invalid_classhome(dashboard_client, valid_headers, dash_par
         logger.info("Step 2 성공: 적절한 요청 거부 메시지가 제공됨")
     except AssertionError as e:
         logger.error(f"❌ 테스트 실패 : {e}")
-        logger.error(f"응답 status_code: {response.status_code}")
-        logger.error(f"응답 body: {body}")
         raise
     
     logger.info("=== STU-DAB-03-003 테스트 완료 ===")
@@ -475,7 +443,7 @@ def test_one_lecture_invalid_classhome(dashboard_client, valid_headers, dash_par
 def test_one_lecture_invalid_lecture(dashboard_client, valid_headers, dash_params) :
     logger.info("=== STU-DAB-03-004: 과목과 매칭되지 않는 수업의 현황 페이지 조회 ===")
     
-    endpoint = f"/lecture/{dash_params['invalid_lecture_id']}"
+    endpoint = f"/lecture/{dash_params['lecture_id']}"
     response = dashboard_client.get(
         endpoint,
         headers = valid_headers,
@@ -494,8 +462,6 @@ def test_one_lecture_invalid_lecture(dashboard_client, valid_headers, dash_param
         logger.info("Step 2 성공: 적절한 요청 거부 메시지가 제공됨")
     except AssertionError as e:
         logger.error(f"❌ 테스트 실패 : {e}")
-        logger.error(f"응답 status_code: {response.status_code}")
-        logger.error(f"응답 body: {body}")
         raise
     
     logger.info("=== STU-DAB-03-004 테스트 완료 ===")
