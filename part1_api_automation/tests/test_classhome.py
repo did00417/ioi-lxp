@@ -789,6 +789,14 @@ def test_get_emotion(
 
     logger.info("=== STU-CHM-08-001 테스트 완료 ===")
     
+# 테스트 케이스 : STU-CHM-08-002("수강생 감정상태 설정 확인")
+# TODO def test_post_emotion(
+    # classroom_client,
+    # valid_headers,
+    # classhome_params): 
+    # logger.info("=== STU-CHM-08-002: 수강생 감정상태 설정 확인 ===")
+    # logger.info("=== STU-CHM-08-002 테스트 완료 ===")
+    
 # 테스트 케이스 : STU-CHM-08-003("수강생들이 감정상태를 선택하지 않았을 경우 응답 바디가 빈 값으로 출력되는지 확인")    
 def test_get_emotion_empty_list(
     classroom_client,
