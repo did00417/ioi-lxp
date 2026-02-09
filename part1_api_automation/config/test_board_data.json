@@ -59,6 +59,9 @@
     "invalid_article_comment": {
       "board_article_id": 99999,
       "content": "존재하지 않는 게시글 댓글 작성 기능 확인 중입니다."
+    },
+    "like_test": {
+      "article_comment_id": 38051
     }
   }
 }

@@ -524,17 +524,17 @@ def test_article_like_add_and_delete_flow(rest_client, valid_headers, classroom_
 
     logger.info("=== STU_BOARD_03-001,002: 모든 좋아요 시나리오 검증 완료 ===")
 
-@pytest.mark.parametrize("case_name, data_key, expected_status, expected_code, expected_fail_code", [
-    ("STU_BOARD_03-003", "valid_comment", "ok", 200, None),
-    ("STU_BOARD_03-004", "invalid_article_comment", "fail", 400, "resource_not_found")
+@pytest.mark.parametrize("data_key, expected_status, expected_code, expected_fail_code", [
+    ("valid_comment", "ok", 200, None),
+    ("invalid_article_comment", "fail", 400, "resource_not_found")
 ])
 def test_create_comment(rest_client, valid_headers, test_board_data, 
-                                    case_name, data_key, expected_status, expected_code, expected_fail_code):
+                                    data_key, expected_status, expected_code, expected_fail_code):
     """
     STU_BOARD_03-003: 댓글 작성 가능 확인
     STU_BOARD_03-004: 존재하지 않는 게시글 댓글 작성
     """
-    logger.info(f"=== {case_name} 테스트 시작 ===")
+    logger.info(f"=== 댓글 작성 테스트 시작 ===")
 
     payload = test_board_data["comment_data"][data_key]
     
@@ -561,4 +561,55 @@ def test_create_comment(rest_client, valid_headers, test_board_data,
         assert "article_comment_id" in res_data
         logger.info(f"댓글 작성 성공 (ID: {res_data['article_comment_id']})")
 
-    logger.info(f"=== {case_name} 테스트 종료 ===")
+    logger.info(f"=== STU_BOARD_03-003, 004 댓글 테스트 종료 ===")
+
+def test_comment_like_add_and_delete(rest_client, valid_headers, test_board_data):
+    """
+    STU_BOARD_03-005: 댓글 좋아요 정상 동작
+    STU_BOARD_03-006: 댓글 좋아요 취소 확인
+    """
+    logger.info("=== 댓글 좋아요 및 취소 테스트 시작 ===")
+
+    comment_data = test_board_data["comment_data"]["like_test"]
+    comment_id = comment_data["article_comment_id"]
+    
+    headers = valid_headers.copy()
+    headers.pop("Content-Type", None)
+    
+    logger.debug(f"테스트 대상 댓글 ID: {comment_id}")
+
+    # 1. 댓글 좋아요 추가
+    endpoint_add = "/org/qatrack/board/article/comment/like/add/"
+    logger.debug(f"좋아요 추가 요청 엔드포인트: {endpoint_add}")
+    
+    like_add_res = rest_client.post(
+        endpoint=endpoint_add,
+        headers=headers,
+        data={"article_comment_id": comment_id}
+    )
+    
+    like_add_body = like_add_res.json()
+    logger.debug(f"좋아요 추가 응답: {like_add_body}")
+
+    assert like_add_body["_result"]["status"] == "ok"
+    assert like_add_body["_result"]["status_code"] == 200
+    logger.info(f"ID {comment_id} 댓글 좋아요 추가 성공")
+
+    # 2. 댓글 좋아요 취소
+    endpoint_del = "/org/qatrack/board/article/comment/like/delete/"
+    logger.debug(f"좋아요 취소 요청 엔드포인트: {endpoint_del}")
+    
+    like_del_res = rest_client.post(
+        endpoint=endpoint_del,
+        headers=headers,
+        data={"article_comment_id": comment_id}
+    )
+    
+    like_del_body = like_del_res.json()
+    logger.debug(f"좋아요 취소 응답: {like_del_body}")
+
+    assert like_del_body["_result"]["status"] == "ok"
+    assert like_del_body["_result"]["status_code"] == 200
+    logger.info(f"ID {comment_id} 댓글 좋아요 취소 성공")
+
+    logger.info("=== STU_BOARD_03-005, 006: 댓글 좋아요 시나리오 검증 완료 ===")
