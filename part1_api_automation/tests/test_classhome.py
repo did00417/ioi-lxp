@@ -713,7 +713,6 @@ def test_get_board_articles_no_classroom_id(
     
     logger.info("=== STU-CHM-07-002 테스트 완료 ===")
 
-
 # 테스트 케이스 : STU-CHM-07-003(skip/conut 값 오류시 조회 차단)
 def test_get_board_articles_with_invalid_skip_count(
     classroom_client,
@@ -753,3 +752,99 @@ def test_get_board_articles_with_invalid_skip_count(
         raise
 
     logger.info("=== STU-CHM-07-003 테스트 완료 ===")
+
+# 테스트 케이스 : STU-CHM-08-001(수강생들의 감정상태 조회 확인)    
+def test_get_emotion(
+    classroom_client,
+    valid_headers,
+    classhome_params):
+    
+    logger.info("=== STU-CHM-08-001: 수강생의 감정 상태 조회 확인 ===")
+    endpoint = f"/emotion"
+    
+    params = {
+       "classroom_id":classhome_params["classroom_id"],
+       "filter_record_date": "2026-02-04"
+    }
+    
+    response = classroom_client.get(
+        endpoint,
+        headers=valid_headers,
+        params=params
+    )
+
+    emotion_data = response.json()
+    
+    try:
+        assert response.status_code == 200, f"status={response.status_code}"
+        assert isinstance(emotion_data, list), "응답이 리스트가 아님"
+        emotion_item = emotion_data[0]
+        assert isinstance(emotion_item.get("emoji"), str), f"emoji={emotion_item.get('emoji')}"
+    except AssertionError as e: 
+        logger.error(f"감정 상태 조회 검증 실패 | {e} | response={emotion_data}") 
+        raise
+
+    logger.info("=== STU-CHM-08-001 테스트 완료 ===")
+    
+# 테스트 케이스 : STU-CHM-08-003("수강생들이 감정상태를 선택하지 않았을 경우 응답 바디가 빈 값으로 출력되는지 확인")    
+def test_get_emotion_empty_list(
+    classroom_client,
+    valid_headers,
+    classhome_params):
+    
+    logger.info("=== STU-CHM-08-003: 감정 상태 미 설정시 응답 body가 빈 값인지 확인 ===")
+    endpoint = f"/emotion"
+    
+    params = {
+       "classroom_id":classhome_params["classroom_id"],
+       "filter_record_date": "2026-02-01"
+    }
+    
+    response = classroom_client.get(
+        endpoint,
+        headers=valid_headers,
+        params=params
+    )
+
+    emotion_data = response.json()
+    
+    try:
+        assert response.status_code == 200, f"status={response.status_code}"
+        assert emotion_data == []
+        
+    except AssertionError as e: 
+        logger.error(f"응답이 빈 리스트가 아님 | {e} | response={emotion_data}") 
+        raise
+
+    logger.info("=== STU-CHM-08-003 테스트 완료 ===")
+    
+    # 테스트 케이스 : STU-CHM-08-004("보유한 토큰이 없거나 로그아웃 상태일시 감정 조회 차단")    
+def test_get_emotion_no_token(
+    classroom_client,
+    classhome_params):
+    
+    logger.info("=== STU-CHM-08-004: 보유한 토큰이 없을 시 감정 조회 차단 ===")
+    endpoint = f"/emotion"
+    
+    params = {
+       "classroom_id":classhome_params["classroom_id"],
+       "filter_record_date": "2026-02-01"
+    }
+    
+    response = classroom_client.get(
+        endpoint,
+        params=params
+    )
+
+    error_data = response.json()
+    
+    assert response.status_code == 403, f"status={response.status_code}"
+
+    error_data = response.json()
+    try:
+        assert error_data.get("code") == "no_access_token", f"code={error_data.get('code')}"
+    except AssertionError as e:
+        logger.error(f"403 인증 검증 실패 | {e} | response={error_data}")
+        raise
+
+    logger.info("=== STU-CHM-08-004 테스트 완료 ===")
