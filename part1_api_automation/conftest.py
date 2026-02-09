@@ -20,6 +20,10 @@ def classroom_client():
 def rest_client():
     return APIClient(get_service_url("rest"))
 
+@pytest.fixture(scope="session")
+def course_client():
+    return APIClient(get_service_url("course"))
+
 #------------------ <공용> 헤더 받아서 사용 --------------------------
 
 @pytest.fixture(scope="session")
