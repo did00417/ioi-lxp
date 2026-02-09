@@ -35,5 +35,33 @@
       "dt_start_ge": "2026-02-30",
       "dt_start_le": "2026-02-31"
     }
+  },
+  "student_course_data" : {
+    "STU-CHM-06": {
+      "count": 5
+    },
+    "STU-CHM-06-005": {
+      "offset": 15,
+      "count": 5
+    },
+    "STU-CHM-06-006": {
+      "offset": -12,
+      "count": -34
+    }
+  },
+  "board_data": {
+    "STU-CHM-07-001": {
+      "filter_title": "%%",
+       "skip": 0,
+       "count": 3  
+    },
+    "STU-CHM-07-002": {
+      "filter_title": "%%"
+    },
+    "STU-CHM-07-003": {
+      "filter_title": "%%",
+      "skip": -12,
+      "count": -34
+    }
   }
 }
