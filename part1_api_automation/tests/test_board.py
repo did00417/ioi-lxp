@@ -679,3 +679,34 @@ def test_comment_update_delete(rest_client, valid_headers, test_board_data):
     logger.info(f" ID {comment_id} 댓글 삭제 완료")
 
     logger.info("=== STU_BOARD_03-007,008: 댓글 수정, 삭제 검증 완료 ===")
+
+def test_get_comment_list_success(rest_client, valid_headers, test_board_data):
+    """
+    STU_BOARD_03-009: 특정 게시글 댓글 목록 조회
+    """
+    logger.info("=== STU_BOARD_03-009: 댓글 목록 조회 테스트 시작 ===")
+
+    params = test_board_data["comment_data"]["list_params"]
+    logger.debug(f"조회 조건: {params}")
+
+    response = rest_client.get(
+        endpoint="/org/qatrack/board/article/comment/list/",
+        headers=valid_headers,
+        params=params
+    )
+
+    res_data = response.json()
+    logger.debug(f"조회 응답 데이터 요약: {res_data.get('_result')}")
+
+    assert res_data["_result"]["status"] == "ok"
+    assert res_data["_result"]["status_code"] == 200
+
+    assert isinstance(res_data.get("article_comments"), list)
+
+    if res_data["article_comments"]:
+        first_comment = res_data["article_comments"][0]
+        logger.info(f"조회 성공: 첫 번째 댓글 ID -> {first_comment.get('id')}")
+    else:
+        logger.warning("조회는 성공했으나 댓글이 비어있습니다.")
+
+    logger.info("=== STU_BOARD_03-009 댓글 목록 조회 테스트 종료 ===")

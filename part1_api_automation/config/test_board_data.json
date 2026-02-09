@@ -67,6 +67,11 @@
       "article_id": 67135,
       "create_content": "자동화 테스트로 작성된 댓글입니다.",
       "update_content": "자동화 테스트로 수정된 댓글입니다."
+    },
+    "list_params": {
+      "board_article_id": 67135,
+      "count": 10,
+      "offset": 0
     }
   }
 }
