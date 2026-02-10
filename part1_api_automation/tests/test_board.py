@@ -249,7 +249,7 @@ def test_get_article_detail_cases(
         assert body["board_article"]["id"] == article_id
         assert "title" in body["board_article"]
     else:
-        logger.warning(f"에러 케이스 검증 (결과: {expected_fail_code})")
+        logger.info(f"에러 케이스 검증 (결과: {expected_fail_code})")
         assert body["fail_code"] == expected_fail_code
         assert body["fail_message"] == "bad request"
         assert "board_article" not in body
