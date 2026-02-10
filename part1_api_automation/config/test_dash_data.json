@@ -7,7 +7,11 @@
     "course_id" : 766477,
     "invalid_course_id" : 766000,
     "lecture_id" : 6643882,
-    "invalid_lecture_id" : 6643059
+    "invalid_lecture_id" : 6643059,
+    "chapter_test_id" : 6643886,
+    "invalid_chapter_test_id" : 6644109,
+    "review_test_id" : 6644112,
+    "invalid_review_test_id" : 6644114
   },
   "page" : {
     "one_course_ids" : [762843, 762844, 759075, 763817, 759074],
