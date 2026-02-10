@@ -85,10 +85,11 @@ def test_get_contiune_learning_lecture(dashboard_client, valid_headers, classroo
         headers=valid_headers
         )
     
+    assert response.status_code == 200, f"status={response.status_code}"
+    
     lecture_data = response.json()
 
     try:
-        assert response.status_code == 200, f"status={response.status_code}"
         assert isinstance(lecture_data.get("lecture_page_id"), int) and lecture_data["lecture_page_id"] > 0, \
             f"lecture_page_id={lecture_data.get('lecture_page_id')}"
         assert isinstance(lecture_data.get("course_title"), str) and lecture_data["course_title"].strip(), \
@@ -110,6 +111,7 @@ def test_get_continue_learning_lecture_without_classroom_id(dashboard_client, va
     assert response.status_code == 404, f"status={response.status_code}"
 
     error_data = response.json()
+    
     try:
         assert error_data.get("detail") == "Not Found", f"detail={error_data.get('detail')}"
     except AssertionError as e:
@@ -206,10 +208,10 @@ def test_get_no_class_schedule(
         headers=valid_headers, 
         params=params
     )
+    assert response.status_code == 200, f"status={response.status_code}"
     
+    ics_text = response.text
     try:
-        assert response.status_code == 200, f"status={response.status_code}"
-        ics_text = response.text
         assert "RRULE" in ics_text, "RRULE 없음"
         assert "DTSTART;TZID=KST:20260131" not in ics_text, "제외되어야 할 날짜 포함됨"
     except AssertionError as e:
@@ -354,6 +356,7 @@ def test_get_lectureroom_location(
     )
     
     assert response.status_code == 200
+    
     lectureroom_data = response.json()
 
     try:
@@ -469,12 +472,11 @@ def test_get_classhome_student_overall_progress(
         headers=valid_headers,
         params=params
     )
+    assert response.status_code == 200, f"status={response.status_code}"
     
     progress_data = response.json()
     
     try:
-        assert response.status_code == 200, f"status={response.status_code}"
-
         account_id = progress_data.get("account", {}).get("id")
         assert account_id == int(classhome_params["student_id"]), f"account_id={account_id}"
 
@@ -502,12 +504,11 @@ def test_get_classhome_student_overall_progress_no_params(
         endpoint, 
         headers=valid_headers,
     )
+    assert response.status_code == 422, f"status={response.status_code}"
     
     error_data = response.json()
     
     try:
-        assert response.status_code == 422, f"status={response.status_code}"
-
         detail = error_data.get("detail", [])
         assert detail, "detail empty"
 
@@ -584,12 +585,11 @@ def test_get_student_course_slides_no_params(
         headers=valid_headers,
         params=params
     )
+    assert response.status_code == 422, f"status={response.status_code}"
     
     error_data = response.json()
     
     try:
-        assert response.status_code == 422, f"status={response.status_code}"
-
         detail = error_data.get("detail", [])
         assert detail, "detail 없음"
 
@@ -623,12 +623,11 @@ def test_get_learning_status_invalid_offset_count(
         headers=valid_headers,
         params=params
     )
+    assert response.status_code == 422, f"status={response.status_code}"
     
     error_data = response.json()
     
     try:
-        assert response.status_code == 422, f"status={response.status_code}"
-
         detail = error_data.get("detail", [])
         assert detail[0].get("type") == "greater_than_equal", f"type0={detail[0].get('type')}"
         assert detail[0].get("loc") == ["query", "offset"], f"loc0={detail[0].get('loc')}"
@@ -662,11 +661,10 @@ def test_get_latest_board_articles(
         headers=valid_headers,
         params=params
     )
-    
-    try:
-        assert response.status_code == 200, f"status={response.status_code}"
+    assert response.status_code == 200, f"status={response.status_code}"
         
-        board_data = response.json()[0]
+    board_data = response.json()[0]
+    try:
         assert isinstance(board_data.get("title"), str) and board_data["title"].strip(), \
             f"title={board_data.get('title')}"
         assert isinstance(board_data.get("content"), str) and board_data["content"].strip(), \
@@ -698,12 +696,11 @@ def test_get_board_articles_no_classroom_id(
         headers=valid_headers,
         params=params
     )
+    assert response.status_code == 422, f"status={response.status_code}"
     
     error_data = response.json()
     
     try:
-        assert response.status_code == 422, f"status={response.status_code}"
-
         detail = error_data.get("detail", [])
         assert detail, "detail empty"
 
@@ -737,12 +734,11 @@ def test_get_board_articles_with_invalid_skip_count(
         headers = valid_headers,
         params = params
     )
+    assert response.status_code == 422, f"status={response.status_code}"
     
     error_data = response.json()
 
     try:
-        assert response.status_code == 422, f"status={response.status_code}"
-
         detail = error_data.get("detail", [])
 
         assert detail[0].get("type") == "greater_than_equal", f"type0={detail[0].get('type')}"
@@ -777,11 +773,12 @@ def test_get_emotion(
         headers=valid_headers,
         params=params
     )
-
+    
+    assert response.status_code == 200, f"status={response.status_code}"
+    
     emotion_data = response.json()
     
     try:
-        assert response.status_code == 200, f"status={response.status_code}"
         assert isinstance(emotion_data, list), "응답이 리스트가 아님"
         emotion_item = emotion_data[0]
         assert isinstance(emotion_item.get("emoji"), str), f"emoji={emotion_item.get('emoji')}"
@@ -847,11 +844,11 @@ def test_get_emotion_empty_list(
         headers=valid_headers,
         params=params
     )
-
+    assert response.status_code == 200, f"status={response.status_code}"
+    
     emotion_data = response.json()
     
     try:
-        assert response.status_code == 200, f"status={response.status_code}"
         assert emotion_data == []
         
     except AssertionError as e: 
@@ -878,11 +875,8 @@ def test_get_emotion_no_token(
         endpoint,
         params=params
     )
-
-    error_data = response.json()
-    
     assert response.status_code == 403, f"status={response.status_code}"
-
+    
     error_data = response.json()
     try:
         assert error_data.get("code") == "no_access_token", f"code={error_data.get('code')}"
