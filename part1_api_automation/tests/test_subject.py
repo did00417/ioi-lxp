@@ -237,16 +237,14 @@ def test_fetch_material_unified(rest_client, valid_headers, subject_params, case
 
 @pytest.mark.parametrize("case", load_test_data("subject")["adjacent_lecture_data"])
 def test_fetch_adjacent_lecture(course_client, valid_headers, subject_params, case):
-    test_id, direction, offset = case["test_id"], case["direction"], int(case["offset"])
+    test_id, lecture_key, direction, offset, is_null = case["test_id"], case["lecture_key"], case["direction"], int(case["offset"]), case.get("is_null", False)
 
-    lecture_key = f"lecture_id_with_{direction}"
     course_key = f"course_id_test_{direction}"
 
     base_lecture_id = subject_params[lecture_key]
     course_id = subject_params[course_key]
 
     endpoint = f"/lecture/{base_lecture_id}/{direction}"
-    expected_id = base_lecture_id + offset
 
     logger.info(f"=== {test_id} 시작 ===")
 
@@ -259,16 +257,22 @@ def test_fetch_adjacent_lecture(course_client, valid_headers, subject_params, ca
     )
     data = response.json()
     status_code = response.status_code
-    result_course_id = data.get("course_id")
-    result_id = data.get("id")
 
     assert status_code == 200, f"Step 1 실패: 200을 기대했으나 {status_code} 반환됨."
     logger.info(f"Step 1 성공: 200 OK 반환됨.")
 
-    assert result_id == expected_id, f"Step 2 실패: 기대값({expected_id}) != 결과값({result_id})"
-    logger.info(f"Step 2 성공: Lecture ID 일치 ({result_id})")
-    
-    assert result_course_id == course_id, f"Step 3 실패: 기대값({course_id}) != 결과값({result_course_id})"
-    logger.info(f"Step 3 성공: Course ID 일치 ({result_course_id})")
+    if is_null:
+        assert data is None, f"Step 2 실패: 결과가 null이어야 합니다."
+        logger.info(f"Step 2 성공: 기대한 대로 null 반환됨")
+    else:
+        result_course_id = data.get("course_id")
+        result_id = data.get("id")
+        expected_id = base_lecture_id + offset
+
+        assert result_id == expected_id, f"Step 2 실패: 기대값({expected_id}) != 결과값({result_id})"
+        logger.info(f"Step 2 성공: Lecture ID 일치 ({result_id})")
+
+        assert result_course_id == course_id, f"Step 3 실패: 기대값({course_id}) != 결과값({result_course_id})"
+        logger.info(f"Step 3 성공: Course ID 일치 ({result_course_id})")
 
     logger.info(f"=== {test_id} 테스트 완료 ===")
