@@ -5,11 +5,12 @@ from utils.config_loader import load_test_data
 logger = logging.getLogger(__name__)
 
 def test_fetch_sbj_list(classroom_client, valid_headers, subject_params):
-    """STU-SBJ-01-001: 클래스 학습 목록 정상 조회"""
-    logger.info("=== STU-SBJ-01-001: 클래스 학습 목록 정상 조회 ===")
+    test_id = "STU-SBJ-01-001"
     classroom_id = subject_params['classroom_id']
     count = 10
     endpoint = f"/classroom/{classroom_id}/course"
+
+    logger.info(f"=== {test_id} 시작 ===")
 
     response = classroom_client.get(
         endpoint=endpoint,
@@ -19,282 +20,173 @@ def test_fetch_sbj_list(classroom_client, valid_headers, subject_params):
             "count": count
         }
     )
-    response_count = len(response.json())
+    data = response.json()
+    response_count = len(data)
 
-    if response.status_code == 200:
-        logger.info(f"Step 1 성공: 예상대로 200 OK 반환됨.")
-    else:
-        logger.error(f"Step 1 실패: 200을 기대했으나 {response.status_code} 반환됨.")
+    assert response.status_code == 200, f"Step 1 실패: 200을 기대했으나 {response.status_code} 반환됨."
+    logger.info(f"Step 1 성공: 예상대로 200 OK 반환됨.")
 
-    if response_count <= count:
-        logger.info(f"Step 2 성공: 응답 데이터 갯수({response_count})가 요청한 count({count})보다 작거나 같음.")
-    else:
-        logger.error(f"Step 2 실패: 응답 데이터 갯수({response_count})가 요청한 count({count})보다 많음.")
-    
-    assert response.status_code == 200
-    assert response_count <= count
-    logger.info("=== STU-SBJ-01-001 테스트 완료 ===")
+    assert response_count <= count, f"Step 2 실패: 응답 데이터 갯수({response_count})가 요청한 count({count})보다 많음."
+    logger.info(f"Step 2 성공: 응답 데이터 갯수({response_count})가 요청한 count({count})보다 작거나 같음.")
 
-def test_fetch_sbj_list_invalid_classid(classroom_client, valid_headers, subject_params):
-    """STU-SBJ-01-002: 올바르지 않은 클래스 id로 학습 목록 조회"""
-    logger.info("=== STU-SBJ-01-002: 올바르지 않은 클래스 id로 학습 목록 조회 ===")
-    invalid_classroom_id = subject_params['invalid_classroom_id']
-    count = 10
-    endpoint=f"/classroom/{invalid_classroom_id}/course"
+    logger.info(f"=== {test_id} 테스트 완료 ===")
+
+@pytest.mark.parametrize("case", load_test_data("subject")["sbj_list_failure_cases"])
+def test_fetch_sbj_list_failure_cases(classroom_client, valid_headers, subject_params, case):
+    test_id = case["test_id"]
+    classroom_id_key=case["classroom_id_key"]
+    query_params=case["query_params"]
+    exp_status=case["expected_status"]
+    exp_content=case["expected_content"]
+
+    classroom_id = subject_params[classroom_id_key]
+    endpoint = f"/classroom/{classroom_id}/course"
+    logger.info(f"=== {test_id} 시작 ===")
 
     response = classroom_client.get(
         endpoint=endpoint,
         headers=valid_headers,
-        params={
-            "skip" : 0,
-            "count": count
-        }
+        params=query_params
     )
     data = response.json()
-    result_code = data.get('code', "")
-    if response.status_code == 403:
-        logger.info(f"Step 1 성공: 예상대로 403 Forbidden 반환됨.")
+
+    assert response.status_code == exp_status, f"{test_id} 실패: {exp_status} 기대했으나 {response.status_code} 반환됨."
+    logger.info(f"Step 1 성공: {exp_status} 반환됨.")
+
+    target_key = exp_content["key"]
+    expected_val = exp_content["value"]
+
+    if target_key == "detail":
+        # 422 에러
+        detail = data.get("detail", [])
+        actual_val = detail[0].get("msg") if isinstance(detail, list) and detail else data.get("detail")
     else:
-        logger.error(f"Step 1 실패: 403을 기대했으나 {response.status_code} 반환됨.")
+        # 일반 에러 코드 처리
+        actual_val = data.get(target_key, "")
 
-    if "permission" in result_code:
-        logger.info(f"Step 2 성공: 응답 코드에 'permission' 키워드 확인됨 (응답값: {result_code})")
-    else:
-        logger.error(f"Step 2 실패: 응답 코드에 'permission'이 없음 (실제 응답: {result_code})")
+    assert expected_val in str(actual_val), f"Step 2 실패: '{expected_val}' 미포함 (실제값: {actual_val})"
+    logger.info(f"Step 2 성공: '{expected_val}' 확인 완료")
 
-    assert response.status_code == 403
-    assert "permission" in result_code
-    logger.info("=== STU-SBJ-01-002 테스트 완료 ===")
+    logger.info(f"=== {test_id} 테스트 완료 ===")
 
-def test_fetch_sbj_list_without_parameter(classroom_client, valid_headers, subject_params):
-    """STU-SBJ-01-003: 필수 파라미터가 제공되지 않았을 때 학습 목록 조회"""
-    logger.info("=== STU-SBJ-01-003: 필수 파라미터가 제공되지 않았을 때 학습 목록 조회 ===")
-    classroom_id = subject_params['classroom_id']
-    endpoint=f"/classroom/{classroom_id}/course"
+@pytest.mark.parametrize("case", load_test_data("subject")["sbj_detail_cases"])
+def test_fetch_sbj_detail(classroom_client, valid_headers, subject_params, case):
+    test_id = case["test_id"]
+    cls_id = subject_params[case["classroom_id_key"]]
+    crs_id = subject_params[case["course_id_key"]]
+    exp_status = case["expected_status"]
 
-    response = classroom_client.get(
-        endpoint=endpoint,
-        headers=valid_headers
-    )
-    data = response.json()
-    detail = data.get("detail", [{}])
-    error_msg = detail[0].get("msg") if detail else None
-    if response.status_code == 422:
-        logger.info(f"Step 1 성공: 예상대로 422 Unprocessable Entity 반환됨.")
-    else:
-        logger.error(f"Step 1 실패: 422를 기대했으나 {response.status_code} 반환됨.")
-
-    if error_msg == "Field required":
-        logger.info(f"Step 2 성공: 응답 내용에 'Field required' 키워드가 포함됨.")
-    else:
-        logger.warning(f"Step 2 실패: 응답 내용에 'Field required' 키워드가 포함되지 않음.")
-
-    assert response.status_code == 422
-    assert error_msg == "Field required"
-    logger.info("=== STU-SBJ-01-003 테스트 완료 ===")
-
-def test_fetch_sbj_detail(classroom_client, valid_headers, subject_params):
-    """STU-SBJ-02-001: 학습 과목 상세 내용 정상 조회"""
-    logger.info("=== STU-SBJ-02-001: 학습 과목 상세 내용 정상 조회 ===")
-    classroom_id = subject_params['classroom_id']
-    course_id = subject_params['course_id']
-    endpoint = f"/classroom/{classroom_id}/course/{course_id}"
+    endpoint = f"/classroom/{cls_id}/course/{crs_id}"
+    logger.info(f"=== {test_id} 시작 ===")
 
     response = classroom_client.get(
         endpoint=endpoint,
         headers=valid_headers
     )
     data = response.json()
-    result_course_id = data.get('course_id', '')
 
-    if response.status_code == 200:
-        logger.info(f"Step 1 성공: 예상대로 200 OK 반환됨.")
-    else:
-        logger.error(f"Step 1 실패: 200을 기대했으나 {response.status_code} 반환됨.")
+    assert response.status_code == exp_status, f"상태코드 불일치: {response.status_code} != {exp_status}"
+    logger.info(f"Step 1 성공: {response.status_code} 반환됨.")
 
-    if result_course_id == course_id:
-        logger.info(f"Step 2 성공: 요청한 course_id({course_id})와 응답 값의 course_id({result_course_id})가 일치함.")
-    else:
-        logger.error(f"Step 2 실패: 요청한 course_id({course_id})와 응답 값의 course_id({result_course_id})가 일치하지 않음.")
+    exp_info = case.get("expected_content")
+    if exp_info:
+        target_key = exp_info["key"]
+        
+        if "value_from_params" in exp_info:
+            expected_val = subject_params[exp_info["value_from_params"]]
+        else:
+            expected_val = exp_info["value"]
 
-    assert response.status_code == 200
-    assert result_course_id == course_id
-    logger.info("=== STU-SBJ-02-001 테스트 완료 ===")
+        actual_val = data.get(target_key)
+        
+        assert str(actual_val) == str(expected_val), f"데이터 불일치: {actual_val} != {expected_val}"
+        logger.info(f"Step 2 성공: {target_key} 검증 완료 ({actual_val})")
 
-def test_fetch_sbj_map(dashboard_client, valid_headers, subject_params):
-    """STU-SBJ-03-001: 학습 맵 정상 조회"""
-    logger.info("=== STU-SBJ-03-001: 학습 맵 정상 조회 ===")
-    endpoint=f"/student/{subject_params['student_id']}/lecture"
+    if exp_status == 409:
+        assert "ClassroomCourse" in data.get("detail", {}), "실패 상세 정보(ClassroomCourse)가 누락됨"
+        logger.info("Step 3 성공: 에러 상세 모델명 확인 완료.")
 
-    response = dashboard_client.get(
-        endpoint=endpoint,
-        headers=valid_headers,
-        params={
-            "classroom_id" : subject_params['classroom_id'],
-            "offset":0,
-            "count":40
-        }
-    )
+    logger.info(f"=== {test_id} 테스트 완료 ===")
 
-    data = response.json()
-    first_item = data[0] if isinstance(data, list) and len(data) > 0 else {}
-    lecture_data = first_item.get('lecture', {})
-    actual_title = lecture_data.get('title')
+@pytest.mark.parametrize("case", load_test_data("subject")["sbj_map_cases"])
+def test_fetch_sbj_map_integrated(dashboard_client, valid_headers, subject_params, case):
+    test_id = case["test_id"]
+    student_id = subject_params[case["student_id_key"]]
+    endpoint = f"/student/{student_id}/lecture"
 
-    if response.status_code == 200:
-        logger.info(f"Step 1 성공: 예상대로 200 OK 반환됨.")
-    else:
-        logger.error(f"Step 1 실패: 200을 기대했으나 {response.status_code} 반환됨.")
-    if actual_title:
-        logger.info(f"성공: 학습 맵 제목을 확인했습니다. ({actual_title})")
-    else:
-        logger.error(f"실패: 'title' 키가 없거나 값이 비어있습니다. (데이터: {lecture_data})")
-    assert response.status_code == 200
-    assert actual_title is not None
-    assert len(actual_title) > 0
+    actual_params = {}
+    for k, v in case["query_params"].items():
+        actual_params[k] = subject_params.get(v, v) if isinstance(v, str) else v
 
-    logger.info("=== STU-SBJ-03-001 테스트 완료 ===")   
-    
-def test_fetch_sbj_map_without_parameter(dashboard_client, valid_headers, subject_params):
-    """STU-SBJ-03-002: 필수 파라미터가 제공되지 않았을 때 학습 맵 조회"""
-    logger.info("=== STU-SBJ-03-002: 필수 파라미터가 제공되지 않았을 때 학습 맵 조회 ===")
-    endpoint=f"/student/{subject_params['student_id']}/lecture"
+    logger.info(f"=== {test_id} 시작 ===")
 
     response = dashboard_client.get(
         endpoint=endpoint,
         headers=valid_headers,
-        params={
-            "classroom_id" : subject_params['classroom_id'],
-        }
+        params=actual_params
     )
+    
     data = response.json()
+    status_code = response.status_code
 
-    if response.status_code == 422:
-        logger.info(f"Step 1 성공: 예상대로 422 Unprocessable Entity 반환됨.")
-    else:
-        logger.error(f"Step 1 실패: 422를 기대했으나 {response.status_code} 반환됨.")
+    assert status_code == case["expected_status"], f"상태코드 불일치: {status_code}"
+    logger.info(f"Step 1 성공: {status_code} 확인됨.")
 
-    if data["detail"][0]["msg"] == "Field required":
-        logger.info(f"Step 2 성공: 응답 내용에 'Field required' 키워드가 포함됨.")
-    else:
-        logger.warning(f"Step 2 실패: 응답 내용에 'Field required' 키워드가 포함되지 않음.")
+    if case["validate_type"] == "content_check":
+        # 정상 조회 시: 데이터 구조 및 제목 확인
+        first_item = data[0] if isinstance(data, list) and len(data) > 0 else {}
+        actual_title = first_item.get('lecture', {}).get('title')
+        
+        assert actual_title is not None and len(actual_title) > 0, "제목이 비어있음"
+        logger.info(f"Step 2 성공: 학습 맵 제목 확인 완료 ({actual_title})")
 
-    assert response.status_code == 422
-    assert data["detail"][0]["msg"] == "Field required"
-    logger.info("=== STU-SBJ-03-002 테스트 완료 ===")
+    elif case["validate_type"] == "error_check":
+        # 에러 발생 시: 에러 메시지 확인
+        error_msg = data.get("detail", [{}])[0].get("msg")
+        assert error_msg == case["expected_msg"], f"에러 메시지 불일치: {error_msg}"
+        logger.info(f"Step 2 성공: 예상된 에러 메시지 확인 완료 ({error_msg})")
 
-def test_fetch_child_lectures(rest_client, valid_headers, subject_params):
-    """STU-SBJ-05-001: 특정 과목의 하위 강의 목록 조회"""
-    logger.info("=== STU-SBJ-05-001: 특정 과목의 하위 강의 목록 조회 ===")
+    logger.info(f"=== {test_id} 테스트 완료 ===")
+
+@pytest.mark.parametrize("case", load_test_data("subject")["child_lectures_cases"])
+def test_fetch_child_lecture_integrated(rest_client, valid_headers, subject_params, case):
+    test_id = case["test_id"]
+    course_id = int(subject_params[case["course_id_key"]])
+    user_id = int(subject_params[case["user_id_key"]])
     endpoint = "/org/qatrack/dashboard/user/lecture_page/list/"
-    course_id = int(subject_params['course_id'])
-    user_id = int(subject_params['user_id'])
+    
+    logger.info(f"=== {test_id} 시작 ===")
 
     response = rest_client.get(
         endpoint=endpoint,
         headers=valid_headers,
-        params={
-            "course_id" : course_id,
-            "user_id" : user_id,
-        }
+        params={"course_id": course_id, "user_id": user_id}
     )
-    data = response.json()
-    data_user_id = int(data.get("user", {}).get("id"))
-    lectures = data.get("lectures", [])
-    if response.status_code == 200:
-        logger.info(f"Step 1 성공: 예상대로 200 OK 반환됨.")
-    else:
-        logger.error(f"Step 1 실패: 200을 기대했으나 {response.status_code} 반환됨.")
-    if data_user_id == user_id:
-        logger.info(f"Step 2 성공: 요청한 user_id({user_id})와 응답 값의 user_id({data_user_id})가 일치함.")
-    else:
-        logger.error(f"Step 2 실패: 요청한 user_id({user_id})와 응답 값의 user_id({data_user_id})가 일치하지 않음.")
-    if not lectures:
-        logger.error("Step 3 실패: lectures 데이터가 비어 있습니다.")
-    first_lecture = lectures[0]
-    if "lecture_pages" in first_lecture and len(first_lecture["lecture_pages"]) > 0:
-        logger.info(f"Step 3 성공: 강의 및 상세 페이지 구조 확인 완료 (강의명: {first_lecture.get('title')})")
-    else:
-        logger.warning(f"Step 3 주의: 강의({first_lecture.get('title')}) 내에 페이지가 없습니다.")
-
-    assert response.status_code == 200
-    assert data_user_id == user_id
-    assert "lecture_pages" in first_lecture and len(first_lecture["lecture_pages"]) > 0
-
-    logger.info("=== STU-SBJ-05-001 테스트 완료 ===")
-
-def test_fetch_child_lectures_invalid_course_id(rest_client, valid_headers, subject_params):
-    """STU-SBJ-05-002: 비정상 course_id로 하위 강의 목록 조회"""
-    logger.info("=== STU-SBJ-05-002: 비정상 course_id로 하위 강의 목록 조회 ===")
-    endpoint = "/org/qatrack/dashboard/user/lecture_page/list/"
-    invalid_course_id = int(subject_params['invalid_course_id'])
-    user_id = int(subject_params['user_id'])
-
-    response = rest_client.get(
-        endpoint=endpoint,
-        headers=valid_headers,
-        params={
-            "course_id" : invalid_course_id,
-            "user_id" : user_id,
-        }
-    )
-    data = response.json()
-    result = data.get("_result", {})
-    result_status = result.get('status')
-    result_status_code = result.get('status_code')
-
-    if result_status == "fail":
-        logger.info(f"Step 1: 응답에서 'fail' 키워드 확인 성공")
-    else:
-        logger.error(f"Step 1: 응답에서 'fail' 키워드 확인 실패, status={result_status}")
     
-    if result_status_code == 400:
-        logger.info(f"Step 2: 응답 코드 400 확인 성공")
-    else:
-        logger.warning(f"Sep 2: 응답 코드 400 확인 실패, status_code={result_status_code}")
-
-    assert response.status_code == 200
-    assert result_status == "fail"
-    assert result_status_code == 400
-    logger.info("=== STU-SBJ-05-002 테스트 완료 ===")
-
-
-def test_fetch_child_lectures_invalid_user_id(rest_client, valid_headers, subject_params):
-    """STU-SBJ-05-003: 비정상 user_id로 하위 강의 목록 조회"""
-    logger.info("=== STU-SBJ-05-003: 비정상 user_id로 하위 강의 목록 조회 ===")
-    endpoint = "/org/qatrack/dashboard/user/lecture_page/list/"
-    course_id = int(subject_params['course_id'])
-    invalid_user_id = int(subject_params['invalid_user_id'])
-
-    response = rest_client.get(
-        endpoint=endpoint,
-        headers=valid_headers,
-        params={
-            "course_id" : course_id,
-            "user_id" : invalid_user_id,
-        }
-    )
     data = response.json()
-    result = data.get("_result", {})
-    result_status = result.get('status')
-    result_status_code = result.get('status_code')
-    assert response.status_code == 200
-    
-    if result_status == "fail":
-        logger.info(f"Step 1: 응답에서 'fail' 키워드 확인 성공")
-    else:
-        logger.error(f"Step 1: 응답에서 'fail' 키워드 확인 실패, status={result_status}")
-    
-    if result_status_code == 409:
-        logger.info(f"Step 2: 응답 코드 409 확인 성공")
-    else:
-        logger.warning(f"Sep 2: 응답 코드 409 확인 실패, status_code={result_status_code}")
+    assert response.status_code == case["expected_http_status"]
+    logger.info(f"Step 1: HTTP {response.status_code} 확인")
 
-    assert response.status_code == 200
-    assert result_status == "fail"
-    assert result_status_code == 409
+    if case["validate_type"] == "success":
+        data_user_id = int(data.get("user", {}).get("id"))
+        lectures = data.get("lectures", [])
+        
+        assert data_user_id == user_id, "User ID 불일치"
+        assert len(lectures) > 0, "Lectures 데이터가 비어 있음"
+        
+        first_lecture = lectures[0]
+        assert "lecture_pages" in first_lecture and len(first_lecture["lecture_pages"]) > 0, "상세 페이지 구조 누락"
+        logger.info(f"Step 2: 성공 데이터 구조 확인 완료 (강의명: {first_lecture.get('title')})")
 
-    logger.info("=== STU-SBJ-05-003 테스트 완료 ===")
+    elif case["validate_type"] == "fail":
+        result = data.get("_result", {})
+        exp_res = case["expected_result"]
+        
+        assert result.get("status") == exp_res["status"], f"Status 불일치: {result.get('status')}"
+        assert result.get("status_code") == exp_res["status_code"], f"비즈니스 코드 불일치: {result.get('status_code')}"
+        logger.info(f"Step 2: 예상된 실패 코드({exp_res['status_code']}) 확인 완료")
+
+    logger.info(f"=== {test_id} 완료 ===")
 
 @pytest.mark.parametrize("case", load_test_data("subject")["lecture_cases"])
 def test_fetch_material_unified(rest_client, valid_headers, subject_params, case):
@@ -343,13 +235,20 @@ def test_fetch_material_unified(rest_client, valid_headers, subject_params, case
     
     logger.info(f"=== {test_id} 테스트 완료 ===")
 
-@pytest.mark.parametrize("id, title, direction, offset", [("STU-SBJ-07-001", "이전 강의 목록 조회 성공", "prev", -1), ("STU-SBJ-08-001", "다음 강의 목록 조회 성공", "next", +1)])
-def test_fetch_adjacent_lecture(course_client, valid_headers, subject_params, id, title, direction, offset):
-    logger.info(f"=== {id}: {title} ===")
-    base_lecture_id = subject_params["lecture_id_with_prev"] if direction == "prev" else subject_params["lecture_id_with_next"]
-    course_id = subject_params["course_id_test_prev"] if direction == "prev" else subject_params["course_id_test_next"]
+@pytest.mark.parametrize("case", load_test_data("subject")["adjacent_lecture_data"])
+def test_fetch_adjacent_lecture(course_client, valid_headers, subject_params, case):
+    test_id, direction, offset = case["test_id"], case["direction"], int(case["offset"])
+
+    lecture_key = f"lecture_id_with_{direction}"
+    course_key = f"course_id_test_{direction}"
+
+    base_lecture_id = subject_params[lecture_key]
+    course_id = subject_params[course_key]
+
     endpoint = f"/lecture/{base_lecture_id}/{direction}"
     expected_id = base_lecture_id + offset
+
+    logger.info(f"=== {test_id} 시작 ===")
 
     response = course_client.get(
         endpoint=endpoint,
@@ -362,20 +261,14 @@ def test_fetch_adjacent_lecture(course_client, valid_headers, subject_params, id
     status_code = response.status_code
     result_course_id = data.get("course_id")
     result_id = data.get("id")
-    if status_code == 200:
-        logger.info(f"Step 1 성공: 예상대로 200 OK 반환됨.")
-    else:
-        logger.error(f"Step 1 실패: 200을 기대했으나 {response.status_code} 반환됨.")
-    if expected_id == result_id:
-        logger.info(f"Step 2: 기대값 ({expected_id})와 응답 값이 ({result_id})가 일치함.")
-    else:
-        logger.error(f"Step 2: 기대값 ({expected_id})와 응답 값이 ({result_id})가 일치하지 않음.")
-    if course_id == result_course_id:
-        logger.info(f"Step 3: 요청한 course_id({course_id})와 응답 값의 course_id({result_course_id})가 일치함.")
-    else:
-        logger.error(f"Step 3: 요청한 course_id({course_id})와 응답 값의 course_id({result_course_id})가 일치하지 않음.")
-    assert status_code == 200
-    assert expected_id == result_id
-    assert course_id == result_course_id
+
+    assert status_code == 200, f"Step 1 실패: 200을 기대했으나 {status_code} 반환됨."
+    logger.info(f"Step 1 성공: 200 OK 반환됨.")
+
+    assert result_id == expected_id, f"Step 2 실패: 기대값({expected_id}) != 결과값({result_id})"
+    logger.info(f"Step 2 성공: Lecture ID 일치 ({result_id})")
     
-    logger.info(f"=== {id} 테스트 완료 ===")
+    assert result_course_id == course_id, f"Step 3 실패: 기대값({course_id}) != 결과값({result_course_id})"
+    logger.info(f"Step 3 성공: Course ID 일치 ({result_course_id})")
+
+    logger.info(f"=== {test_id} 테스트 완료 ===")

@@ -141,5 +141,101 @@
       "expected_status_code": 409,
       "expected_result": "fail"
     }
+  ],
+  "adjacent_lecture_data": [
+    {
+      "test_id": "STU-SBJ-07-001",
+      "direction": "prev",
+      "offset": -1
+    },
+    {
+      "test_id": "STU-SBJ-08-001",
+      "direction": "next",
+      "offset": 1
+    }
+  ],
+  "sbj_list_failure_cases": [
+    {
+      "test_id": "STU-SBJ-01-002",
+      "classroom_id_key": "invalid_classroom_id",
+      "query_params": { "skip": 0, "count": 10 },
+      "expected_status": 403,
+      "expected_content": { "key": "code", "value": "permission" }
+    },
+    {
+      "test_id": "STU-SBJ-01-003",
+      "classroom_id_key": "classroom_id",
+      "query_params": null,
+      "expected_status": 422,
+      "expected_content": { "key": "detail", "value": "Field required" }
+    }
+  ],
+  "sbj_detail_cases": [
+    {
+      "test_id": "STU-SBJ-02-001",
+      "classroom_id_key": "classroom_id",
+      "course_id_key": "course_id",
+      "expected_status": 200,
+      "expected_content": {
+        "key": "course_id",
+        "value_from_params": "course_id"
+      }
+    },
+    {
+      "test_id": "STU-SBJ-02-002",
+      "classroom_id_key": "classroom_id",
+      "course_id_key": "invalid_course_id",
+      "expected_status": 409,
+      "expected_content": { "key": "code", "value": "model_not_found" }
+    }
+  ],
+  "sbj_map_cases": [
+    {
+      "test_id": "STU-SBJ-03-001",
+      "student_id_key": "student_id",
+      "query_params": {
+        "classroom_id": "classroom_id",
+        "offset": 0,
+        "count": 40
+      },
+      "expected_status": 200,
+      "validate_type": "content_check"
+    },
+    {
+      "test_id": "STU-SBJ-03-002",
+      "student_id_key": "student_id",
+      "query_params": {
+        "classroom_id": "classroom_id"
+      },
+      "expected_status": 422,
+      "validate_type": "error_check",
+      "expected_msg": "Field required"
+    }
+  ],
+  "child_lectures_cases": [
+    {
+      "test_id": "STU-SBJ-05-001",
+      "course_id_key": "course_id",
+      "user_id_key": "user_id",
+      "expected_http_status": 200,
+      "validate_type": "success",
+      "expected_result": null
+    },
+    {
+      "test_id": "STU-SBJ-05-002",
+      "course_id_key": "invalid_course_id",
+      "user_id_key": "user_id",
+      "expected_http_status": 200,
+      "validate_type": "fail",
+      "expected_result": { "status": "fail", "status_code": 400 }
+    },
+    {
+      "test_id": "STU-SBJ-05-003",
+      "course_id_key": "course_id",
+      "user_id_key": "invalid_user_id",
+      "expected_http_status": 200,
+      "validate_type": "fail",
+      "expected_result": { "status": "fail", "status_code": 409 }
+    }
   ]
 }
