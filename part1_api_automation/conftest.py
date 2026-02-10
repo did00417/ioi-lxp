@@ -98,7 +98,7 @@ def schedule_common(test_classhome_data):
     return test_classhome_data["schedule_common_data"]
 
 @pytest.fixture(scope="session")
-def schedule_cases(test_classhome_data):
+def classhome_schedule_cases(test_classhome_data):
     return test_classhome_data["schedule_cases_data"]
 
 @pytest.fixture(scope="session")
