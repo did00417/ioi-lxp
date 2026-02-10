@@ -631,14 +631,14 @@ def test_comment_update_delete(rest_client, valid_headers, test_board_data):
     logger.info("=== STU_BOARD_03-007,008: 댓글 수정, 삭제 테스트 시작 ===")
     
     test_data = test_board_data["comment_data"]["update_delete_test"]
-    article_id = test_data["article_id"]
+    board_article_id = test_data["board_article_id"]
     
     headers = valid_headers.copy()
     headers.pop("Content-Type", None)
 
     # --- 1. 댓글 작성 ---
     create_payload = {
-        "board_article_id": article_id,
+        "board_article_id": board_article_id,
         "content": test_data["create_content"]
     }
     logger.debug(f"댓글 작성 요청: {create_payload}")
@@ -656,7 +656,7 @@ def test_comment_update_delete(rest_client, valid_headers, test_board_data):
 
     # --- 2. 댓글 수정 ---
     update_payload = {
-        "board_article_id": article_id,
+        "board_article_id": board_article_id,
         "article_comment_id": comment_id,
         "content": test_data["update_content"]
     }
