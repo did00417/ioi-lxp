@@ -155,7 +155,7 @@ def test_get_class_schedule(
     valid_headers,
     classhome_params,
     schedule_common,
-    schedule_cases
+    classhome_schedule_cases
     ):
     logger.info("=== STU-CHM-03-001: 수강생의 수업 일정 정보를 정상적으로 조회 ===")
     endpoint = "/schedule/ics"
@@ -163,7 +163,7 @@ def test_get_class_schedule(
     params = { 
         "classroom_id": classhome_params["classroom_id"],
         **schedule_common,
-        **schedule_cases["STU-CHM-03-001"]
+        **classhome_schedule_cases["STU-CHM-03-001"]
     }
     response = classroom_client.get(
         endpoint, 
@@ -192,7 +192,7 @@ def test_get_no_class_schedule(
     valid_headers,
     classhome_params,
     schedule_common,
-    schedule_cases
+    classhome_schedule_cases
     ):
     logger.info("=== STU-CHM-03-002: 수강일정이 없는 날짜 조회 시 해당 날짜에 실제 일정이 없음을 확인 ===")
     endpoint = "/schedule/ics"
@@ -200,7 +200,7 @@ def test_get_no_class_schedule(
     params = {
         "classroom_id": classhome_params["classroom_id"],
         **schedule_common,
-        **schedule_cases["STU-CHM-03-002"]
+        **classhome_schedule_cases["STU-CHM-03-002"]
         }
     
     response = classroom_client.get(
@@ -225,7 +225,7 @@ def test_get_class_schedule_no_token(
     classroom_client,
     classhome_params,
     schedule_common,
-    schedule_cases
+    classhome_schedule_cases
     ):
     logger.info("=== STU-CHM-03-003: 유효 토큰 없이 수강일정 조회 시 에러 발생 확인 ===")
     endpoint = "/schedule/ics"
@@ -233,7 +233,7 @@ def test_get_class_schedule_no_token(
     params = {
         "classroom_id": classhome_params["classroom_id"],
         **schedule_common,
-        **schedule_cases["STU-CHM-03-003"]
+        **classhome_schedule_cases["STU-CHM-03-003"]
         }
     
     response = classroom_client.get(
@@ -259,7 +259,7 @@ def test_get_schedule_fails_when_date_parameters_missing(
     valid_headers,
     classhome_params,
     schedule_common,
-    schedule_cases
+    classhome_schedule_cases
     ):
     logger.info("=== STU-CHM-03-004: 날짜 파라미터 누락 시 에러 발생 확인 ===")
     endpoint = "/schedule/ics"
@@ -268,7 +268,7 @@ def test_get_schedule_fails_when_date_parameters_missing(
     params = {
         "classroom_id": classhome_params["classroom_id"],
         **schedule_common,
-        **schedule_cases["STU-CHM-03-004"]
+        **classhome_schedule_cases["STU-CHM-03-004"]
     }
     
     response = classroom_client.get(
@@ -302,7 +302,7 @@ def test_get_schedule_fails_when_date_format_invalid(
     valid_headers,
     classhome_params,
     schedule_common,
-    schedule_cases
+    classhome_schedule_cases
     ):
     logger.info("=== STU-CHM-03-005: 잘못된 날짜 포맷 입력시 에러 발생 확인 ===")
     endpoint = "/schedule/ics"
@@ -311,7 +311,7 @@ def test_get_schedule_fails_when_date_format_invalid(
     params = {
         "classroom_id": classhome_params["classroom_id"],
         **schedule_common,
-        **schedule_cases["STU-CHM-03-005"]
+        **classhome_schedule_cases["STU-CHM-03-005"]
     }
     
     response = classroom_client.get(
