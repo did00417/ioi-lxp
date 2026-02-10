@@ -26,67 +26,64 @@ def test_get_article_list(rest_client, valid_headers, board_id, test_board_data)
     assert "board_articles" in body, "응답에 게시글 목록(board_articles)이 포함되어 있지 않습니다."
     logger.info("게시글 목록 조회 완료")
 
-def test_articles_sorted_by_latest(classroom_client, valid_headers, classroom_id, test_board_data):
-    """STU_BOARD_01-002: 게시글 최신순 정렬 조회"""
-    logger.info("=== STU_BOARD_01-002: 게시글 최신순 정렬 조회 시작 ===")
-    query = test_board_data["queries"]["sort_latest"]
-    
-    response = classroom_client.get(
-        endpoint=f"/classroom/{classroom_id}/article",
-        headers=valid_headers,
-        params=query
-    )
-    
-    assert response.status_code == 200, f"예상치 못한 상태 코드: {response.status_code}"
-    articles = response.json()
-    
-    if len(articles) >= 2:
-        for i in range(len(articles) - 1):
-            current_date = articles[i]['created']
-            next_date = articles[i+1]['created']
-            
-            logger.debug(f"정렬 비교 중: {current_date} vs {next_date}")
-            assert current_date >= next_date
-    logger.info("최신순 정렬 검증 완료")
+@pytest.mark.parametrize("case_id, query_key, sort_field", [
+    ("STU_BOARD_01-002", "sort_latest", "created"),
+    ("STU_BOARD_01-003", "sort_likes", "like_count")
+])
+def test_articles_sorting_latest_likes(classroom_client, valid_headers, classroom_id, test_board_data,
+                                      case_id, query_key, sort_field):
+    """
+    STU_BOARD_01-002: 게시글 최신순 정렬 조회
+    STU_BOARD_01-003: 게시글 좋아요순 정렬 조회
+    """
+    logger.info(f"=== {case_id} 정렬 조회 테스트 시작 ===")
 
-def test_articles_sorted_by_likes(classroom_client, valid_headers, classroom_id, test_board_data):
-    """STU_BOARD_01-003: 게시글 좋아요순 정렬 조회"""
-    logger.info("=== STU_BOARD_01-003: 게시글 좋아요순 정렬 조회 시작 ===")
-    query = test_board_data["queries"]["sort_likes"]
-    
+    query = test_board_data["queries"][query_key]
+    logger.debug(f"요청 쿼리: {query}")
+
     response = classroom_client.get(
         endpoint=f"/classroom/{classroom_id}/article",
         headers=valid_headers,
         params=query
     )
+    
     assert response.status_code == 200, f"조회 실패: {response.status_code}"
     articles = response.json()
+    logger.info(f"조회된 게시글 수: {len(articles)}")
 
     if len(articles) >= 2:
         for i in range(len(articles) - 1):
-            current_likes = articles[i]['like_count']
-            next_likes = articles[i+1]['like_count']
+            current_val = articles[i][sort_field]
+            next_val = articles[i+1][sort_field]
             
-            logger.debug(f"정렬 비교 중: {current_likes} vs {next_likes}")
-            assert current_likes >= next_likes
-    logger.info("좋아요순 정렬 검증 완료")
+            logger.debug(f"[{current_val} >= {next_val}")
+            
+            # 내림차순 검증 (최신순은 문자열 날짜 비교, 좋아요순은 숫자 비교)
+            assert current_val >= next_val, f"정렬 오류 발견: {current_val} < {next_val}"
+    else:
+        logger.warning(f"검증할 게시글이 충분하지 않습니다. (현재 {len(articles)}개)")
 
-@pytest.mark.parametrize("keyword, expected_count_min", [
-    ("%커리큘럼%", 1),  # 1. 검색 결과가 있어야 하는 케이스
-    ("%바나나%", 0)    # 2. 검색 결과가 없어야 하는 케이스
+    logger.info(f"=== {case_id}: 테스트 완료 ===")
+
+@pytest.mark.parametrize("keyword_key, expected_count_min", [
+    ("valid", 1),  # 1. 검색 결과가 있어야 하는 케이스
+    ("invalid", 0)    # 2. 검색 결과가 없어야 하는 케이스
 ])
 def test_get_article_list_by_filter(
     rest_client,
     valid_headers,
     board_id,
-    keyword,
+    keyword_key,
     expected_count_min,
     test_board_data
 ):
     """STU_BOARD_01-004: 제목 키워드 검색"""
     """STU_BOARD_01-005: 제목 키워드 일치하는 검색 결과 없음"""
-    logger.info(f"=== 검색 테스트 시작: 키워드 '{keyword}' ===")
+    
+    keyword = test_board_data["search_keywords"][keyword_key]
     query = test_board_data["queries"]["article_list"]
+    
+    logger.info(f"=== 제목 키워드 검색 테스트 시작 ===")
     
     response = rest_client.get(
         endpoint="/org/qatrack/board/article/list/",

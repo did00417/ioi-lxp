@@ -9,6 +9,10 @@
     "sort_likes": { "sort_by": "like_desc", "skip": 0, "count": 10, "filter_title": "%%" },
     "course_query": { "filter_title": "%%", "skip": 0, "count": 40 }
   },
+  "search_keywords": {
+    "valid": "%커리큘럼%",
+    "invalid": "%바나나%"
+  },
   "articles": {
     "create_article": {
       "title": "api 자동화로 제목",
