@@ -26,67 +26,64 @@ def test_get_article_list(rest_client, valid_headers, board_id, test_board_data)
     assert "board_articles" in body, "응답에 게시글 목록(board_articles)이 포함되어 있지 않습니다."
     logger.info("게시글 목록 조회 완료")
 
-def test_articles_sorted_by_latest(classroom_client, valid_headers, classroom_id, test_board_data):
-    """STU_BOARD_01-002: 게시글 최신순 정렬 조회"""
-    logger.info("=== STU_BOARD_01-002: 게시글 최신순 정렬 조회 시작 ===")
-    query = test_board_data["queries"]["sort_latest"]
-    
-    response = classroom_client.get(
-        endpoint=f"/classroom/{classroom_id}/article",
-        headers=valid_headers,
-        params=query
-    )
-    
-    assert response.status_code == 200, f"예상치 못한 상태 코드: {response.status_code}"
-    articles = response.json()
-    
-    if len(articles) >= 2:
-        for i in range(len(articles) - 1):
-            current_date = articles[i]['created']
-            next_date = articles[i+1]['created']
-            
-            logger.debug(f"정렬 비교 중: {current_date} vs {next_date}")
-            assert current_date >= next_date
-    logger.info("최신순 정렬 검증 완료")
+@pytest.mark.parametrize("query_key, sort_field", [
+    ("sort_latest", "created"),
+    ("sort_likes", "like_count")
+])
+def test_articles_sorting_latest_likes(classroom_client, valid_headers, classroom_id, test_board_data,
+                                      query_key, sort_field):
+    """
+    STU_BOARD_01-002: 게시글 최신순 정렬 조회
+    STU_BOARD_01-003: 게시글 좋아요순 정렬 조회
+    """
+    logger.info(f"=== 게시글 정렬 조회 테스트 시작 ===")
 
-def test_articles_sorted_by_likes(classroom_client, valid_headers, classroom_id, test_board_data):
-    """STU_BOARD_01-003: 게시글 좋아요순 정렬 조회"""
-    logger.info("=== STU_BOARD_01-003: 게시글 좋아요순 정렬 조회 시작 ===")
-    query = test_board_data["queries"]["sort_likes"]
-    
+    query = test_board_data["queries"][query_key]
+    logger.debug(f"요청 쿼리: {query}")
+
     response = classroom_client.get(
         endpoint=f"/classroom/{classroom_id}/article",
         headers=valid_headers,
         params=query
     )
+    
     assert response.status_code == 200, f"조회 실패: {response.status_code}"
     articles = response.json()
+    logger.info(f"조회된 게시글 수: {len(articles)}")
 
     if len(articles) >= 2:
         for i in range(len(articles) - 1):
-            current_likes = articles[i]['like_count']
-            next_likes = articles[i+1]['like_count']
+            current_val = articles[i][sort_field]
+            next_val = articles[i+1][sort_field]
             
-            logger.debug(f"정렬 비교 중: {current_likes} vs {next_likes}")
-            assert current_likes >= next_likes
-    logger.info("좋아요순 정렬 검증 완료")
+            logger.debug(f"[{current_val} >= {next_val}")
+            
+            # 내림차순 검증 (최신순은 문자열 날짜 비교, 좋아요순은 숫자 비교)
+            assert current_val >= next_val, f"정렬 오류 발견: {current_val} < {next_val}"
+    else:
+        logger.warning(f"검증할 게시글이 충분하지 않습니다. (현재 {len(articles)}개)")
 
-@pytest.mark.parametrize("keyword, expected_count_min", [
-    ("%커리큘럼%", 1),  # 1. 검색 결과가 있어야 하는 케이스
-    ("%바나나%", 0)    # 2. 검색 결과가 없어야 하는 케이스
+    logger.info(f"=== 게시글 정렬 테스트 완료 ===")
+
+@pytest.mark.parametrize("keyword_key, expected_count_min", [
+    ("valid", 1),  # 1. 검색 결과가 있어야 하는 케이스
+    ("invalid", 0)    # 2. 검색 결과가 없어야 하는 케이스
 ])
 def test_get_article_list_by_filter(
     rest_client,
     valid_headers,
     board_id,
-    keyword,
+    keyword_key,
     expected_count_min,
     test_board_data
 ):
     """STU_BOARD_01-004: 제목 키워드 검색"""
     """STU_BOARD_01-005: 제목 키워드 일치하는 검색 결과 없음"""
-    logger.info(f"=== 검색 테스트 시작: 키워드 '{keyword}' ===")
+    
+    keyword = test_board_data["search_keywords"][keyword_key]
     query = test_board_data["queries"]["article_list"]
+    
+    logger.info(f"=== 제목 키워드 검색 테스트 시작 ===")
     
     response = rest_client.get(
         endpoint="/org/qatrack/board/article/list/",
@@ -142,29 +139,30 @@ def test_create_article_success(rest_client, valid_headers, classroom_id, create
     logger.info(f"게시글 작성 성공! 생성된 ID: {res_data.get('board_article_id')}")
     assert article_id is not None, "게시글 ID가 생성되지 않았습니다."
 
-@pytest.mark.parametrize("missing_key, expected_status", [
-    ("classroom_id", 409), # (1) classroom_id 누락
-    ("title", 400),        # (2) title 누락
-    ("content", 400)       # (3) content 누락
+@pytest.mark.parametrize("case_key, expected_status", [
+    ("classroom_id_missing", 409),
+    ("title_missing", 400),
+    ("content_missing", 400)
 ])
 def test_create_article_fail_by_missing_param(
     rest_client, 
     valid_headers, 
     classroom_id, 
     create_article_data, 
-    missing_key, 
-    expected_status
+    case_key,
+    expected_status,
+    test_board_data
 ):
     """STU_BOARD_02_002: 게시글 작성 필수값 누락 검증"""
-    logger.info(f"=== STU_BOARD_02_002: 필수값 누락 검증 시작 (누락 키: {missing_key}) ===")
+    case_data = test_board_data["article_data"]["create_fail_cases"][case_key]
+    missing_key = case_data["missing_key"]
+    
+    logger.info(f"=== STU_BOARD_02_002: 필수값 누락 검증 시작 (누락 키: {case_key}) ===")
     payload = {
         **create_article_data,
         "classroom_id": classroom_id
     }
-    
-    # parametrize에서 지정한 키를 데이터에서 삭제
     payload.pop(missing_key, None) 
-    logger.debug(f"요청 페이로드 (누락 적용): {payload}")
 
     headers = valid_headers.copy()
     headers.pop("Content-Type", None)
@@ -213,21 +211,26 @@ def test_get_linked_courses(classroom_client, valid_headers, classroom_id, test_
         logger.debug(f"첫 번째 과목 데이터 확인: {courses[0]}")
     logger.info("=== STU_BOARD_02_003: 테스트 완료 ===")
 
-@pytest.mark.parametrize("article_id, expected_status, expected_result, expected_fail_code", [
-    (65912, 200, "ok", None),                  # 정상 조회
-    (99999, 400, "fail", "resource_not_found")  # 존재하지 않는 게시글
+@pytest.mark.parametrize("case_key", [
+    "valid_article", 
+    "not_found_article"
 ])
 def test_get_article_detail_cases(
     rest_client, 
-    valid_headers, 
-    article_id, 
-    expected_status, 
-    expected_result,
-    expected_fail_code
+    valid_headers,
+    case_key,
+    test_board_data
 ):
     """STU_BOARD_02_004: 특정 게시글 조회"""
     """STU_BOARD_02_005: 존재하지 않는 게시글 상세 조회"""
-    logger.info(f"=== 상세 조회 테스트 시작 (ID: {article_id}) ===")
+    
+    case_data = test_board_data["article_data"]["detail_cases"][case_key]
+    article_id = case_data["article_id"]
+    expected_status = case_data["expected_status"]
+    expected_result = case_data["expected_result"]
+    expected_fail_code = case_data["expected_fail_code"]
+    
+    logger.info(f"=== 상세 조회 테스트 시작 ({case_key} ID: {article_id}) ===")
     
     response = rest_client.get(
         endpoint="/org/qatrack/board/article/get/",
@@ -236,7 +239,7 @@ def test_get_article_detail_cases(
     )
     
     body = response.json()
-    logger.debug(f"응답 결과: {body}")
+    logger.debug(f"[{case_key}] 응답 결과: {body}")
     
     assert body["_result"]["status"] == expected_result
     assert body["_result"]["status_code"] == expected_status
@@ -246,25 +249,29 @@ def test_get_article_detail_cases(
         assert body["board_article"]["id"] == article_id
         assert "title" in body["board_article"]
     else:
-        logger.warning(f"에러 케이스 검증 (결과: {expected_fail_code})")
+        logger.info(f"에러 케이스 검증 (결과: {expected_fail_code})")
         assert body["fail_code"] == expected_fail_code
         assert body["fail_message"] == "bad request"
         assert "board_article" not in body
     
     logger.info(f"=== 상세 조회 케이스(ID: {article_id}) 완료 ===")
 
-@pytest.mark.parametrize("article_id", [
-    67176,  # 타인A의 비밀글 ID
-    67183   # 타인B의 비밀글 ID
+@pytest.mark.parametrize("case_key", [
+    "others_private_a", 
+    "others_private_b"
 ])
 @pytest.mark.xfail(reason="보안 버그: 타인의 비밀글이 권한 체크 없이 조회됨")
-def test_get_others_private_article_security_bug(rest_client, valid_headers, article_id):
+def test_get_others_private_article_security_bug(rest_client, valid_headers, case_key, test_board_data):
     """
     STU_BOARD_02_006: 타인 비밀글 조회
     기대 결과: status 'fail', fail_code 'insufficient_permission' 반환하며 차단되어야 함
     현재 현상: 200 OK와 함께 게시글 내용이 반환됨
     """
-    logger.info(f"=== STU_BOARD_02_006 보안 취약점 테스트 (ID: {article_id}) ===")
+    case_data = test_board_data["article_data"]["security_cases"][case_key]
+    article_id = case_data["article_id"]
+    description = case_data["description"]
+    
+    logger.info(f"=== STU_BOARD_02_006 타인 비밀글 테스트 시작 ({case_key}: {description}) ===")
     
     response = rest_client.get(
         endpoint="/org/qatrack/board/article/get/",
@@ -282,7 +289,7 @@ def test_get_others_private_article_security_bug(rest_client, valid_headers, art
     assert body["_result"]["status"] == "fail", f"보안 취약점: ID {article_id} 비밀글이 조회됨"
     assert body["_result"]["status_code"] == 409
     assert body["fail_code"] == "insufficient_permission"
-    logger.info("=== 보안 테스트 시나리오 종료 ===")
+    logger.info("=== 타인 비밀글 테스트 시나리오 종료 ===")
 
 def test_update_article_success(rest_client, valid_headers, classroom_id, test_board_data):
     """STU_BOARD_02_007: 게시글 수정"""
@@ -624,14 +631,14 @@ def test_comment_update_delete(rest_client, valid_headers, test_board_data):
     logger.info("=== STU_BOARD_03-007,008: 댓글 수정, 삭제 테스트 시작 ===")
     
     test_data = test_board_data["comment_data"]["update_delete_test"]
-    article_id = test_data["article_id"]
+    board_article_id = test_data["board_article_id"]
     
     headers = valid_headers.copy()
     headers.pop("Content-Type", None)
 
     # --- 1. 댓글 작성 ---
     create_payload = {
-        "board_article_id": article_id,
+        "board_article_id": board_article_id,
         "content": test_data["create_content"]
     }
     logger.debug(f"댓글 작성 요청: {create_payload}")
@@ -649,7 +656,7 @@ def test_comment_update_delete(rest_client, valid_headers, test_board_data):
 
     # --- 2. 댓글 수정 ---
     update_payload = {
-        "board_article_id": article_id,
+        "board_article_id": board_article_id,
         "article_comment_id": comment_id,
         "content": test_data["update_content"]
     }

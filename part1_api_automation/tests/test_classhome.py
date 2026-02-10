@@ -1,5 +1,6 @@
 import pytest
 import logging
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -760,14 +761,15 @@ def test_get_board_articles_with_invalid_skip_count(
 def test_get_emotion(
     classroom_client,
     valid_headers,
-    classhome_params):
+    classhome_params,
+    emotion_case):
     
     logger.info("=== STU-CHM-08-001: 수강생의 감정 상태 조회 확인 ===")
     endpoint = f"/emotion"
     
     params = {
        "classroom_id":classhome_params["classroom_id"],
-       "filter_record_date": "2026-02-04"
+       **emotion_case["STU-CHM-08-001"]
     }
     
     response = classroom_client.get(
@@ -790,25 +792,54 @@ def test_get_emotion(
     logger.info("=== STU-CHM-08-001 테스트 완료 ===")
     
 # 테스트 케이스 : STU-CHM-08-002("수강생 감정상태 설정 확인")
-# TODO def test_post_emotion(
-    # classroom_client,
-    # valid_headers,
-    # classhome_params): 
-    # logger.info("=== STU-CHM-08-002: 수강생 감정상태 설정 확인 ===")
-    # logger.info("=== STU-CHM-08-002 테스트 완료 ===")
+def test_post_emotion(
+    classroom_client,
+    valid_headers,
+    classhome_params): 
+    logger.info("=== STU-CHM-08-002: 수강생 감정상태 설정 확인 ===")
+    
+    endpoint = f"/emotion"
+    today = datetime.now().strftime("%Y-%m-%d")
+    
+    params ={
+        "classroom_id":classhome_params["classroom_id"],
+       "filter_record_date": today
+    }
+    
+    # Body 추가 (Postman에서 사용한 값)
+    payload = {
+        "classroom_id": classhome_params["classroom_id"],
+        "emoji": "bad"
+    }
+    
+    response = classroom_client.post(
+        endpoint,
+        headers=valid_headers,
+        params=params,
+        payload = payload
+    )
+    
+    # 하루 1회 제한 대응 (이미 설정된 경우)
+    if response.status_code in [400, 409]:
+        pytest.skip("오늘 이미 감정 상태가 설정되어 있어 테스트 스킵")
+
+    assert response.status_code == 200
+
+    logger.info("=== STU-CHM-08-002 테스트 완료 ===")
     
 # 테스트 케이스 : STU-CHM-08-003("수강생들이 감정상태를 선택하지 않았을 경우 응답 바디가 빈 값으로 출력되는지 확인")    
 def test_get_emotion_empty_list(
     classroom_client,
     valid_headers,
-    classhome_params):
+    classhome_params,
+    emotion_case):
     
     logger.info("=== STU-CHM-08-003: 감정 상태 미 설정시 응답 body가 빈 값인지 확인 ===")
     endpoint = f"/emotion"
     
     params = {
        "classroom_id":classhome_params["classroom_id"],
-       "filter_record_date": "2026-02-01"
+       **emotion_case["STU-CHM-08-002~3"]
     }
     
     response = classroom_client.get(
@@ -832,14 +863,15 @@ def test_get_emotion_empty_list(
     # 테스트 케이스 : STU-CHM-08-004("보유한 토큰이 없거나 로그아웃 상태일시 감정 조회 차단")    
 def test_get_emotion_no_token(
     classroom_client,
-    classhome_params):
+    classhome_params,
+    emotion_case):
     
     logger.info("=== STU-CHM-08-004: 보유한 토큰이 없을 시 감정 조회 차단 ===")
     endpoint = f"/emotion"
     
     params = {
        "classroom_id":classhome_params["classroom_id"],
-       "filter_record_date": "2026-02-01"
+       **emotion_case["STU-CHM-08-002~3"]
     }
     
     response = classroom_client.get(
