@@ -14,6 +14,21 @@
     "dt_start_le": "2026-02-14T14:59:59.999Z",
     "expected_event_keyword": "🎄성탄절☃️"
     },
+
+    "project_start_jump": {
+    "dt_start_ge": "2025-09-16T15:00:00.000Z",
+    "dt_start_le": "2025-11-14T14:59:59.999Z",
+    "expected_event": "🧪 [CH1] 소프트웨어 테스트 기초 📖",
+    "description": "프로젝트 시작 시점 점프 테스트"
+    },
+
+    "list_view_integrity": {
+    "dt_start_ge": "2026-02-01T00:00:00Z",
+    "dt_start_le": "2026-02-28T23:59:59Z",
+    "expected_event": "회의",
+    "description": "2월 한 달 데이터로 422 에러 디버깅"
+    },
+
     "detail_view": {
       "schedule_id": "bf440c62-cd8b-40ce-b9c9-092a89690618",
       "expected_title": "2팀 회의실🧑‍💻👩‍💻👨‍💻",
