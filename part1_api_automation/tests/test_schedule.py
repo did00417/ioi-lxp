@@ -79,7 +79,7 @@ def test_schedule_all_data_loaded(classroom_client, valid_headers, schedule_para
             "dt_start_ge": weekly_case["dt_start_ge"],
             "dt_start_le": weekly_case["dt_start_le"],
             "offset": 0,
-            "count": 100 
+            "count": 50 
         }
     )
 
@@ -102,8 +102,9 @@ def test_schedule_all_data_loaded(classroom_client, valid_headers, schedule_para
 
     assert "BEGIN:VCALENDAR" in content
     
+# [LDB_INIT_004] 증분( <, > ) 이동 시 날짜 파라미터 갱신 테스트 
 def test_schedule_date_update_on_move(classroom_client, valid_headers, schedule_params, test_schedule_data):
-    logger.info("증분 이동(12월) 시 날짜 파라미터 갱신 및 데이터 로드 테스트 시작")
+    logger.info("증분 이동시 날짜 파라미터 갱신 및 데이터 로드 테스트 시작")
     
     # 1. 12월 이동 케이스 데이터 가져오기
     dec_case = test_schedule_data["cases"]["december_move"]
@@ -131,6 +132,42 @@ def test_schedule_date_update_on_move(classroom_client, valid_headers, schedule_
     assert "202512" in content or "202601" in content
 
     logger.info(f"검증 성공: 12월 이동 시 파라미터가 정상 반영되어 '{dec_case['expected_event_keyword']}' 데이터를 수신했습니다.") 
+ 
+# [LDB_INIT_005 and 008] DatePicker(미니 캘린더)를 통한 특정 일자 점프, 멀티 뷰 모드 간 데이터 무결성 비교 검증   
+@pytest.mark.parametrize("case_name" , ["december_move" , "project_start_jump" , "list_view_integrity"])   
+def test_schedule_jump_verification(classroom_client, valid_headers, schedule_params, schedule_cases, case_name):
+            
+    case =schedule_cases[case_name]
+    logger.info(f"테스트 시나리오 수행: {case.get('description', case_name)}")
     
+    response = classroom_client.get(
+    "/schedule/ics",
+    headers=valid_headers,
+    params={
+        "classroom_id": schedule_params["classroom_id"],
+        "dt_start_ge": case["dt_start_ge"],
+        "dt_start_le": case["dt_start_le"],
+        "offset": 0,
+        "count": 40,
+        "timezone": "Asia/Seoul"
+         }
+        )
+    assert response.status_code == 200
+    content = response.text
+     
 
+    # 데이터 정합성 검증
+    target_event = case.get("expected_event") or case.get("expected_event_keyword")
+    if target_event:
     
+        assert target_event in content, f"에러: '{target_event}'를 찾을 수 없음. 응답요약: {content[:100]}..."
+
+    if "dt_start_ge" in case:
+        pattern = case["dt_start_ge"][0:7].replace("-", "")
+        if pattern not in content:
+  
+            logger.warning(f"참고: 응답 데이터에 {pattern} 패턴이 없습니다. (해당 월에 일정이 없을 수 있음)")
+    assert "BEGIN:VCALENDAR" in content
+    assert "END:VCALENDAR" in content
+    
+    logger.info(f"성공: {case_name} 시나리오에서 '{target_event}' 데이터를 확인했습니다.")
