@@ -3,7 +3,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-#---------------------------- 테스트 시나리오 STU-DAB-01 ------------------------------------
+#------------------ 테스트 시나리오 STU-DAB-01 : 학습 대시보드 메뉴의 전체 과목 학습 현황과 관련된 API 테스트 ------------------------------------
 # STU-DAB-01-001
 def test_all_courses_learning_page_success(dashboard_client,valid_headers,dash_params):
     logger.info("=== STU-DAB-01-001: 전체 과목 학습 현황 페이지 정상 조회 ===")
@@ -192,7 +192,7 @@ def test_all_courses_delete_with_student_account(classroom_client,valid_headers,
     
     logger.info("=== STU-DAB-01-007 테스트 완료 ===")
     
-#---------------------------- 테스트 시나리오 STU-DAB-02 ------------------------------------
+#-------------------- 테스트 시나리오 STU-DAB-02 : 학습 대시보드 메뉴의 과목별 학습 현황과 관련된 API 테스트 ------------------------------------
 # STU-DAB-02-001
 def test_course_learning_page_success(dashboard_client,valid_headers,dash_params):
     logger.info("=== STU-DAB-02-001: 과목 선택 후 학습 현황 페이지 정상 조회 ===")
@@ -353,7 +353,7 @@ def test_course_page_delete_with_student_account(classroom_client,valid_headers,
     
     logger.info("=== STU-DAB-02-006 테스트 완료 ===")
     
-#---------------------------- 테스트 시나리오 STU-DAB-03 ------------------------------------
+#------------------- 테스트 시나리오 STU-DAB-03 : 학습 대시보드 메뉴의 수업별 학습 현황과 관련된 API 테스트 ------------------------------------
 # STU-DAB-03-001
 def test_lecture_learning_page_success(dashboard_client, valid_headers, dash_params) :
     logger.info("=== STU-DAB-03-001: 수업 선택 후 학습 현황 페이지 정상 조회 ===")
@@ -519,7 +519,7 @@ def test_lecture_page_with_no_course_id(dashboard_client, valid_headers, dash_pa
     
     logger.info("=== STU-DAB-03-006 테스트 완료 ===")
     
-#---------------------------- 테스트 시나리오 STU-DAB-04 ------------------------------------
+#-------------------- 테스트 시나리오 STU-DAB-04 : 학습 대시보드 메뉴의 챕터 테스트 현황과 관련된 API 테스트 ------------------------------------
 # STU-DAB-04-001
 def test_chapter_test_page_success(dashboard_client, valid_headers, dash_params) :
     logger.info("=== STU-DAB-04-001: 챕터 테스트 선택 후 학습 현황 페이지 정상 조회 ===")
@@ -687,7 +687,7 @@ def test_chapter_test_page_with_no_classroom_id(dashboard_client, valid_headers,
     
     logger.info("=== STU-DAB-04-006 테스트 완료 ===")
     
-#---------------------------- 테스트 시나리오 STU-DAB-05 ------------------------------------
+#-------------------- 테스트 시나리오 STU-DAB-05 : 학습 대시보드 메뉴의 복습 테스트 현황과 관련된 API 테스트 ------------------------------------
 # STU-DAB-05-001
 def test_review_test_page_success(dashboard_client, valid_headers, dash_params) :
     logger.info("=== STU-DAB-05-001: 복습 테스트 선택 후 학습 현황 페이지 정상 조회 ===")
