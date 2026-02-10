@@ -77,8 +77,10 @@ def test_get_article_list_by_filter(
     expected_count_min,
     test_board_data
 ):
-    """STU_BOARD_01-004: 제목 키워드 검색"""
-    """STU_BOARD_01-005: 제목 키워드 일치하는 검색 결과 없음"""
+    """
+    STU_BOARD_01-004: 제목 키워드 검색
+    STU_BOARD_01-005: 제목 키워드 일치하는 검색 결과 없음
+    """
     
     keyword = test_board_data["search_keywords"][keyword_key]
     query = test_board_data["queries"]["article_list"]
@@ -221,8 +223,10 @@ def test_get_article_detail_cases(
     case_key,
     test_board_data
 ):
-    """STU_BOARD_02_004: 특정 게시글 조회"""
-    """STU_BOARD_02_005: 존재하지 않는 게시글 상세 조회"""
+    """
+    STU_BOARD_02_004: 특정 게시글 조회
+    STU_BOARD_02_005: 존재하지 않는 게시글 상세 조회
+    """
     
     case_data = test_board_data["article_data"]["detail_cases"][case_key]
     article_id = case_data["article_id"]
@@ -355,8 +359,10 @@ def test_update_others_article_fail(rest_client, valid_headers, classroom_id, te
     logger.info(f"=== STU_BOARD_03_002: 타인 게시글({article_id}) 수정 차단 확인 완료 ===")
 
 def test_delete_article_success(rest_client, valid_headers, classroom_id, create_article_data):
-    """STU_BOARD_02_009: 게시글 삭제 """
-    """반복 테스트를 위해 게시글 생성 후 삭제 로직"""
+    """
+    STU_BOARD_02_009: 게시글 삭제
+    반복 테스트를 위해 게시글 생성 후 삭제 로직
+    """
     logger.info("=== STU_BOARD_02_009: 게시글 삭제 테스트 시작 ===")
 
     # 1. ID 확보용 게시글 생성
@@ -689,9 +695,7 @@ def test_comment_update_delete(rest_client, valid_headers, test_board_data):
     logger.info("=== STU_BOARD_03-007,008: 댓글 수정, 삭제 검증 완료 ===")
 
 def test_get_comment_list_success(rest_client, valid_headers, test_board_data):
-    """
-    STU_BOARD_03-009: 특정 게시글 댓글 목록 조회
-    """
+    """STU_BOARD_03-009: 특정 게시글 댓글 목록 조회"""
     logger.info("=== STU_BOARD_03-009: 댓글 목록 조회 테스트 시작 ===")
 
     params = test_board_data["comment_data"]["list_params"]
