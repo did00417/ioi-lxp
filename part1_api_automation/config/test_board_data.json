@@ -20,7 +20,37 @@
       "is_secret": "false"
     }
   },
-
+  "article_data": {
+    "create_fail_cases": {
+      "classroom_id_missing": { "missing_key": "classroom_id", "expected_status": 409 },
+      "title_missing": { "missing_key": "title", "expected_status": 400 },
+      "content_missing": { "missing_key": "content", "expected_status": 400 }
+    },
+    "detail_cases": {
+      "valid_article": {
+        "article_id": 65912,
+        "expected_status": 200,
+        "expected_result": "ok",
+        "expected_fail_code": null
+      },
+      "not_found_article": {
+        "article_id": 99999,
+        "expected_status": 400,
+        "expected_result": "fail",
+        "expected_fail_code": "resource_not_found"
+      }
+    },
+    "security_cases": {
+      "others_private_a": {
+        "article_id": 67176,
+        "description": "타인A의 비밀글"
+      },
+      "others_private_b": {
+        "article_id": 67183,
+        "description": "타인B의 비밀글"
+      }
+    }
+  },
   "edit_article": {
     "board_article_id": 67135,
     "update_payload": {
