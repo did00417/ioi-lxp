@@ -111,6 +111,17 @@ IOI-LXP/
 1. 헤더, url은 공용으로 사용
 2. 각 도메인 별 테스트 데이터 불러오는 fixture 함수 load_test_data()로 각자 만들어서 사용
 
+### .env (git ignore)
+
+개인 정보가 포함된 데이터는 .env 파일에 작성
+```bash
+ELICE_VALID_TOKEN={각자의 인증 토큰}
+ELICE_INVALID_TOKEN={만료된 토큰}
+STUDENT_ID={각자의 student_id}
+USER_ID={각자의 user_id}
+INVALID_USER_ID={만료된 user_id}
+```
+
 ---
 
 ## 🪵 로깅(Logging) 전략
