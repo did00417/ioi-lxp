@@ -50,5 +50,38 @@
       "content": "좋아요 추가 및 취소를 테스트하기 위한 글입니다.",
       "is_secret": false
     }
+  },
+  "comment_data": {
+    "valid_comment": {
+      "board_article_id": 67135,
+      "content": "댓글 작성 기능 확인 중입니다."
+    },
+    "invalid_article_comment": {
+      "board_article_id": 99999,
+      "content": "존재하지 않는 게시글 댓글 작성 기능 확인 중입니다."
+    },
+    "like_test": {
+      "article_comment_id": 38051
+    },
+    "update_delete_test": {
+      "article_id": 67135,
+      "create_content": "자동화 테스트로 작성된 댓글입니다.",
+      "update_content": "자동화 테스트로 수정된 댓글입니다."
+    },
+    "list_params": {
+      "board_article_id": 67135,
+      "count": 10,
+      "offset": 0
+    },
+    "sort_test": {
+      "board_article_id": 67135,
+      "cases": {
+        "valid_desc": {"key": "created_datetime", "order": "desc"},
+        "valid_asc": {"key": "created_datetime", "order": "asc"},
+        "invalid_key": {"key": "user_name", "order": "desc"},
+        "invalid_order": {"key": "created_datetime", "order": "top"},
+        "missing_field": {"key": "created_datetime"}
+      }
+    }
   }
 }

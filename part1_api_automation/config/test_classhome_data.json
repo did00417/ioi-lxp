@@ -2,7 +2,7 @@
   "params": {
     "classroom_id": "a6bd98a3-83ff-4e5d-ba9e-6c04c69592fc",
     "invalid_classroom_id": "00000000-0000-0000-0000-000000000000",
-    "lectureroom_id": "135111",
+    "lectureroom_id": "135109",
     "invalid_lectureroom_id": "000000",
     "student_id": "{STUDENT_ID}"
   },
@@ -34,6 +34,34 @@
     "STU-CHM-03-005": {
       "dt_start_ge": "2026-02-30",
       "dt_start_le": "2026-02-31"
+    }
+  },
+  "student_course_data" : {
+    "STU-CHM-06": {
+      "count": 5
+    },
+    "STU-CHM-06-005": {
+      "offset": 15,
+      "count": 5
+    },
+    "STU-CHM-06-006": {
+      "offset": -12,
+      "count": -34
+    }
+  },
+  "board_data": {
+    "STU-CHM-07-001": {
+      "filter_title": "%%",
+       "skip": 0,
+       "count": 3  
+    },
+    "STU-CHM-07-002": {
+      "filter_title": "%%"
+    },
+    "STU-CHM-07-003": {
+      "filter_title": "%%",
+      "skip": -12,
+      "count": -34
     }
   }
 }

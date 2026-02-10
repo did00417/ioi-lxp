@@ -5,7 +5,9 @@
     "student_id": "{STUDENT_ID}",
     "invalid_student_id" : 1000000,
     "course_id" : 766477,
-    "invalid_course_id" : 766000
+    "invalid_course_id" : 766000,
+    "lecture_id" : 6643882,
+    "invalid_lecture_id" : 6643059
   },
   "page" : {
     "one_course_ids" : [762843, 762844, 759075, 763817, 759074],
