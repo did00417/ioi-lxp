@@ -107,7 +107,11 @@ def student_course_case(test_classhome_data):
 
 @pytest.fixture(scope="session")
 def board_case(test_classhome_data):
-    return test_classhome_data["board_data"]
+    return test_classhome_data["classhome_board_data"]
+
+@pytest.fixture(scope="session")
+def emotion_case(test_classhome_data):
+    return test_classhome_data["emotion_date_data"]
 #-------------------- <효진> 학습 과목 데이터 ------------------------------
 
 @pytest.fixture(scope="session")
