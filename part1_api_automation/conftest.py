@@ -94,7 +94,7 @@ def classhome_params(test_classhome_data):
     return test_classhome_data["params"]
 
 @pytest.fixture(scope="session")
-def schedule_common(test_classhome_data):
+def classhome_schedule_common(test_classhome_data):
     return test_classhome_data["schedule_common_data"]
 
 @pytest.fixture(scope="session")
@@ -102,15 +102,15 @@ def classhome_schedule_cases(test_classhome_data):
     return test_classhome_data["schedule_cases_data"]
 
 @pytest.fixture(scope="session")
-def student_course_case(test_classhome_data):
+def classhome_student_course_case(test_classhome_data):
     return test_classhome_data["student_course_data"]
 
 @pytest.fixture(scope="session")
-def board_case(test_classhome_data):
+def classhome_board_case(test_classhome_data):
     return test_classhome_data["classhome_board_data"]
 
 @pytest.fixture(scope="session")
-def emotion_case(test_classhome_data):
+def classhome_emotion_case(test_classhome_data):
     return test_classhome_data["emotion_date_data"]
 #-------------------- <효진> 학습 과목 데이터 ------------------------------
 
@@ -118,7 +118,7 @@ def emotion_case(test_classhome_data):
 def subject_params(test_subject_data):
     return test_subject_data["params"]
 
-#-------------------- <동빈> 학습 과목 데이터 ------------------------------
+#-------------------- <동빈> 수업 일정 데이터 ------------------------------
 @pytest.fixture(scope="session")
 def test_schedule_data():
     return load_test_data("schedule")
