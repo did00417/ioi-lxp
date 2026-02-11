@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 작성자: 양정은
 passed: 29 ~ 30개(정상)
 skipped: 0 ~1 1개(정상)
-fail: 1개(정상)
+fail: 1개(정상) -> skip로 처리
 '''
 
 # 테스트 케이스: STU-CHM-01-001(유효한 토큰 사용 시 사용자 정보 조회)
@@ -648,17 +648,19 @@ def test_get_learning_status_invalid_offset_count(
     
     logger.info("=== STU-CHM-06-006 테스트 완료 ===")
     
-    # 테스트 케이스 : STU-CHM-06-007(타인의 필수 path 파라미터에 student_id 입력시 학습 현황 조회 차단 확인)
+# 테스트 케이스 : STU-CHM-06-007(타인의 필수 path 파라미터에 student_id 입력시 학습 현황 조회 차단 확인)
 def test_get_learning_status_unauthorized_user(
     dashboard_client, 
     valid_headers, 
     classhome_params,
+    classhome_student_course_case
  ):
     logger.info("=== STU-CHM-06-007: 타인의 필수 path 파라미터에 student_id 입력시 학습 현황 조회 차단 확인 ===")
-    endpoint = endpoint = f"/student/{classhome_params['other_student_id']}/course"
+    endpoint = f"/student/{classhome_params['other_student_id']}/course"
     
     params = {
         "classroom_id":classhome_params["classroom_id"],
+        **classhome_student_course_case["STU_CHM-06-007"]
     }
     
     response = dashboard_client.get(
@@ -666,11 +668,13 @@ def test_get_learning_status_unauthorized_user(
         headers=valid_headers,
         params=params
     )
-    assert response.status_code == [403, 404], f"보안 오류: 타인 데이터 접근 가능 (status={response.status_code})"
     
     if response.status_code == 200:
         error_data = response.json()
-        pytest.fail(f"IDOR 취약점: 타인 데이터 노출됨 {error_data}")
+        pytest.fail(f"현재 상태 코드: {response.status_code}, IDOR 취약점: 타인 데이터 노출됨 {error_data}")
+        
+    assert response.status_code == [403, 404], \
+        f"보안 오류: 타인 데이터 접근 가능 (status={response.status_code}, body={error_data})"
     
     logger.info("=== STU-CHM-06-007 테스트 완료 ===")
 
@@ -849,7 +853,7 @@ def test_post_emotion(
         payload = payload
     )
     
-    # 하루 1회 제한 대응 (이미 설정된 경우)
+    # 하루 1회 제한 대응
     if response.status_code in [400, 409]:
         pytest.skip("오늘 이미 감정 상태가 설정되어 있어 테스트 스킵")
 

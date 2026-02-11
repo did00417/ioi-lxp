@@ -48,6 +48,10 @@
     "STU-CHM-06-006": {
       "offset": -12,
       "count": -34
+    },
+    "STU_CHM-06-007": {
+      "offset": 5,
+      "count": 5
     }
   },
   "classhome_board_data": {
