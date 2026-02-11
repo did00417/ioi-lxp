@@ -120,6 +120,7 @@ ELICE_INVALID_TOKEN={만료된 토큰}
 STUDENT_ID={각자의 student_id}
 USER_ID={각자의 user_id}
 INVALID_USER_ID={만료된 user_id}
+OTHER_STUEDNT_ID={다른 유저의 student_id}
 ```
 
 ---
