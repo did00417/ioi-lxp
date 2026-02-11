@@ -5,7 +5,7 @@
     "lectureroom_id": "135109",
     "invalid_lectureroom_id": "000000",
     "student_id": "{STUDENT_ID}",
-    "invalid_student_id": "{INVALID_STUEDNT_ID}"
+    "other_student_id": "{OTHER_STUEDNT_ID}"
   },
 
   "schedule_common_data": {
