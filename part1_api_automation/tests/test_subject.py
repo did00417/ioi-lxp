@@ -276,3 +276,105 @@ def test_fetch_adjacent_lecture(course_client, valid_headers, subject_params, ca
         logger.info(f"Step 3 성공: Course ID 일치 ({result_course_id})")
 
     logger.info(f"=== {test_id} 테스트 완료 ===")
+
+@pytest.mark.parametrize("case", load_test_data("subject")["lecture_details_data"])
+def test_fetch_lectures(course_client, valid_headers ,subject_params, case):
+    test_id = case["test_id"]
+    course_id = subject_params[case["course_id_key"]]
+    endpoint = f"/lecture_page"
+
+    
+    logger.info(f"=== {test_id} 시작 ===")
+    
+    actual_params = {}
+    for k, v in case["query_params"].items():
+        actual_params[k] = subject_params.get(v, v) if v in subject_params else v
+
+    response = course_client.get(
+        endpoint=endpoint,
+        headers=valid_headers,
+        params=actual_params
+    )
+    data = response.json()
+    status_code = response.status_code
+
+    assert status_code == case["expected_status"], f"Status Code 불일치: {status_code}"
+    logger.info(f"Step 1 성공: {status_code} 반환됨.")
+
+    if case["validate_type"] == "success":
+        assert isinstance(data, list) and len(data) > 0, "응답 데이터가 비어있거나 리스트가 아님"
+
+        first_lecture = data[0].get("lecture", {})
+        actual_title = first_lecture.get("title")
+        
+        assert actual_title is not None, "강의 제목(title)을 찾을 수 없음"
+        logger.info(f"Step 2 성공: 강의 제목 확인 완료 ({actual_title})")
+
+    elif case["validate_type"] == "error":
+        detail = data.get("detail", {})
+        actual_msg = detail.get("msg")
+        actual_loc = detail.get("loc", [])
+        actual_message_text = data.get("message", "")
+
+        assert actual_msg.lower() == case["expected_msg"].lower(), f"상세 메시지 불일치: {actual_msg}"
+        exp_loc = case["expected_loc"]
+        assert exp_loc in actual_loc, f"에러 위치(loc) 불일치: 기대값 '{exp_loc}'가 {actual_loc}에 없음"
+        assert exp_loc in actual_message_text, f"전체 메시지에 '{exp_loc}' 정보가 누락됨"
+        logger.info(f"Step 2 성공: {exp_loc} 누락에 대한 422 에러 및 상세 정보 확인 완료")
+
+    logger.info(f"=== {test_id} 테스트 완료 ===")
+
+def test_quiz_request_success(rest_client, valid_headers, subject_params):
+    endpoint = "/org/qatrack/material_quiz/response/add/"
+    headers = valid_headers.copy()
+    if "Content-Type" in headers:
+        del headers["Content-Type"]
+
+    response = rest_client.post(
+        endpoint=endpoint,
+        headers=headers,
+        data={
+            "material_quiz_id": subject_params["material_quiz_id"],
+            "answer": str(subject_params["answer"])
+        }
+    )
+    data = response.json()
+
+    assert response.status_code == 200, f"Step 1 실패: 200을 기대했으나 {response.status_code} 반환됨."
+    logger.info(f"Step 1 성공: 예상대로 200 OK 반환됨.")
+    assert "quiz_response_id" in data, f"Step 2 실패: 응답 값에 quiz_response_id가 포함되지 않음."
+    logger.info(f"Step 2 성공: 응답 값에 quiz_response_id가({data.get('quiz_response_id')}) 포함됨.")
+    logger.info("=== STU-SBJ-10-001 테스트 완료 ===")
+
+@pytest.mark.parametrize("case", load_test_data("subject")["quiz_missing_params_data"])
+def test_quiz_request_fail_missing_params(rest_client, valid_headers, subject_params, case):
+    endpoint = "/org/qatrack/material_quiz/response/add/"
+    headers = valid_headers.copy()
+    if "Content-Type" in headers:
+        del headers["Content-Type"]
+
+    missing_data = case["missing_data"]
+    expected_fields = case["expected_missing_field"]
+    response = rest_client.post(
+        endpoint=endpoint,
+        headers=headers,
+        data=missing_data
+    )
+    data = response.json()
+    result = data.get("_result", {})
+    status_code = result.get("status_code")
+    assert status_code == 400, f"Step 1 실패: 400을 기대했으나 {status_code}가 반환됨."
+    logger.info(f"Step 1 성공: 예상대로 400 반환됨.")
+
+    status = result.get("status")
+    assert status == "fail"
+    fail_code = data.get("fail_code")
+    assert fail_code == "invalid_parameter"
+    logger.info(f"Step 2 성공: 실패 메시지가 정상적으로 확인됨.")
+    invalid_params = data.get("fail_detail", {}).get("invalid_params")
+
+    for field in expected_fields:
+        assert field in invalid_params, f"에러 상세 내용에 {field} 필드가 누락되었습니다."
+        logger.info(f"Step 3 성공: 오류 메시지에서 {field}가 누락됨을 확인.")
+        assert invalid_params[field] == "required", f"{field}의 에러 사유가 'required'가 아닙니다."
+    logger.info("=== STU-SBJ-10-002 테스트 완료 ===")

@@ -26,7 +26,9 @@
     "course_id_test_prev": 768550,
     "lecture_id_with_next": 6644273,
     "lecture_id_without_next": 6644280,
-    "course_id_test_next": 766557
+    "course_id_test_next": 766557,
+    "material_quiz_id": 54569309,
+    "answer": [0]
   },
   "sbj_list_failure_cases": [
     {
@@ -254,6 +256,72 @@
       "direction": "next",
       "offset": 1,
       "is_null": true
+    }
+  ],
+  "lecture_details_data": [
+    {
+      "test_id": "STU-SBJ-09-001",
+      "course_id_key": "course_id",
+      "query_params": {
+        "skip": 0,
+        "count": 10,
+        "elice_course_id": "course_id"
+      },
+      "expected_status": 200,
+      "validate_type": "success"
+    },
+    {
+      "test_id": "STU-SBJ-09-002",
+      "course_id_key": "course_id",
+      "query_params": {
+        "elice_course_id": "course_id"
+      },
+      "expected_status": 422,
+      "validate_type": "error",
+      "expected_msg": "field required",
+      "expected_loc": "skip"
+    },
+    {
+      "test_id": "STU-SBJ-09-003",
+      "course_id_key": "course_id",
+      "query_params": {
+        "count": 10,
+        "elice_course_id": "course_id"
+      },
+      "expected_status": 422,
+      "validate_type": "error",
+      "expected_msg": "field required",
+      "expected_loc": "skip"
+    },
+    {
+      "test_id": "STU-SBJ-09-004",
+      "course_id_key": "course_id",
+      "query_params": {
+        "skip": 0,
+        "elice_course_id": "course_id"
+      },
+      "expected_status": 422,
+      "validate_type": "error",
+      "expected_msg": "field required",
+      "expected_loc": "count"
+    }
+  ],
+  "quiz_missing_params_data": [
+    {
+      "missing_data": {
+        "answer": [0]
+      },
+      "expected_missing_field": ["material_quiz_id"]
+    },
+    {
+      "missing_data": {
+        "material_quiz_id": 54569309
+      },
+      "expected_missing_field": ["answer"]
+    },
+    {
+      "missing_data": {},
+      "expected_missing_field": ["material_quiz_id", "answer"]
     }
   ]
 }
