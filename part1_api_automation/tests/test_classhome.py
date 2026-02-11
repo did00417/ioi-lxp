@@ -655,7 +655,7 @@ def test_get_learning_status_unauthorized_user(
     classhome_params,
  ):
     logger.info("=== STU-CHM-06-007: 타인의 필수 path 파라미터에 student_id 입력시 학습 현황 조회 차단 확인 ===")
-    endpoint = endpoint = f"/student/{classhome_params['invalid_student_id']}/course"
+    endpoint = endpoint = f"/student/{classhome_params['other_student_id']}/course"
     
     params = {
         "classroom_id":classhome_params["classroom_id"],
