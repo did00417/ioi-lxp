@@ -4,6 +4,13 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
+'''
+작성자: 양정은
+passed: 29 ~ 30개(정상)
+skipped: 0 ~1 1개(정상)
+fail: 1개(정상)
+'''
+
 # 테스트 케이스: STU-CHM-01-001(유효한 토큰 사용 시 사용자 정보 조회)
 def test_get_user_details(rest_client,valid_headers):
     logger.info("=== STU-CHM-01-001: 유효한 토큰 사용 시 사용자 정보 조회 ===")
@@ -640,6 +647,32 @@ def test_get_learning_status_invalid_offset_count(
         raise
     
     logger.info("=== STU-CHM-06-006 테스트 완료 ===")
+    
+    # 테스트 케이스 : STU-CHM-06-007(타인의 필수 path 파라미터에 student_id 입력시 학습 현황 조회 차단 확인)
+def test_get_learning_status_unauthorized_user(
+    dashboard_client, 
+    valid_headers, 
+    classhome_params,
+ ):
+    logger.info("=== STU-CHM-06-007: 타인의 필수 path 파라미터에 student_id 입력시 학습 현황 조회 차단 확인 ===")
+    endpoint = endpoint = f"/student/{classhome_params['invalid_student_id']}/course"
+    
+    params = {
+        "classroom_id":classhome_params["classroom_id"],
+    }
+    
+    response = dashboard_client.get(
+        endpoint,
+        headers=valid_headers,
+        params=params
+    )
+    assert response.status_code == [403, 404], f"보안 오류: 타인 데이터 접근 가능 (status={response.status_code})"
+    
+    if response.status_code == 200:
+        error_data = response.json()
+        pytest.fail(f"IDOR 취약점: 타인 데이터 노출됨 {error_data}")
+    
+    logger.info("=== STU-CHM-06-007 테스트 완료 ===")
 
 # 테스트 케이스 : STU-CHM-07-001(최신 게시판 공지 정상 조회)    
 def test_get_latest_board_articles(
