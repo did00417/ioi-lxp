@@ -4,6 +4,13 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
+'''
+작성자: 양정은
+passed: 29 ~ 30개(정상)
+skipped: 0 ~1 1개(정상)
+fail: 1개(정상)
+'''
+
 # 테스트 케이스: STU-CHM-01-001(유효한 토큰 사용 시 사용자 정보 조회)
 def test_get_user_details(rest_client,valid_headers):
     logger.info("=== STU-CHM-01-001: 유효한 토큰 사용 시 사용자 정보 조회 ===")
@@ -154,7 +161,7 @@ def test_get_class_schedule(
     classroom_client,
     valid_headers,
     classhome_params,
-    schedule_common,
+    classhome_schedule_common,
     classhome_schedule_cases
     ):
     logger.info("=== STU-CHM-03-001: 수강생의 수업 일정 정보를 정상적으로 조회 ===")
@@ -162,7 +169,7 @@ def test_get_class_schedule(
     
     params = { 
         "classroom_id": classhome_params["classroom_id"],
-        **schedule_common,
+        **classhome_schedule_common,
         **classhome_schedule_cases["STU-CHM-03-001"]
     }
     response = classroom_client.get(
@@ -191,7 +198,7 @@ def test_get_no_class_schedule(
     classroom_client,
     valid_headers,
     classhome_params,
-    schedule_common,
+    classhome_schedule_common,
     classhome_schedule_cases
     ):
     logger.info("=== STU-CHM-03-002: 수강일정이 없는 날짜 조회 시 해당 날짜에 실제 일정이 없음을 확인 ===")
@@ -199,7 +206,7 @@ def test_get_no_class_schedule(
     
     params = {
         "classroom_id": classhome_params["classroom_id"],
-        **schedule_common,
+        **classhome_schedule_common,
         **classhome_schedule_cases["STU-CHM-03-002"]
         }
     
@@ -224,7 +231,7 @@ def test_get_no_class_schedule(
 def test_get_class_schedule_no_token(
     classroom_client,
     classhome_params,
-    schedule_common,
+    classhome_schedule_common,
     classhome_schedule_cases
     ):
     logger.info("=== STU-CHM-03-003: 유효 토큰 없이 수강일정 조회 시 에러 발생 확인 ===")
@@ -232,7 +239,7 @@ def test_get_class_schedule_no_token(
     
     params = {
         "classroom_id": classhome_params["classroom_id"],
-        **schedule_common,
+        **classhome_schedule_common,
         **classhome_schedule_cases["STU-CHM-03-003"]
         }
     
@@ -258,7 +265,7 @@ def test_get_schedule_fails_when_date_parameters_missing(
     classroom_client,
     valid_headers,
     classhome_params,
-    schedule_common,
+    classhome_schedule_common,
     classhome_schedule_cases
     ):
     logger.info("=== STU-CHM-03-004: 날짜 파라미터 누락 시 에러 발생 확인 ===")
@@ -267,7 +274,7 @@ def test_get_schedule_fails_when_date_parameters_missing(
     # dt_start_ge 파라미터 누락
     params = {
         "classroom_id": classhome_params["classroom_id"],
-        **schedule_common,
+        **classhome_schedule_common,
         **classhome_schedule_cases["STU-CHM-03-004"]
     }
     
@@ -301,7 +308,7 @@ def test_get_schedule_fails_when_date_format_invalid(
     classroom_client,
     valid_headers,
     classhome_params,
-    schedule_common,
+    classhome_schedule_common,
     classhome_schedule_cases
     ):
     logger.info("=== STU-CHM-03-005: 잘못된 날짜 포맷 입력시 에러 발생 확인 ===")
@@ -310,7 +317,7 @@ def test_get_schedule_fails_when_date_format_invalid(
     # dt_start_ge 파라미터 잘못된 포맷
     params = {
         "classroom_id": classhome_params["classroom_id"],
-        **schedule_common,
+        **classhome_schedule_common,
         **classhome_schedule_cases["STU-CHM-03-005"]
     }
     
@@ -528,7 +535,7 @@ def test_get_student_course_slides(
     valid_headers, 
     classhome_params, 
     offset,
-    student_course_case
+    classhome_student_course_case
     ):
     logger.info("=== STU-CHM-06-001 ~ 004: 슬라이드 학습 현황 내용 확인 ===")
     endpoint = f"/student/{classhome_params['student_id']}/course"
@@ -536,7 +543,7 @@ def test_get_student_course_slides(
     params = {
         "classroom_id": classhome_params['classroom_id'],
         "offset": offset,
-        **student_course_case["STU-CHM-06"]
+        **classhome_student_course_case["STU-CHM-06"]
     }
     
     response = dashboard_client.get(
@@ -573,12 +580,12 @@ def test_get_student_course_slides_no_params(
     dashboard_client, 
     valid_headers, 
     classhome_params, 
-    student_course_case
+    classhome_student_course_case
  ):
     logger.info("=== STU-CHM-06-005: 필수 파라미터 값 누락시 학습 현황 조회 차단 확인 ===")
     endpoint = endpoint = f"/student/{classhome_params['student_id']}/course"
     
-    params = {**student_course_case["STU-CHM-06-005"]}
+    params = {**classhome_student_course_case["STU-CHM-06-005"]}
     
     response = dashboard_client.get(
         endpoint,
@@ -608,14 +615,14 @@ def test_get_learning_status_invalid_offset_count(
     dashboard_client, 
     valid_headers, 
     classhome_params,
-    student_course_case
+    classhome_student_course_case
  ):
     logger.info("=== STU-CHM-06-006: offset/count 값 오류시 학습 현황 조회 차단 확인 ===")
     endpoint = endpoint = f"/student/{classhome_params['student_id']}/course"
     
     params = {
         "classroom_id":classhome_params["classroom_id"],
-        **student_course_case["STU-CHM-06-006"]
+        **classhome_student_course_case["STU-CHM-06-006"]
     }
     
     response = dashboard_client.get(
@@ -640,20 +647,46 @@ def test_get_learning_status_invalid_offset_count(
         raise
     
     logger.info("=== STU-CHM-06-006 테스트 완료 ===")
+    
+    # 테스트 케이스 : STU-CHM-06-007(타인의 필수 path 파라미터에 student_id 입력시 학습 현황 조회 차단 확인)
+def test_get_learning_status_unauthorized_user(
+    dashboard_client, 
+    valid_headers, 
+    classhome_params,
+ ):
+    logger.info("=== STU-CHM-06-007: 타인의 필수 path 파라미터에 student_id 입력시 학습 현황 조회 차단 확인 ===")
+    endpoint = endpoint = f"/student/{classhome_params['invalid_student_id']}/course"
+    
+    params = {
+        "classroom_id":classhome_params["classroom_id"],
+    }
+    
+    response = dashboard_client.get(
+        endpoint,
+        headers=valid_headers,
+        params=params
+    )
+    assert response.status_code == [403, 404], f"보안 오류: 타인 데이터 접근 가능 (status={response.status_code})"
+    
+    if response.status_code == 200:
+        error_data = response.json()
+        pytest.fail(f"IDOR 취약점: 타인 데이터 노출됨 {error_data}")
+    
+    logger.info("=== STU-CHM-06-007 테스트 완료 ===")
 
 # 테스트 케이스 : STU-CHM-07-001(최신 게시판 공지 정상 조회)    
 def test_get_latest_board_articles(
     classroom_client,
     valid_headers,
     classhome_params,
-    board_case
+    classhome_board_case
     ):
     
     logger.info("=== STU-CHM-07-001: 최신 게시판 공지 정상 조회 ===")
     endpoint = f"/classroom/{classhome_params['classroom_id']}/article"
     
     params = {
-       **board_case["STU-CHM-07-001"]
+       **classhome_board_case["STU-CHM-07-001"]
     }
     
     response = classroom_client.get(
@@ -681,14 +714,14 @@ def test_get_board_articles_no_classroom_id(
     classroom_client,
     valid_headers,
     classhome_params,
-    board_case
+    classhome_board_case
     ):
     
     logger.info("=== STU-CHM-07-002: 필수 파라미터 누락시 게시판 조회 차단 ===")
     endpoint = f"/classroom/{classhome_params['classroom_id']}/article"
     
     params = {
-        **board_case["STU-CHM-07-002"]
+        **classhome_board_case["STU-CHM-07-002"]
     }
     
     response = classroom_client.get(
@@ -720,13 +753,13 @@ def test_get_board_articles_with_invalid_skip_count(
     classroom_client,
     valid_headers,
     classhome_params,
-    board_case
+    classhome_board_case
 ):
     logger.info("=== STU-CHM-07-003: skip/conut 값 오류시 게시판 조회 차단 확인 ===")
     endpoint = f"/classroom/{classhome_params['classroom_id']}/article"
     
     params = {
-        **board_case["STU-CHM-07-003"]
+        **classhome_board_case["STU-CHM-07-003"]
     }
     
     response = classroom_client.get(
@@ -758,14 +791,14 @@ def test_get_emotion(
     classroom_client,
     valid_headers,
     classhome_params,
-    emotion_case):
+    classhome_emotion_case):
     
     logger.info("=== STU-CHM-08-001: 수강생의 감정 상태 조회 확인 ===")
     endpoint = f"/emotion"
     
     params = {
        "classroom_id":classhome_params["classroom_id"],
-       **emotion_case["STU-CHM-08-001"]
+       **classhome_emotion_case["STU-CHM-08-001"]
     }
     
     response = classroom_client.get(
@@ -829,14 +862,14 @@ def test_get_emotion_empty_list(
     classroom_client,
     valid_headers,
     classhome_params,
-    emotion_case):
+    classhome_emotion_case):
     
     logger.info("=== STU-CHM-08-003: 감정 상태 미 설정시 응답 body가 빈 값인지 확인 ===")
     endpoint = f"/emotion"
     
     params = {
        "classroom_id":classhome_params["classroom_id"],
-       **emotion_case["STU-CHM-08-002~3"]
+       **classhome_emotion_case["STU-CHM-08-002~3"]
     }
     
     response = classroom_client.get(
@@ -861,14 +894,14 @@ def test_get_emotion_empty_list(
 def test_get_emotion_no_token(
     classroom_client,
     classhome_params,
-    emotion_case):
+    classhome_emotion_case):
     
     logger.info("=== STU-CHM-08-004: 보유한 토큰이 없을 시 감정 조회 차단 ===")
     endpoint = f"/emotion"
     
     params = {
        "classroom_id":classhome_params["classroom_id"],
-       **emotion_case["STU-CHM-08-002~3"]
+       **classhome_emotion_case["STU-CHM-08-002~3"]
     }
     
     response = classroom_client.get(
