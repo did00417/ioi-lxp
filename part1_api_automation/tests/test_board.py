@@ -140,6 +140,16 @@ def test_create_article_success(rest_client, valid_headers, classroom_id, create
     article_id = res_data.get("board_article_id")
     logger.info(f"게시글 작성 성공! 생성된 ID: {res_data.get('board_article_id')}")
     assert article_id is not None, "게시글 ID가 생성되지 않았습니다."
+    
+    delete_response = rest_client.post(
+        endpoint="/org/qatrack/board/article/delete/",
+        headers=headers,
+        data={"board_article_id": article_id}
+    )
+    
+    delete_res_data = delete_response.json()
+    assert delete_res_data["_result"]["status"] == "ok", f"테스트 후 데이터 삭제 실패 (ID: {article_id})"
+    logger.info(f"테스트 종료 전 생성된 데이터 정리: ID {article_id} 삭제 완료")
 
 @pytest.mark.parametrize("case_key, expected_status", [
     ("classroom_id_missing", 409),
