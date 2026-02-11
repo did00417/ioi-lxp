@@ -826,3 +826,73 @@ def test_review_test_page_with_invalid_lecture_id(dashboard_client, valid_header
         raise
     
     logger.info("=== STU-DAB-05-005 테스트 완료 ===")
+    
+#-------------------- 테스트 시나리오 STU-DAB-06 : 학습 대시보드 메뉴의 오답 노트 현황과 관련된 API 테스트 ------------------------------------
+# STU-DAB-06-001
+def test_review_note_page_when_exist_wrong_answers(course_client, valid_headers, dash_params) :
+    logger.info("=== STU-DAB-06-001: 테스트 오답 데이터가 존재하는 과목의 오답 노트 페이지 조회 ===")
+    
+    endpoint = "/lecture_page"
+    response = course_client.get(
+        endpoint,
+        headers = valid_headers,
+        params= {
+            "filter_lecture_page_ids" : dash_params["note_page_ids"],
+            "skip" : 0,
+            "count" : 40,
+            "elice_course_id" : dash_params["note_course_id"]
+        }
+    )
+    body = response.json()
+    requested_ids = set(dash_params["note_page_ids"])
+    response_ids = {item["id"] for item in body}
+    
+    try : 
+        assert response.status_code == 200, "Step 1 실패: status_code != 200"
+        logger.info("Step 1 성공: 예상대로 200 OK 반환됨")
+        assert isinstance(body, list), "Step 2 실패: 응답 바디가 list 타입이 아님"
+        logger.info("Step 2 성공: 응답 바디가 list 타입임")
+        assert requested_ids == response_ids, "Step 3 실패: 요청한 문제 ID와 응답 데이터 불일치"
+        logger.info("Step 3 성공: 요청한 문제 ID와 응답 데이터 일치")
+        assert len(body) == len(dash_params["note_page_ids"]), "Step 4 실패: 오답 데이터가 존재할때 해당 테스트의 틀린 문제 갯수만큼 반환되지 않음"
+        logger.info("Step 4 성공: 오답 데이터가 존재할때 해당 테스트의 틀린 문제 갯수만큼 반환됨")
+    except AssertionError as e:
+        logger.error(f"❌ 테스트 실패 : {e}")
+        raise
+    
+    logger.info("=== STU-DAB-06-001 테스트 완료 ===")
+    
+# STU-DAB-06-002
+def test_review_note_page_when_not_exist_wrong_answers(course_client, valid_headers, dash_params) :
+    logger.info("=== STU-DAB-06-002: 테스트 오답 데이터가 존재하지 않을 때 전체 문제 반환 검증 ===")
+    
+    endpoint = "/lecture_page"
+    response = course_client.get(
+        endpoint,
+        headers = valid_headers,
+        params= {
+            "filter_lecture_page_ids" : dash_params["all_page_ids"],
+            "skip" : 0,
+            "count" : 19,
+            "elice_course_id" : dash_params["course_id"]
+        }
+    )
+    body = response.json()
+    requested_ids = set(dash_params["all_page_ids"])
+    response_ids = {item["id"] for item in body}
+    
+    try : 
+        assert response.status_code == 200, "Step 1 실패: status_code != 200"
+        logger.info("Step 1 성공: 예상대로 200 OK 반환됨")
+        assert isinstance(body, list), "Step 2 실패: 응답 바디가 list 타입이 아님"
+        logger.info("Step 2 성공: 응답 바디가 list 타입임")
+        assert requested_ids == response_ids, "Step 3 실패: 요청한 문제 ID와 응답 데이터 불일치"
+        logger.info("Step 3 성공: 요청한 문제 ID와 응답 데이터 일치")
+        assert len(body) == 19, "Step 4 실패: 오답 데이터가 존재하지 않을 때 해당 테스트의 전체 문제 목록 갯수만큼 반환되지 않음"
+        logger.info("Step 4 성공: 오답 데이터가 존재하지 않을 때 해당 테스트의 전체 문제 목록 갯수만큼 반환됨")
+    except AssertionError as e:
+        logger.error(f"❌ 테스트 실패 : {e}")
+        raise
+    
+    logger.info("=== STU-DAB-06-002 테스트 완료 ===")
+    
