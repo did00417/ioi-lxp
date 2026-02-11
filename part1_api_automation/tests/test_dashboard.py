@@ -1,4 +1,3 @@
-import pytest
 import logging
 
 logger = logging.getLogger(__name__)
@@ -829,33 +828,38 @@ def test_review_test_page_with_invalid_lecture_id(dashboard_client, valid_header
     
 #-------------------- 테스트 시나리오 STU-DAB-06 : 학습 대시보드 메뉴의 오답 노트 현황과 관련된 API 테스트 ------------------------------------
 # STU-DAB-06-001
-def test_review_note_page_when_exist_wrong_answers(course_client, valid_headers, dash_params) :
-    logger.info("=== STU-DAB-06-001: 테스트 오답 데이터가 존재하는 과목의 오답 노트 페이지 조회 ===")
+def test_review_note_page_when_exist_test(dashboard_client, valid_headers, dash_params) :
+    '''
+    챕터 테스트 or 복습 테스트가 존재하는 과목의 오답 노트 관련 API 조회 시 
+    응답 바디에 해당 테스트의 각 문제 페이지 id와 채점된 점수가 포함됨
+    '''
+    logger.info("=== STU-DAB-06-001: 테스트 lecture가 존재할 때 오답 노트 페이지와 관련된 API 조회 ===")
     
-    endpoint = "/lecture_page"
-    response = course_client.get(
+    endpoint = f"/student/{dash_params['student_id']}/lecture"
+    response = dashboard_client.get(
         endpoint,
         headers = valid_headers,
         params= {
-            "filter_lecture_page_ids" : dash_params["note_page_ids"],
-            "skip" : 0,
-            "count" : 40,
-            "elice_course_id" : dash_params["note_course_id"]
+            "classroom_id": dash_params["classroom_id"],
+            "course_id" : dash_params["course_id"],
+            "filter_test_admission_status" : "completed",
+            "offset" : 0,
+            "count" : 40
         }
     )
     body = response.json()
-    requested_ids = set(dash_params["note_page_ids"])
-    response_ids = {item["id"] for item in body}
     
     try : 
         assert response.status_code == 200, "Step 1 실패: status_code != 200"
         logger.info("Step 1 성공: 예상대로 200 OK 반환됨")
-        assert isinstance(body, list), "Step 2 실패: 응답 바디가 list 타입이 아님"
-        logger.info("Step 2 성공: 응답 바디가 list 타입임")
-        assert requested_ids == response_ids, "Step 3 실패: 요청한 문제 ID와 응답 데이터 불일치"
-        logger.info("Step 3 성공: 요청한 문제 ID와 응답 데이터 일치")
-        assert len(body) == len(dash_params["note_page_ids"]), "Step 4 실패: 오답 데이터가 존재할때 해당 테스트의 틀린 문제 갯수만큼 반환되지 않음"
-        logger.info("Step 4 성공: 오답 데이터가 존재할때 해당 테스트의 틀린 문제 갯수만큼 반환됨")
+        assert body[0]["lecture"]["course_id"] == int(dash_params["course_id"]), "Step 2 실패: 요청한 과목 ID와 응답 데이터 불일치"
+        logger.info("Step 2 성공: 요청한 과목 ID와 응답 데이터 일치")
+        assert body[0]["lecture"]["id"] == int(dash_params["chapter_test_id"]), "Step 3 실패: 해당 과목의 챕터 테스트 id 조회되지 않음"
+        logger.info("Step 3 성공: 해당 과목의 챕터 테스트 id 조회됨")
+        assert body[0]["page_score"][0]["id"], "Step 4 실패: 챕터 테스트의 각 문제 페이지 id 제공되지 않음"
+        logger.info("Step 4 성공: 챕터 테스트의 각 문제 페이지 id 제공됨")
+        assert body[0]["page_score"][0]["score"], "Step 5 실패: 챕터 테스트의 각 문제당 채점 결과 데이터 제공되지 않음"
+        logger.info("Step 5 성공: 챕터 테스트의 각 문제당 채점 결과 데이터 제공됨")
     except AssertionError as e:
         logger.error(f"❌ 테스트 실패 : {e}")
         raise
@@ -863,36 +867,208 @@ def test_review_note_page_when_exist_wrong_answers(course_client, valid_headers,
     logger.info("=== STU-DAB-06-001 테스트 완료 ===")
     
 # STU-DAB-06-002
-def test_review_note_page_when_not_exist_wrong_answers(course_client, valid_headers, dash_params) :
-    logger.info("=== STU-DAB-06-002: 테스트 오답 데이터가 존재하지 않을 때 전체 문제 반환 검증 ===")
+def test_review_note_page_when_not_exist_test(dashboard_client, valid_headers, dash_params) :
+    '''
+    챕터 테스트 or 복습 테스트가 존재하지 않는 과목의 오답 노트 관련 API 조회 시 응답 바디가 비어있음
+    '''
+    logger.info("=== STU-DAB-06-002: 테스트 lecture가 존재하지 않을 때 오답 노트 페이지와 관련된 API 조회 ===")
     
-    endpoint = "/lecture_page"
-    response = course_client.get(
+    endpoint = f"/student/{dash_params['student_id']}/lecture"
+    response = dashboard_client.get(
         endpoint,
         headers = valid_headers,
         params= {
-            "filter_lecture_page_ids" : dash_params["all_page_ids"],
-            "skip" : 0,
-            "count" : 19,
-            "elice_course_id" : dash_params["course_id"]
+            "classroom_id": dash_params["classroom_id"],
+            "course_id" : dash_params["no_test_course_id"],
+            "filter_test_admission_status" : "completed",
+            "offset" : 0,
+            "count" : 40
         }
     )
     body = response.json()
-    requested_ids = set(dash_params["all_page_ids"])
-    response_ids = {item["id"] for item in body}
     
     try : 
         assert response.status_code == 200, "Step 1 실패: status_code != 200"
         logger.info("Step 1 성공: 예상대로 200 OK 반환됨")
-        assert isinstance(body, list), "Step 2 실패: 응답 바디가 list 타입이 아님"
-        logger.info("Step 2 성공: 응답 바디가 list 타입임")
-        assert requested_ids == response_ids, "Step 3 실패: 요청한 문제 ID와 응답 데이터 불일치"
-        logger.info("Step 3 성공: 요청한 문제 ID와 응답 데이터 일치")
-        assert len(body) == 19, "Step 4 실패: 오답 데이터가 존재하지 않을 때 해당 테스트의 전체 문제 목록 갯수만큼 반환되지 않음"
-        logger.info("Step 4 성공: 오답 데이터가 존재하지 않을 때 해당 테스트의 전체 문제 목록 갯수만큼 반환됨")
+        assert body == [], "Step 2 실패: 응답 바디가 비어있지 않음"
+        logger.info("Step 2 성공: 응답 바디가 비어있음")
     except AssertionError as e:
         logger.error(f"❌ 테스트 실패 : {e}")
         raise
     
     logger.info("=== STU-DAB-06-002 테스트 완료 ===")
     
+# STU-DAB-06-003
+def test_review_note_page_with_invalid_token(dashboard_client, invalid_headers, dash_params) :
+    logger.info("=== STU-DAB-06-003: 유효하지 않은 토큰으로 오답 노트 페이지와 관련된 API 조회 ===")
+    
+    endpoint = f"/student/{dash_params['student_id']}/lecture"
+    response = dashboard_client.get(
+        endpoint,
+        headers = invalid_headers,
+        params= {
+            "classroom_id": dash_params["classroom_id"],
+            "course_id" : dash_params["course_id"],
+            "filter_test_admission_status" : "completed",
+            "offset" : 0,
+            "count" : 40
+        }
+    )
+    body = response.json()
+    
+    try : 
+        assert response.status_code == 403, "Step 1 실패: status_code != 403"
+        logger.info("Step 1 성공: 예상대로 403 Forbidden 반환됨")
+        assert "permission" in body["message"], "Step 2 실패: 적절한 요청 거부 메시지가 제공되지 않음"
+        logger.info("Step 2 성공: 적절한 요청 거부 메시지가 제공됨")
+    except AssertionError as e:
+        logger.error(f"❌ 테스트 실패 : {e}")
+        raise
+    
+    logger.info("=== STU-DAB-06-003 테스트 완료 ===")
+    
+# STU-DAB-06-004
+def test_review_note_page_with_invalid_classroom(dashboard_client, valid_headers, dash_params) :
+    logger.info("=== STU-DAB-06-004: 소속되지 않은 클래스의 오답 노트 페이지와 관련된 API 조회 ===")
+    
+    endpoint = f"/student/{dash_params['student_id']}/lecture"
+    response = dashboard_client.get(
+        endpoint,
+        headers = valid_headers,
+        params= {
+            "classroom_id": dash_params["invalid_classroom_id"],
+            "course_id" : dash_params["course_id"],
+            "filter_test_admission_status" : "completed",
+            "offset" : 0,
+            "count" : 40
+        }
+    )
+    body = response.json()
+    
+    try : 
+        assert response.status_code == 200, "Step 1 실패: status_code != 200"
+        logger.info("Step 1 성공: 예상대로 200 OK 반환됨")
+        assert body == [], "Step 2 실패: 응답 바디가 비어있지 않음"
+        logger.info("Step 2 성공: 응답 바디가 비어있음")
+    except AssertionError as e:
+        logger.error(f"❌ 테스트 실패 : {e}")
+        raise
+    
+    logger.info("=== STU-DAB-06-004 테스트 완료 ===")
+    
+# STU-DAB-06-005
+def test_review_note_page_with_invalid_student(dashboard_client, valid_headers, dash_params) :
+    logger.info("=== STU-DAB-06-005: 유효하지 않은 student id로 오답 노트 페이지와 관련된 API 조회 ===")
+    
+    endpoint = f"/student/{dash_params['invalid_student_id']}/lecture"
+    response = dashboard_client.get(
+        endpoint,
+        headers = valid_headers,
+        params= {
+            "classroom_id": dash_params["classroom_id"],
+            "course_id" : dash_params["course_id"],
+            "filter_test_admission_status" : "completed",
+            "offset" : 0,
+            "count" : 40
+        }
+    )
+    body = response.json()
+    
+    try : 
+        assert response.status_code == 200, "Step 1 실패: status_code != 200"
+        logger.info("Step 1 성공: 예상대로 200 OK 반환됨")
+        assert body == [], "Step 2 실패: 응답 바디가 비어있지 않음"
+        logger.info("Step 2 성공: 응답 바디가 비어있음")
+    except AssertionError as e:
+        logger.error(f"❌ 테스트 실패 : {e}")
+        raise
+    
+    logger.info("=== STU-DAB-06-005 테스트 완료 ===")
+    
+# STU-DAB-06-006
+def test_review_note_page_with_invalid_course_id(dashboard_client, valid_headers, dash_params) :
+    logger.info("=== STU-DAB-06-006: 클래스룸과 매칭되지 않는 course id로 오답 노트 페이지와 관련된 API 조회 ===")
+    
+    endpoint = f"/student/{dash_params['student_id']}/lecture"
+    response = dashboard_client.get(
+        endpoint,
+        headers = valid_headers,
+        params= {
+            "classroom_id": dash_params["classroom_id"],
+            "course_id" : dash_params["invalid_course_id"],
+            "filter_test_admission_status" : "completed",
+            "offset" : 0,
+            "count" : 40
+        }
+    )
+    body = response.json()
+    
+    try : 
+        assert response.status_code == 200, "Step 1 실패: status_code != 200"
+        logger.info("Step 1 성공: 예상대로 200 OK 반환됨")
+        assert body == [], "Step 2 실패: 응답 바디가 비어있지 않음"
+        logger.info("Step 2 성공: 응답 바디가 비어있음")
+    except AssertionError as e:
+        logger.error(f"❌ 테스트 실패 : {e}")
+        raise
+    
+    logger.info("=== STU-DAB-06-006 테스트 완료 ===")
+    
+# STU-DAB-06-007
+def test_review_note_page_with_weird_parameter(dashboard_client, valid_headers, dash_params) :
+    logger.info("=== STU-DAB-06-007: 적절하지 않은 파라미터 값으로 오답 노트 페이지와 관련된 API 조회 ===")
+    
+    endpoint = f"/student/{dash_params['student_id']}/lecture"
+    response = dashboard_client.get(
+        endpoint,
+        headers = valid_headers,
+        params= {
+            "classroom_id": dash_params["classroom_id"],
+            "course_id" : dash_params["course_id"],
+            "filter_test_admission_status" : "incompleted",
+            "offset" : 0,
+            "count" : 40
+        }
+    )
+    body = response.json()
+    
+    try : 
+        assert response.status_code == 422, "Step 1 실패: status_code != 422"
+        logger.info("Step 1 성공: 예상대로 422 Unprocessable Entity 반환됨")
+        assert "Input should be" in body["detail"][0]["msg"], "Step 2 실패: 적절한 요청 거부 이유가 제공되지 않음"
+        logger.info("Step 2 성공: 적절한 요청 거부 이유가 제공됨")
+    except AssertionError as e:
+        logger.error(f"❌ 테스트 실패 : {e}")
+        raise
+    
+    logger.info("=== STU-DAB-06-007 테스트 완료 ===")
+    
+# STU-DAB-06-008
+def test_review_note_page_without_parameter(dashboard_client, valid_headers, dash_params) :
+    logger.info("=== STU-DAB-06-008: 필수 파라미터인 offset 누락 시 오답 노트 페이지와 관련된 API 조회 ===")
+    
+    endpoint = f"/student/{dash_params['student_id']}/lecture"
+    response = dashboard_client.get(
+        endpoint,
+        headers = valid_headers,
+        params= {
+            "classroom_id": dash_params["classroom_id"],
+            "course_id" : dash_params["course_id"],
+            "filter_test_admission_status" : "completed",
+            "count" : 40
+        }
+    )
+    body = response.json()
+    
+    try : 
+        assert response.status_code == 422, "Step 1 실패: status_code != 422"
+        logger.info("Step 1 성공: 예상대로 422 Unprocessable Entity 반환됨")
+        assert "missing" in body["detail"][0]["type"], "Step 2 실패: 적절한 요청 거부 이유가 제공되지 않음"
+        logger.info("Step 2 성공: 적절한 요청 거부 이유가 제공됨")
+        assert "offset" in body["detail"][0]["loc"], "Step 3 실패: 누락된 파라미터 field id가 제공되지 않음"
+        logger.info("Step 3 성공: 누락된 파라미터 field id가 제공됨")
+    except AssertionError as e:
+        logger.error(f"❌ 테스트 실패 : {e}")
+        raise
+    
+    logger.info("=== STU-DAB-06-008 테스트 완료 ===")
