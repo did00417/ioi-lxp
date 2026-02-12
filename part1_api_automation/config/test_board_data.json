@@ -69,7 +69,7 @@
     }
   },
   "security_test": {
-    "others_list": ["이수진", "양정은", "안효진", "신동빈"]
+    "others_list": ["김나라", "이원기", "김성호"]
   },
   "invalid_articles": {
     "max_title_over": {
