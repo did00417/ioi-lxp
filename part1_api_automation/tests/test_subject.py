@@ -198,7 +198,7 @@ def test_fetch_material_unified(rest_client, valid_headers, subject_params, case
     expected_status_code = case["expected_status_code"]
     expected_result = case["expected_result"]
 
-    logger.info(f"=== {test_id}: 테스트 시작 ===")
+    logger.info(f"=== {test_id} 시작 ===")
     
     request_id = subject_params[id_key]
     
@@ -330,6 +330,7 @@ def test_quiz_request_success(rest_client, valid_headers, subject_params):
     if "Content-Type" in headers:
         del headers["Content-Type"]
 
+    logger.info(f"=== STU-SBJ-10-001 시작 ===")
     response = rest_client.post(
         endpoint=endpoint,
         headers=headers,
@@ -347,14 +348,16 @@ def test_quiz_request_success(rest_client, valid_headers, subject_params):
     logger.info("=== STU-SBJ-10-001 테스트 완료 ===")
 
 @pytest.mark.parametrize("case", load_test_data("subject")["quiz_missing_params_data"])
-def test_quiz_request_fail_missing_params(rest_client, valid_headers, subject_params, case):
+def test_quiz_request_fail_missing_params(rest_client, valid_headers, case):
     endpoint = "/org/qatrack/material_quiz/response/add/"
     headers = valid_headers.copy()
     if "Content-Type" in headers:
         del headers["Content-Type"]
 
+    test_id = case["test_id"]
     missing_data = case["missing_data"]
     expected_fields = case["expected_missing_field"]
+    logger.info(f"=== {test_id} 시작 ===")
     response = rest_client.post(
         endpoint=endpoint,
         headers=headers,
@@ -378,3 +381,94 @@ def test_quiz_request_fail_missing_params(rest_client, valid_headers, subject_pa
         logger.info(f"Step 3 성공: 오류 메시지에서 {field}가 누락됨을 확인.")
         assert invalid_params[field] == "required", f"{field}의 에러 사유가 'required'가 아닙니다."
     logger.info("=== STU-SBJ-10-002 테스트 완료 ===")
+
+@pytest.mark.parametrize("case", load_test_data("subject")["quiz_response_cases"])
+def test_quiz_response(rest_client, valid_headers, subject_params, case):
+    test_id, title, quiz_response_key, expected_status_code, expected_is_completed = case["test_id"], case["title"], case["quiz_response_key"], case["expected_status_code"], case["expected_is_completed"]
+
+    logger.info(f"=== {test_id}: {title} 시작 ===")  
+    endpoint = "/org/qatrack/material_quiz/response/get/"
+    response = rest_client.get(
+        endpoint=endpoint,
+        headers=valid_headers,
+        params={
+            "quiz_response_id": subject_params.get(quiz_response_key)
+        }
+    )
+    data = response.json()
+    result = data.get("_result", {})
+
+    result_status_code = result.get("status_code")
+    is_completed = data.get("quiz_response", {}).get("is_completed")
+
+    assert result_status_code == expected_status_code, f"Step 1 실패: 200을 기대했으나 {result_status_code} 반환됨."
+    logger.info(f"Step 1 성공: 예상대로 200 OK 반환됨.")    
+    assert is_completed == expected_is_completed, f"Step 2 실패: 응답 결과가 예상 결과와 일치하지 않음. 예상 결과({expected_is_completed}), 실제 결과({is_completed})"
+    logger.info(f"Step 2 성공: 응답 결과가 예상 결과와 일치함. 예상 결과({expected_is_completed}), 실제 결과({is_completed})")
+
+    logger.info(f"=== {test_id} 테스트 완료 ===")
+
+def test_exercise_submit_success(rest_client, valid_headers, subject_params):
+    test_id="STU-SBJ-13-001"
+    endpoint="/org/qatrack/material_exercise/exercise_running/list/"
+    exercise_room_id, user_id = subject_params["exercise_room_id"], subject_params["user_id"]
+
+    logger.info(f"=== {test_id} 시작 ===")
+    response = rest_client.get(
+        endpoint=endpoint,
+        headers=valid_headers,
+        params={
+            "offset": subject_params["offset"],
+            "count": subject_params["count"],
+            "exercise_room_id": exercise_room_id,
+            "user_id": user_id
+        }
+    )
+
+    data = response.json()
+    result = data.get("_result", {})
+    status_code = result.get("status_code")
+    running_result = data.get("exercise_runnings", {})[0]
+    result_exercise_room_id = running_result.get("exercise_room_id")
+    result_user_id = running_result.get("user").get("id")
+    assert status_code == 200, f"Step 1 실패: 200을 기대했으나 {status_code} 반환됨."
+    logger.info(f"Step 1 성공: 예상대로 200 OK 반환됨.")
+
+    assert str(result_exercise_room_id) == str(exercise_room_id), f"Step 2 실패: 요청한 exercise_room_id({exercise_room_id})와 응답 exercise_room_id({result_exercise_room_id})가 일치하지 않음."
+    logger.info(f"Step 2 성공: 요청한 exercise_room_id({exercise_room_id})와 응답 exercise_room_id({result_exercise_room_id})가 일치함.")
+
+    assert str(result_user_id) == str(user_id), f"Step 3 실패: 요청한 user_id({user_id})와 응답 user_id({result_user_id})가 일치하지 않음."
+    logger.info(f"Step 3 성공: 요청한 user_id({user_id})와 응답 user_id({result_user_id})가 일치함.")
+
+    logger.info(f"=== {test_id} 테스트 완료 ===")
+
+@pytest.mark.parametrize("case", load_test_data("subject")["exercise_submit_fail_cases"])
+def test_exercise_submit_fail(rest_client, valid_headers, subject_params, case):
+    test_id, title, expected_status_code, fail_reason, fail_code = case["test_id"], case["title"], case["expected_status_code"], case["fail_reason"], case["fail_code"]
+    endpoint="/org/qatrack/material_exercise/exercise_running/list/"
+    params = case["params"]
+    user_id_key = case["user_id_key"]
+
+    if user_id_key != "":
+        params["user_id"]=subject_params.get(user_id_key)
+
+    logger.info(f"=== {test_id}: {title} 시작 ===")
+    response = rest_client.get(
+        endpoint=endpoint,
+        headers=valid_headers,
+        params=params
+    )
+    data = response.json()
+    result = data.get("_result", {})
+    result_status_code = result.get("status_code")
+    result_fail_reason = result.get("reason")
+    result_fail_code = data.get("fail_code")
+    assert expected_status_code == result_status_code, f"Step 1 실패: {expected_status_code}을 기대했으나 {result_status_code} 반환됨."
+    logger.info(f"Step 1 성공: 예상대로 {expected_status_code} 반환됨.")
+
+    assert fail_reason == result_fail_reason, f"Step 2 실패: 예상된 실패 원인({fail_reason})과 실제 실패 원인({result_fail_reason})이 다름."
+    logger.info(f"Step 2 성공: 예상된 실패 원인({fail_reason})과 실제 실패 원인({result_fail_reason})이 일치함.")
+
+    assert fail_code == result_fail_code, f"Step 3 실패: fail code가 일치하지 않음."
+    logger.info(f"Step 3 성공: fail code가 일치함. ({fail_code})")
+    logger.info(f"=== {test_id} 테스트 완료 ===")
