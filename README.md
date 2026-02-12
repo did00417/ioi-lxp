@@ -64,8 +64,11 @@ LXP 서비스의 주요 기능에 대한 API 검증, 테스트 케이스 설계,
 ## 📚 기술 스택
 
 - Python 3.11
+- pytest
 - Requests
 - JSON 데이터 처리
+- Allure Report
+- Jenkins Pipeline
 
 ## 📁 폴더 별 가이드
 
@@ -85,9 +88,9 @@ IOI-LXP/
 │   └─ pytest.ini              # Pytest 실행 옵션
 │
 ├─ part2_load_test/
-│   ├─ dashboard/              #
-│   ├─ results/                #
-│   └─ scripts/                #
+│   ├─ dashboard/              # JMeter HTML 대시보드 리포트 폴더
+│   ├─ results/                # 실행 결과 데이터 ex) .csv
+│   └─ scripts/                # JMeter 스크립트 파일 (.jmx)
 │
 ├─ requirements.txt            # 프로젝트 Python 패키지 명시
 └─ setup.bat                   # 가상 환경 & 라이브러리 설치 파일
@@ -147,3 +150,27 @@ OTHER_STUEDNT_ID={다른 유저의 student_id}
 - 콘솔 출력은 핵심적인 **INFO** 레벨 위주로, 파일 기록은 상세한 **DEBUG** 레벨까지 기록합니다.
 
 ---
+
+## 💻 CI 파이프라인 구축 (Jenkins)
+
+Jenkins를 사용하여 GitLab 저장소의 코드를 기반으로 API 자동화 테스트를 실행하고 Allure 리포트를 생성하는 CI 환경을 구성합니다.
+
+### 1. Jenkins Credentials를 이용한 보안 환경변수 주입
+
+`Jenkinsfile`에는 보안을 위해 특정 ID를 참조하도록 되어 있습니다. <br>
+따라서 파이프라인 실행을 위해 다음 Credentials ID가 필요합니다.
+
+- **GitLab 연결용 ID**: `LXP_GitLab_Repo_Key`
+- **API 토큰용 ID**: `LXP_TOKENS`
+- **내 정보용 ID**: `LXP_MY_INFO`
+- **타인 정보용 ID**: `LXP_OTHER_INFO`
+
+※ 주의: ID(이름)는 똑같아야 하지만, 그 안에 들어가는 실제 값(토큰이나 ID)은 본인의 계정 정보나 토큰 값을 넣어야 합니다.
+
+### 2. 테스트 결과 시각화
+
+Jenkins Pipeline에서 저장소의 Jenkinsfile을 사용하여 빌드를 실행합니다. <br>
+실행 후 Jenkins UI에서 다음 결과를 확인할 수 있습니다.
+
+- Jenkins 기본 Test Result 리포트
+- Allure 플러그인을 통한 상세 테스트 리포트

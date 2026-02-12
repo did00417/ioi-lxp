@@ -155,12 +155,14 @@ def test_schedule_jump_verification(classroom_client, valid_headers, schedule_pa
     assert response.status_code == 200
     content = response.text
      
+    logger.info(f"API 응답 수신 완료 (데이터 크기: {len(content)}자)")
 
     # 데이터 정합성 검증
     target_event = case.get("expected_event") or case.get("expected_event_keyword")
     if target_event:
     
-        assert target_event in content, f"에러: '{target_event}'를 찾을 수 없음. 응답요약: {content[:100]}..."
+        assert target_event in content, f"에러: '{target_event}'를 찾을 수 없음."
+        logger.info(f"검증 성공: 데이터 내에서 '{target_event}' 키워드를 발견했습니다.")
 
     if "dt_start_ge" in case:
         pattern = case["dt_start_ge"][0:7].replace("-", "")
