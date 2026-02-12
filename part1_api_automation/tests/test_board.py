@@ -305,36 +305,63 @@ def test_get_others_private_article_security_bug(rest_client, valid_headers, cas
     assert body["fail_code"] == "insufficient_permission"
     logger.info("=== 타인 비밀글 테스트 시나리오 종료 ===")
 
-def test_update_article_success(rest_client, valid_headers, classroom_id, test_board_data):
-    """STU_BOARD_02_007: 게시글 수정"""
+def test_update_article_success(rest_client, valid_headers, classroom_id, create_article_data, test_board_data):
+    """
+    STU_BOARD_02_007: 게시글 수정
+    테스트용 게시글 생성 -> 해당 ID로 내용 수정 -> 테스트 종료 후 삭제
+    """
     logger.info("=== STU_BOARD_02_007: 게시글 수정 테스트 시작 ===")
 
-    edit_data = test_board_data["edit_article"]
-    article_id = edit_data["board_article_id"]
-    
-    payload = {
-        "board_article_id": article_id,
-        **edit_data["update_payload"],
-        "classroom_id": classroom_id
-    }
-    
     headers = valid_headers.copy()
     headers.pop("Content-Type", None)
     
-    response = rest_client.post(
+    # 1. 수정을 위한 임시 게시글 생성
+    create_payload = {**create_article_data, "classroom_id": classroom_id}
+    create_res = rest_client.post(
         endpoint="/org/qatrack/board/article/edit/",
         headers=headers,
-        data=payload
+        data=create_payload
     )
+    article_id = create_res.json().get("board_article_id")
+    logger.info(f"수정 테스트를 위한 임시 게시글 생성 완료 (ID: {article_id})")
 
-    res_data = response.json()
-    logger.debug(f"API 응답 데이터: {res_data}")
+    try:
+        # 2. 방금 생성한 ID를 사용하여 게시글 수정
+        edit_content = test_board_data["edit_article"]["update_payload"]
+        update_payload = {
+            "board_article_id": article_id,
+            **edit_content,
+            "classroom_id": classroom_id
+        }
+        
+        response = rest_client.post(
+            endpoint="/org/qatrack/board/article/edit/",
+            headers=headers,
+            data=update_payload
+        )
 
-    assert res_data["_result"]["status"] == "ok"
-    assert res_data["_result"]["status_code"] == 200
-    assert res_data["board_article_id"] == article_id
+        res_data = response.json()
+        logger.debug(f"수정 API 응답 데이터: {res_data}")
+        
+        assert res_data["_result"]["status"] == "ok"
+        assert res_data["_result"]["status_code"] == 200
+        assert res_data["board_article_id"] == article_id
+        logger.info(f"게시글 ID {article_id} 수정 검증 완료")
 
-    logger.info(f"=== STU_BOARD_03_001: ID {article_id} 수정 검증 완료 ===")
+    finally:
+        # 3. 테스트 종료 후 임시 게시글 삭제
+        delete_payload = {"board_article_id": article_id}
+        delete_res = rest_client.post(
+            endpoint="/org/qatrack/board/article/delete/",
+            headers=headers,
+            data=delete_payload
+        )
+        if delete_res.json()["_result"]["status"] == "ok":
+            logger.info(f"임시 테스트 데이터 삭제 완료 (ID: {article_id})")
+        else:
+            logger.error(f"임시 데이터 삭제 실패 (ID: {article_id})")
+
+    logger.info("=== STU_BOARD_02_007: 테스트 종료 ===")
 
 def test_update_others_article_fail(rest_client, valid_headers, classroom_id, test_board_data):
     """STU_BOARD_02_008: 타인 게시글 수정 시도"""
