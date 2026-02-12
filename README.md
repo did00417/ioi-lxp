@@ -88,9 +88,9 @@ IOI-LXP/
 │   └─ pytest.ini              # Pytest 실행 옵션
 │
 ├─ part2_load_test/
-│   ├─ dashboard/              #
-│   ├─ results/                #
-│   └─ scripts/                #
+│   ├─ dashboard/              # JMeter HTML 대시보드 리포트 폴더
+│   ├─ results/                # 실행 결과 데이터 ex) .csv
+│   └─ scripts/                # JMeter 스크립트 파일 (.jmx)
 │
 ├─ requirements.txt            # 프로젝트 Python 패키지 명시
 └─ setup.bat                   # 가상 환경 & 라이브러리 설치 파일
