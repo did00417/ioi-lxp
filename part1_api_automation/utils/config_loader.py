@@ -25,6 +25,7 @@ def get_header():
     
     valid_token = os.getenv("ELICE_VALID_TOKEN")
     invalid_token = os.getenv("ELICE_INVALID_TOKEN")
+    hyojin_token = os.getenv("HYOJIN_VALID_TOKEN")
 
     if not valid_token or not invalid_token:
         raise RuntimeError("[CONFIG ERROR] ELICE 토큰 환경변수가 설정되지 않았습니다")
@@ -35,6 +36,9 @@ def get_header():
     )
     data["invalid_headers"]["Authorization"] = data["invalid_headers"]["Authorization"].format(
         ELICE_INVALID_TOKEN=invalid_token
+    )
+    data["hyojin_headers"]["Authorization"] = data["hyojin_headers"]["Authorization"].format(
+        HYOJIN_VALID_TOKEN=hyojin_token
     )
 
     return data

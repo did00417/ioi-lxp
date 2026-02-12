@@ -9,5 +9,11 @@
     "Authorization": "Bearer {ELICE_INVALID_TOKEN}",
     "x-elice-org-name-short": "qatrack",
     "Content-Type": "application/json"
+  },
+
+  "hyojin_headers": {
+    "Authorization": "Bearer {HYOJIN_VALID_TOKEN}",
+    "x-elice-org-name-short": "qatrack",
+    "Content-Type": "application/json"
   }
 }
