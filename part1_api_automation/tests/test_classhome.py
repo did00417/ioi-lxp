@@ -648,14 +648,14 @@ def test_get_learning_status_invalid_offset_count(
     
     logger.info("=== STU-CHM-06-006 테스트 완료 ===")
     
-# 테스트 케이스 : STU-CHM-06-007(타인의 필수 path 파라미터에 student_id 입력시 학습 현황 조회 차단 확인)
+# 테스트 케이스 : STU-CHM-06-007(path 파라미터에 타인의 student_id 입력시 학습 현황 조회 차단 확인)
 def test_get_learning_status_unauthorized_user(
     dashboard_client, 
     valid_headers, 
     classhome_params,
     classhome_student_course_case
  ):
-    logger.info("=== STU-CHM-06-007: 타인의 필수 path 파라미터에 student_id 입력시 학습 현황 조회 차단 확인 ===")
+    logger.info("=== STU-CHM-06-007: path 파라미터에 타인의 student_id 입력시 학습 현황 조회 차단 확인 ===")
     endpoint = f"/student/{classhome_params['other_student_id']}/course"
     
     params = {
