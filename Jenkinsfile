@@ -41,9 +41,11 @@ pipeline {
                     if [ -f requirements.txt ]; then
                         pip install -r requirements.txt
                     fi
+
+                    pip install allure-pytest
                     
                     # 3. pytest 실행
-                    pytest --junitxml=results.xml || true
+                    pytest --junitxml=results.xml --alluredir=allure-results || true
                     '''
                 }
             }
@@ -52,6 +54,9 @@ pipeline {
         stage('Archive Report') {
             steps {
                 junit 'results.xml'
+
+                // Allure 리포트
+                allure includeProperties: false, jdk: '', results: [[path: 'allure-results']]
             }
         }
     }
