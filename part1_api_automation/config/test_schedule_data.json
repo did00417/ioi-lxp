@@ -23,9 +23,9 @@
     },
 
     "list_view_integrity": {
-    "dt_start_ge": "2026-02-01T00:00:00Z",
-    "dt_start_le": "2026-02-28T23:59:59Z",
-    "expected_event": "회의",
+    "dt_start_ge": "2025-12-17T15:00:00.000Z",
+    "dt_start_le": "2027-01-14T14:59:59.999Z",
+    "expected_event": "신정",
     "description": "2월 한 달 데이터로 422 에러 디버깅"
     },
 
