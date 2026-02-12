@@ -7,6 +7,8 @@
     "user_id": "{USER_ID}",
     "invalid_course_id": 766558,
     "invalid_user_id": "{INVALID_USER_ID}",
+    "hyojin_id": "{HYOJIN_ID}",
+    "invalid_hyojin_id": "{INVALID_HYOJIN_ID}",
     "quiz_id": 54569309,
     "invalid_quiz_id": 54569307,
     "assignment_id": 54704617,
@@ -97,7 +99,7 @@
     {
       "test_id": "STU-SBJ-05-001",
       "course_id_key": "course_id",
-      "user_id_key": "user_id",
+      "user_id_key": "hyojin_id",
       "expected_http_status": 200,
       "validate_type": "success",
       "expected_result": null
@@ -105,7 +107,7 @@
     {
       "test_id": "STU-SBJ-05-002",
       "course_id_key": "invalid_course_id",
-      "user_id_key": "user_id",
+      "user_id_key": "hyojin_id",
       "expected_http_status": 200,
       "validate_type": "fail",
       "expected_result": { "status": "fail", "status_code": 400 }
@@ -113,7 +115,7 @@
     {
       "test_id": "STU-SBJ-05-003",
       "course_id_key": "course_id",
-      "user_id_key": "invalid_user_id",
+      "user_id_key": "invalid_hyojin_id",
       "expected_http_status": 200,
       "validate_type": "fail",
       "expected_result": { "status": "fail", "status_code": 409 }

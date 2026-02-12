@@ -149,17 +149,17 @@ def test_fetch_sbj_map_integrated(dashboard_client, valid_headers, subject_param
     logger.info(f"=== {test_id} 테스트 완료 ===")
 
 @pytest.mark.parametrize("case", load_test_data("subject")["child_lectures_cases"])
-def test_fetch_child_lecture_integrated(rest_client, valid_headers, subject_params, case):
+def test_fetch_child_lecture_integrated(rest_client, hyojin_headers, subject_params, case):
     test_id = case["test_id"]
-    course_id = int(subject_params[case["course_id_key"]])
-    user_id = int(subject_params[case["user_id_key"]])
+    course_id = subject_params[case["course_id_key"]]
+    user_id = str(subject_params[case["user_id_key"]])
     endpoint = "/org/qatrack/dashboard/user/lecture_page/list/"
     
     logger.info(f"=== {test_id} 시작 ===")
 
     response = rest_client.get(
         endpoint=endpoint,
-        headers=valid_headers,
+        headers=hyojin_headers,
         params={"course_id": course_id, "user_id": user_id}
     )
     
@@ -168,10 +168,10 @@ def test_fetch_child_lecture_integrated(rest_client, valid_headers, subject_para
     logger.info(f"Step 1: HTTP {response.status_code} 확인")
 
     if case["validate_type"] == "success":
-        data_user_id = int(data.get("user", {}).get("id"))
+        data_user_id = str(data.get("user", {}).get("id"))
         lectures = data.get("lectures", [])
         
-        assert data_user_id == user_id, "User ID 불일치"
+        assert data_user_id == user_id, f"User ID 불일치, data_user_id({data_user_id}), user_id({user_id})"
         assert len(lectures) > 0, "Lectures 데이터가 비어 있음"
         
         first_lecture = lectures[0]
@@ -324,9 +324,9 @@ def test_fetch_lectures(course_client, valid_headers ,subject_params, case):
 
     logger.info(f"=== {test_id} 테스트 완료 ===")
 
-def test_quiz_request_success(rest_client, valid_headers, subject_params):
+def test_quiz_request_success(rest_client, hyojin_headers, subject_params):
     endpoint = "/org/qatrack/material_quiz/response/add/"
-    headers = valid_headers.copy()
+    headers = hyojin_headers.copy()
     if "Content-Type" in headers:
         del headers["Content-Type"]
 
@@ -383,14 +383,14 @@ def test_quiz_request_fail_missing_params(rest_client, valid_headers, case):
     logger.info("=== STU-SBJ-10-002 테스트 완료 ===")
 
 @pytest.mark.parametrize("case", load_test_data("subject")["quiz_response_cases"])
-def test_quiz_response(rest_client, valid_headers, subject_params, case):
+def test_quiz_response(rest_client, hyojin_headers, subject_params, case):
     test_id, title, quiz_response_key, expected_status_code, expected_is_completed = case["test_id"], case["title"], case["quiz_response_key"], case["expected_status_code"], case["expected_is_completed"]
 
     logger.info(f"=== {test_id}: {title} 시작 ===")  
     endpoint = "/org/qatrack/material_quiz/response/get/"
     response = rest_client.get(
         endpoint=endpoint,
-        headers=valid_headers,
+        headers=hyojin_headers,
         params={
             "quiz_response_id": subject_params.get(quiz_response_key)
         }
@@ -408,7 +408,7 @@ def test_quiz_response(rest_client, valid_headers, subject_params, case):
 
     logger.info(f"=== {test_id} 테스트 완료 ===")
 
-def test_exercise_submit_success(rest_client, valid_headers, subject_params):
+def test_exercise_submit_success(rest_client, hyojin_headers, subject_params):
     test_id="STU-SBJ-13-001"
     endpoint="/org/qatrack/material_exercise/exercise_running/list/"
     exercise_room_id, user_id = subject_params["exercise_room_id"], subject_params["user_id"]
@@ -416,7 +416,7 @@ def test_exercise_submit_success(rest_client, valid_headers, subject_params):
     logger.info(f"=== {test_id} 시작 ===")
     response = rest_client.get(
         endpoint=endpoint,
-        headers=valid_headers,
+        headers=hyojin_headers,
         params={
             "offset": subject_params["offset"],
             "count": subject_params["count"],

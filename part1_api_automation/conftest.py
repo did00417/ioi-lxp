@@ -38,6 +38,10 @@ def valid_headers(header_data):
 def invalid_headers(header_data):
     return header_data["invalid_headers"]
 
+@pytest.fixture
+def hyojin_headers(header_data):
+    return header_data["hyojin_headers"]
+
 #------------------ <공용> logger 설정 --------------------------
 
 @pytest.fixture(scope="session", autouse=True)
