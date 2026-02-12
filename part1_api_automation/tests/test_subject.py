@@ -411,7 +411,7 @@ def test_quiz_response(rest_client, hyojin_headers, subject_params, case):
 def test_exercise_submit_success(rest_client, hyojin_headers, subject_params):
     test_id="STU-SBJ-13-001"
     endpoint="/org/qatrack/material_exercise/exercise_running/list/"
-    exercise_room_id, user_id = subject_params["exercise_room_id"], subject_params["user_id"]
+    exercise_room_id, user_id = subject_params["exercise_room_id"], subject_params["hyojin_id"]
 
     logger.info(f"=== {test_id} 시작 ===")
     response = rest_client.get(
