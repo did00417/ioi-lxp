@@ -53,7 +53,7 @@ pipeline {
                     pip install allure-pytest
                     
                     # 3. pytest 실행
-                    pytest --junitxml=results.xml --alluredir=allure-results || true
+                    rm -rf allure-results results.xml && pytest --junitxml=results.xml --alluredir=allure-results || true
                     '''
                 }
             }
