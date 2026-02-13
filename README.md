@@ -69,34 +69,36 @@ LXP 서비스의 주요 기능에 대한 API 검증, 테스트 케이스 설계,
 - JSON 데이터 처리
 - Allure Report
 - Jenkins Pipeline
+- JMeter
 
 ## 📁 폴더 별 가이드
 
 ```bash
 IOI-LXP/
-├─ part1_api_automation/       # API 자동화 테스트 코드 폴더
+├─ part1_api_automation/       (API 자동화 테스트 코드 폴더)
 │   ├─ api/
-│   │   └─ api_client.py       # API 클라이언트 관련 공통 모듈
-│   ├─ config/                 # 테스트에 사용할 데이터 관리
-│   ├─ reports/                # 테스트 실행 리포트
+│   │   └─ api_client.py       (API 클라이언트 관련 공통 모듈)
+│   ├─ config/                 (테스트에 사용할 데이터 관리)
+│   ├─ reports/                (테스트 실행 리포트)
 │   ├─ tests/
-│   │   └─ test_<도메인명>.py   # 실제 Pytest 테스트 케이스
-│   ├─ utils/                  # 공통 유틸리티 함수 및 도구
-│   │   ├─ config_loader.py    # config 폴더 데이터 불러오는 함수
-│   │   └─ json_reader.py      # JSON 파일 읽기 함수
-│   ├─ conftest.py             # 테스트 초기 설정 관리(fixture 등)
-│   └─ pytest.ini              # Pytest 실행 옵션
+│   │   └─ test_<도메인명>.py   (실제 Pytest 테스트 케이스)
+│   ├─ utils/                  (공통 유틸리티 함수 및 도구)
+│   │   ├─ config_loader.py    (config 폴더 데이터 불러오는 함수)
+│   │   └─ json_reader.py      (JSON 파일 읽기 함수)
+│   ├─ conftest.py             (테스트 초기 설정 관리(fixture 등))
+│   └─ pytest.ini              (Pytest 실행 옵션)
 │
 ├─ part2_load_test/
-│   ├─ dashboard/              # JMeter HTML 대시보드 리포트 폴더
-│   ├─ results/                # 실행 결과 데이터 ex) .csv
-│   └─ scripts/                # JMeter 스크립트 파일 (.jmx)
+│   ├─ dashboard/              (JMeter HTML 대시보드 리포트 폴더)
+│   ├─ results/                (실행 결과 데이터)
+│   └─ scripts/                (JMeter 스크립트 파일)
 │
-├─ requirements.txt            # 프로젝트 Python 패키지 명시
-└─ setup.bat                   # 가상 환경 & 라이브러리 설치 파일
+├─ Jenkinsfile                 (CI/CD를 위한 Jenkins용 파일)
+├─ requirements.txt            (프로젝트 Python 패키지 명시)
+└─ setup.bat/sh                (가상 환경 & 라이브러리 설치 파일)
 ```
 
-## 🌟 part1_api_automation 폴더 규칙
+## 🌟 part1_api_automation 규칙
 
 ### config/
 
@@ -106,17 +108,17 @@ IOI-LXP/
 
 ### utils/config_loader.py
 
-1. load*test_data("도메인명")의 도메인명은 test*<도메인명>\_data.json의 도메인명과 통일
-2. config 폴더 안의 json 파일에서 환경 변수 설정할 시 .env의 변수 명과 통일
+1. *load_test_data(**"도메인명"**)*의 도메인명은 test_<**도메인명**>_data.json 파일의 도메인명과 통일해야 합니다.
+2. config 폴더 안의 json 파일에서 환경 변수를 설정할 시 .env의 변수 명과 통일해야 합니다.
 
 ### conftest.py
 
-1. 헤더, url은 공용으로 사용
-2. 각 도메인 별 테스트 데이터 불러오는 fixture 함수 load_test_data()로 각자 만들어서 사용
+1. 헤더와 url 관련 fixture은 공용으로 사용합니다.
+2. 각 도메인 별 테스트 데이터 불러오는 fixture 함수는 utils/config_loader.py의 *load_test_data()*함수를 이용해 각자 만들어서 사용합니다.
 
 ### .env (git ignore)
 
-개인 정보가 포함된 데이터는 .env 파일에 작성
+개인 정보가 포함된 데이터는 .env 파일에 작성합니다.
 
 ```bash
 ELICE_VALID_TOKEN={각자의 인증 토큰}
@@ -125,6 +127,9 @@ STUDENT_ID={각자의 student_id}
 USER_ID={각자의 user_id}
 INVALID_USER_ID={만료된 user_id}
 OTHER_STUEDNT_ID={다른 유저의 student_id}
+HYOJIN_VALID_TOKEN={학습 과목 도메인 용 인증 토큰}
+HYOJIN_ID={학습 과목 도메인 용 user_id}
+INVALID_HYOJIN_ID={학습 과목 도메인 용 user_id}
 ```
 
 ---
