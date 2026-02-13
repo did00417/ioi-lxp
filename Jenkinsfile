@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        PYTHON_CMD = 'python3.11'
+        PYTHON_CMD = 'python3'
     }
 
     stages {
