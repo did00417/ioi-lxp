@@ -62,7 +62,6 @@ def test_schedule_detail_load_success(rest_client, valid_headers, test_schedule_
     actual_title = body.get("title") or body.get("lectureroom", {}).get("title")
     assert actual_title == expected_title, f"제목 불일치! 실제: {actual_title}, 예상: {expected_title}"
     
-    print(f"[검증 완료] 강의실 상세 정보 진입 성공! (ID: {actual_id}, 제목: {actual_title})")
     logger.info(f"상세 정보 정합성 검증 완료: {actual_title}")
   
 # [LDB_INIT_003] 더보기(+N more)' 확장 데이터 로드 검증   
