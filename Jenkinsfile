@@ -18,7 +18,11 @@ pipeline {
                 withCredentials([
                     usernamePassword(credentialsId: 'LXP_TOKENS', usernameVariable: 'TOKENS_USR', passwordVariable: 'TOKENS_PSW'),
                     usernamePassword(credentialsId: 'LXP_MY_INFO', usernameVariable: 'MY_INFO_USR', passwordVariable: 'MY_INFO_PSW'),
-                    usernamePassword(credentialsId: 'LXP_OTHER_INFO', usernameVariable: 'OTHER_INFO_USR', passwordVariable: 'OTHER_INFO_PSW')
+                    usernamePassword(credentialsId: 'LXP_OTHER_INFO', usernameVariable: 'OTHER_INFO_USR', passwordVariable: 'OTHER_INFO_PSW'),
+
+                    string(credentialsId: 'HYOJIN_VALID_TOKEN', variable: 'NEW_TOKEN'),
+                    string(credentialsId: 'HYOJIN_ID', variable: 'NEW_ID'),
+                    string(credentialsId: 'INVALID_HYOJIN_ID', variable: 'NEW_INVALID_ID')
                 ]) {
                     sh ''' 
                     # 환경변수 이름 맞춰서 재매핑
@@ -29,7 +33,11 @@ pipeline {
                     export STUDENT_ID=$MY_INFO_PSW
         
                     export INVALID_USER_ID=$OTHER_INFO_USR
-                    export OTHER_STUEDNT_ID=$OTHER_INFO_PSW
+                    export OTHER_STUDENT_ID=$OTHER_INFO_PSW
+
+                    export HYOJIN_VALID_TOKEN=$NEW_TOKEN
+                    export HYOJIN_ID=$NEW_ID
+                    export INVALID_HYOJIN_ID=$NEW_INVALID_ID
                     
                     # 1. 가상환경 생성
                     $PYTHON_CMD -m venv venv
