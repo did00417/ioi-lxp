@@ -108,13 +108,13 @@ IOI-LXP/
 
 ### utils/config_loader.py
 
-1. *load_test_data(**"도메인명"**)*의 도메인명은 test_<**도메인명**>_data.json 파일의 도메인명과 통일해야 합니다.
+1. `load_test_data(**"도메인명"**)`의 도메인명은 test_<**도메인명**>_data.json 파일의 도메인명과 통일해야 합니다.
 2. config 폴더 안의 json 파일에서 환경 변수를 설정할 시 .env의 변수 명과 통일해야 합니다.
 
 ### conftest.py
 
 1. 헤더와 url 관련 fixture은 공용으로 사용합니다.
-2. 각 도메인 별 테스트 데이터 불러오는 fixture 함수는 utils/config_loader.py의 *load_test_data()*함수를 이용해 각자 만들어서 사용합니다.
+2. 각 도메인 별 테스트 데이터 불러오는 fixture 함수는 utils/config_loader.py의 `load_test_data()`를 이용해 각자 만들어서 사용합니다.
 
 ### .env (git ignore)
 
