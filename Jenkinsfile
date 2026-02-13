@@ -33,7 +33,7 @@ pipeline {
                     export STUDENT_ID=$MY_INFO_PSW
         
                     export INVALID_USER_ID=$OTHER_INFO_USR
-                    export OTHER_STUDENT_ID=$OTHER_INFO_PSW
+                    export OTHER_STUEDNT_ID=$OTHER_INFO_PSW
 
                     export HYOJIN_VALID_TOKEN=$NEW_TOKEN
                     export HYOJIN_ID=$NEW_ID
