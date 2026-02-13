@@ -1,6 +1,6 @@
 # 💎 Elice LXP QA Project
 
-본 프로젝트는 엘리스 LMS 플랫폼인 **LXP(Learning Experience Platform)**의 품질 보증(QA)을 위한 API 테스트 및 자동화 프로젝트입니다.
+본 프로젝트는 엘리스 LMS 플랫폼인 **LXP(Learning Experience Platform)**의 품질 보증(QA)을 위한 API 테스트 및 자동화 프로젝트입니다. -- test
 
 ---
 
