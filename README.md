@@ -117,6 +117,7 @@ IOI-LXP/
 ### .env (git ignore)
 
 개인 정보가 포함된 데이터는 .env 파일에 작성
+
 ```bash
 ELICE_VALID_TOKEN={각자의 인증 토큰}
 ELICE_INVALID_TOKEN={만료된 토큰}
@@ -174,3 +175,71 @@ Jenkins Pipeline에서 저장소의 Jenkinsfile을 사용하여 빌드를 실행
 
 - Jenkins 기본 Test Result 리포트
 - Allure 플러그인을 통한 상세 테스트 리포트
+
+---
+
+## 🌟 part2_load_test 설정
+
+### 1. 테스트 환경 (Test Environment)
+
+- **Infrastructure**: Local
+- **JMeter Version**: `5.6.3`
+
+### 2. 테스트 시나리오 (Test Scenario)
+
+- **목표**
+  1.  테스트용 Dummy 계정 100개를 이용해 실제 여러 유저가 `입장 → 응시 → 제출 → 재응시`하는 과정을 테스트
+  2.  유저 증가에 따른 TPS와 Latency의 상관관계를 분석하고, 임계 지점 및 변곡점 도출
+- **테스트 목적**: 100명의 유저가 에러 없이 시험을 제출하고 다시 들어오는 사이클이 원활하게 도는지 검증
+- **테스트 성공 기준**
+  1.  **Error Rate**: 1% 미만 유지
+  2.  **평균 Latency(응답속도)**: 5,000ms 이내
+
+### 3. 테스트 요구사항 (Requirements)
+
+| 설정 항목             | 제한 값                        | 비고                                                |
+| :-------------------- | :----------------------------- | :-------------------------------------------------- |
+| **Number of Threads** | `10 → 30 → 50 → 70 → 100(Max)` | 단계별 증설 필수, 한 번에 100명 실행 금지           |
+| **Ramp-up Period**    | `60s`                          | 짧게 설정 시 공격으로 간주됨                        |
+| **Loop Count**        | `5회`                          | Infinite 절대 금지. 유저당 최대 5번의 사이클만 허용 |
+
+### 4. API 선별
+
+| Step | 역할      | Method | Endpoint (Target)                                     |
+| :--- | :-------- | :----- | :---------------------------------------------------- |
+| 1    | 과목 정보 | `GET`  | ${COURSE_URL}/lecture_page                            |
+| 2    | 시험 입장 | `POST` | ${REST_URL}/org/qaproject/user/lecture/test/enter/    |
+| 3    | 시험 시작 | `POST` | ${REST_URL}/org/qaproject/user/lecture/test/start/    |
+| 3    | 시험 제출 | `POST` | ${REST_URL}/org/qaproject/user/lecture/test/stop/     |
+| 4    | 재응시    | `POST` | ${REST_URL}/org/qaproject/lecture/test/reset/by_self/ |
+
+### 5. 📂 Test Plan Structure
+
+```bash
+Test Plan (테스트 계획)
+┗━ Thread Group (사용자 그룹 설정)
+   ┣━ Config Elements (설정)
+   ┃  ┣━ CSV Data Set Config (테스트 데이터 로드)
+   ┃  ┣━ HTTP Header Manager (공통 헤더)
+   ┃  ┗━ HTTP Request Defaults (서버 접속 정보)
+   ┣━ Once Only Controller (최초 1회 실행)
+   ┃  ┗━ Login / Init Setup
+   ┣━ Pause (초기 대기 시간)
+   ┣━ Loop Controller (테스트 반복 구간)
+   ┃  ┣━ Step 1. 과목 정보 (GET)
+   ┃  ┃  ┗━ Uniform Random Timer (3s~5s)
+   ┃  ┣━ Step 2. 시험 입장 (POST)
+   ┃  ┃  ┗━ Uniform Random Timer (3s~5s)
+   ┃  ┣━ Step 3. 시험 시작 (POST)
+   ┃  ┃  ┗━ Uniform Random Timer (3s~5s)
+   ┃  ┣━ Step 4. 시험 제출 (POST)
+   ┃  ┃  ┗━ Uniform Random Timer (3s~5s)
+   ┃  ┗━ Step 5. 재응시 (POST)
+   ┗━ Listeners (결과 확인)
+      ┣━ View Results Tree
+      ┗━ Summary Report
+```
+
+### 6. 부하 테스트 결과 (Test Results)
+
+### 7. 모니터링 및 병목 현상 분석 (Analysis)
