@@ -673,7 +673,7 @@ def test_get_learning_status_unauthorized_user(
         error_data = response.json()
         pytest.fail(f"현재 상태 코드: {response.status_code}, IDOR 취약점: 타인 데이터 노출됨 {error_data}")
         
-    assert response.status_code == [403, 404], \
+    assert response.status_code in [403, 404], \
         f"보안 오류: 타인 데이터 접근 가능 (status={response.status_code}, body={error_data})"
     
     logger.info("=== STU-CHM-06-007 테스트 완료 ===")
