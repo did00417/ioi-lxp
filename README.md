@@ -108,7 +108,7 @@ IOI-LXP/
 
 ### utils/config_loader.py
 
-1. `load_test_data(**"도메인명"**)`의 도메인명은 test_<**도메인명**>_data.json 파일의 도메인명과 통일해야 합니다.
+1. `load_test_data("도메인명")`의 도메인명은 test_<**도메인명**>_data.json 파일의 도메인명과 통일해야 합니다.
 2. config 폴더 안의 json 파일에서 환경 변수를 설정할 시 .env의 변수 명과 통일해야 합니다.
 
 ### conftest.py
@@ -248,6 +248,9 @@ Test Plan (테스트 계획)
 ### 6. 부하 테스트 결과 (Test Results)
 
 ### 7. 모니터링 및 병목 현상 분석 (Analysis)
+
+
+---
 
 ## 🐛Bug Report Summary
 ⚠️**인가 검증 누락**으로 인한 **타 사용자 데이터에 대한 조회 및 삭제가 가능**한 보안 취약점 발견

@@ -68,7 +68,7 @@ def test_classhome_data():
 def test_subject_data():
     return load_test_data("subject")
 
-#-------------- <수진> 간편하게 사용할 학습 대시보드 메뉴 데이터 -----------------------
+#-------------- <수진> 학습 대시보드 메뉴 데이터 -----------------------
 
 @pytest.fixture(scope="session")
 def dash_params(test_dash_data):
@@ -93,6 +93,7 @@ def create_article_data(test_board_data):
     return test_board_data["articles"]["create_article"]
 
 #-------------------- <정은> 클래스 홈 사용 데이터 ------------------------------
+
 @pytest.fixture
 def classhome_params(test_classhome_data):
     return test_classhome_data["params"]
@@ -116,6 +117,7 @@ def classhome_board_case(test_classhome_data):
 @pytest.fixture(scope="session")
 def classhome_emotion_case(test_classhome_data):
     return test_classhome_data["emotion_date_data"]
+
 #-------------------- <효진> 학습 과목 데이터 ------------------------------
 
 @pytest.fixture(scope="session")
@@ -123,6 +125,7 @@ def subject_params(test_subject_data):
     return test_subject_data["params"]
 
 #-------------------- <동빈> 수업 일정 데이터 ------------------------------
+
 @pytest.fixture(scope="session")
 def test_schedule_data():
     return load_test_data("schedule")
