@@ -28,7 +28,7 @@
     },
     "detail_cases": {
       "valid_article": {
-        "article_id": 65912,
+        "article_id": null,
         "expected_status": 200,
         "expected_result": "ok",
         "expected_fail_code": null
@@ -52,7 +52,6 @@
     }
   },
   "edit_article": {
-    "board_article_id": 67135,
     "update_payload": {
       "title": "api 자동화로 수정",
       "content": "수정하겠습니다.",
@@ -80,7 +79,7 @@
   },
   "comment_data": {
     "valid_comment": {
-      "board_article_id": 67135,
+      "board_article_id": null,
       "content": "댓글 작성 기능 확인 중입니다."
     },
     "invalid_article_comment": {
@@ -88,16 +87,15 @@
       "content": "존재하지 않는 게시글 댓글 작성 기능 확인 중입니다."
     },
     "update_delete_test": {
-      "create_content": "자동화 테스트로 작성된 댓글입니다.",
       "update_content": "자동화 테스트로 수정된 댓글입니다."
     },
     "list_params": {
-      "board_article_id": 67135,
+      "board_article_id": null,
       "count": 10,
       "offset": 0
     },
     "sort_test": {
-      "board_article_id": 67135,
+      "board_article_id": null,
       "cases": {
         "valid_desc": {"key": "created_datetime", "order": "desc"},
         "valid_asc": {"key": "created_datetime", "order": "asc"},

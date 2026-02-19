@@ -231,7 +231,8 @@ def test_get_article_detail_cases(
     rest_client, 
     valid_headers,
     case_key,
-    test_board_data
+    test_board_data,
+    created_article_id
 ):
     """
     STU_BOARD_02_004: 특정 게시글 조회
@@ -239,7 +240,8 @@ def test_get_article_detail_cases(
     """
     
     case_data = test_board_data["article_data"]["detail_cases"][case_key]
-    article_id = case_data["article_id"]
+    article_id = created_article_id if case_key == "valid_article" else case_data["article_id"]
+    
     expected_status = case_data["expected_status"]
     expected_result = case_data["expected_result"]
     expected_fail_code = case_data["expected_fail_code"]
@@ -521,16 +523,19 @@ def test_article_like_add_and_delete_flow(rest_client, valid_headers, created_ar
     ("valid_comment", "ok", 200, None),
     ("invalid_article_comment", "fail", 400, "resource_not_found")
 ])
-def test_create_comment(rest_client, valid_headers, test_board_data, 
+def test_create_comment(rest_client, valid_headers, test_board_data, created_article_id,
                                     data_key, expected_status, expected_code, expected_fail_code):
     """
     STU_BOARD_03-003: 댓글 작성 가능 확인
     STU_BOARD_03-004: 존재하지 않는 게시글 댓글 작성
     """
     logger.info(f"=== 댓글 작성 테스트 시작 ===")
-
-    payload = test_board_data["comment_data"][data_key]
     
+    payload = test_board_data["comment_data"][data_key].copy()
+    
+    if data_key == "valid_comment":
+        payload["board_article_id"] = created_article_id
+
     headers = valid_headers.copy()
     headers.pop("Content-Type", None)
 
@@ -598,7 +603,7 @@ def test_comment_update_delete(rest_client, valid_headers, created_article_id, c
     STU_BOARD_03-007: 댓글 수정 반영 확인
     STU_BOARD_03-008: 댓글 삭제 확인
     """
-    logger.info("=== STU_BOARD_03-007,008: 댓글 수정, 삭제 테스트 시작 (ID: {created_comment_id}) ===")
+    logger.info(f"=== STU_BOARD_03-007,008: 댓글 수정, 삭제 테스트 시작 (ID: {created_comment_id}) ===")
     
     test_data = test_board_data["comment_data"]["update_delete_test"]
     headers = valid_headers.copy()
@@ -634,11 +639,12 @@ def test_comment_update_delete(rest_client, valid_headers, created_article_id, c
 
     logger.info("=== STU_BOARD_03-007,008: 댓글 수정, 삭제 검증 완료 ===")
 
-def test_get_comment_list_success(rest_client, valid_headers, test_board_data):
+def test_get_comment_list_success(rest_client, valid_headers, test_board_data, created_article_id):
     """STU_BOARD_03-009: 특정 게시글 댓글 목록 조회"""
     logger.info("=== STU_BOARD_03-009: 댓글 목록 조회 테스트 시작 ===")
 
-    params = test_board_data["comment_data"]["list_params"]
+    params = test_board_data["comment_data"]["list_params"].copy()
+    params["board_article_id"] = created_article_id
     logger.debug(f"조회 조건: {params}")
 
     response = rest_client.get(
@@ -670,7 +676,7 @@ def test_get_comment_list_success(rest_client, valid_headers, test_board_data):
     ("invalid_order", "fail", 400),
     ("missing_field", "fail", 400)
 ])
-def test_get_comment_list_sort_parametrize(rest_client, valid_headers, test_board_data,
+def test_get_comment_list_sort_parametrize(rest_client, valid_headers, test_board_data,created_article_id,
                                            sort_key, expected_status, expected_code):
     """
     STU_BOARD_03-010: 댓글 최신순 정렬 조회
@@ -685,7 +691,7 @@ def test_get_comment_list_sort_parametrize(rest_client, valid_headers, test_boar
     
     params = {
         **base_query, 
-        "board_article_id": sort_config["board_article_id"],
+        "board_article_id": created_article_id,
         "sort_by": json.dumps(sort_value)
     }
 
