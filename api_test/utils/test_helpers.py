@@ -20,7 +20,12 @@ def assert_error(response, expected_status, expected_keyword):
         assert expected_keyword in error_detail, f"Step 실패 : '{expected_keyword}' 키워드가 에러 상세(detail)에 없음"
     else:
         # 일반적인 403, 409 등의 에러 구조 대응
-        error_msg = body.get("message", "")
+        error_msg = (
+            str(body.get("message", "")) +
+            str(body.get("detail", "")) +
+            str(body.get("code", "")) +
+            str(body.get("fail_code", ""))
+        )
         assert expected_keyword in error_msg, f"Step 실패 : '{expected_keyword}' 키워드가 에러 메시지(message)에 없음"
         
     logger.info(f"Step 성공: 적절한 요청 거부 메시지('{expected_keyword}')가 제공됨")
@@ -73,3 +78,19 @@ def assert_business_status(result, exp_res, step=""):
 def assert_equal_value(res_val, exp_val, key, step="", ):
     assert res_val == exp_val, f"Step {step} 실패: {key} 불일치, 기대값({exp_val}), 결과값({res_val})"
     logger.info(f"Step {step} 성공: {key} 일치 ({res_val})")
+    
+def assert_success_text(response):
+    # ICS 텍스트 응답용
+    assert response.status_code == 200, \
+        f"상태 코드 오류: 예상 200, 실제 {response.status_code}"
+    logger.info("Step 성공: 예상대로 200 OK 반환됨 (text)")
+    return response.text
+
+def assert_business_error1(response, expected_status, expected_fail_code):
+    #_result 구조 Business Error 검증
+    body = response.json()
+    result = body.get("_result", {})
+    assert result.get("status_code") == expected_status, f"Business 상태코드 오류: 예상 {expected_status}, 실제 {result.get('status_code')}"
+    assert body.get("fail_code") == expected_fail_code, f"fail_code 오류: 예상 {expected_fail_code}, 실제 {body.get('fail_code')}"
+    logger.info(f"Step 성공: Business Error {expected_status} / {expected_fail_code}"
+)
