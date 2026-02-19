@@ -231,7 +231,8 @@ def test_get_article_detail_cases(
     rest_client, 
     valid_headers,
     case_key,
-    test_board_data
+    test_board_data,
+    created_article_id
 ):
     """
     STU_BOARD_02_004: 특정 게시글 조회
@@ -239,7 +240,8 @@ def test_get_article_detail_cases(
     """
     
     case_data = test_board_data["article_data"]["detail_cases"][case_key]
-    article_id = case_data["article_id"]
+    article_id = created_article_id if case_key == "valid_article" else case_data["article_id"]
+    
     expected_status = case_data["expected_status"]
     expected_result = case_data["expected_result"]
     expected_fail_code = case_data["expected_fail_code"]
@@ -305,61 +307,33 @@ def test_get_others_private_article_security_bug(rest_client, valid_headers, cas
     assert body["fail_code"] == "insufficient_permission"
     logger.info("=== 타인 비밀글 테스트 시나리오 종료 ===")
 
-def test_update_article_success(rest_client, valid_headers, classroom_id, create_article_data, test_board_data):
-    """
-    STU_BOARD_02_007: 게시글 수정
-    테스트용 게시글 생성 -> 해당 ID로 내용 수정 -> 테스트 종료 후 삭제
-    """
+def test_update_article_success(rest_client, valid_headers, classroom_id, created_article_id, test_board_data):
+    """STU_BOARD_02_007: 게시글 수정"""
     logger.info("=== STU_BOARD_02_007: 게시글 수정 테스트 시작 ===")
 
     headers = valid_headers.copy()
     headers.pop("Content-Type", None)
     
-    # 1. 수정을 위한 임시 게시글 생성
-    create_payload = {**create_article_data, "classroom_id": classroom_id}
-    create_res = rest_client.post(
+    edit_content = test_board_data["edit_article"]["update_payload"]
+    update_payload = {
+        "board_article_id": created_article_id,
+        **edit_content,
+        "classroom_id": classroom_id
+    }
+    
+    response = rest_client.post(
         endpoint="/org/qatrack/board/article/edit/",
         headers=headers,
-        form_data=create_payload
+        form_data=update_payload
     )
-    article_id = create_res.json().get("board_article_id")
-    logger.info(f"수정 테스트를 위한 임시 게시글 생성 완료 (ID: {article_id})")
 
-    try:
-        # 2. 방금 생성한 ID를 사용하여 게시글 수정
-        edit_content = test_board_data["edit_article"]["update_payload"]
-        update_payload = {
-            "board_article_id": article_id,
-            **edit_content,
-            "classroom_id": classroom_id
-        }
-        
-        response = rest_client.post(
-            endpoint="/org/qatrack/board/article/edit/",
-            headers=headers,
-            form_data=update_payload
-        )
-
-        res_data = response.json()
-        logger.debug(f"수정 API 응답 데이터: {res_data}")
-        
-        assert res_data["_result"]["status"] == "ok"
-        assert res_data["_result"]["status_code"] == 200
-        assert res_data["board_article_id"] == article_id
-        logger.info(f"게시글 ID {article_id} 수정 검증 완료")
-
-    finally:
-        # 3. 테스트 종료 후 임시 게시글 삭제
-        delete_payload = {"board_article_id": article_id}
-        delete_res = rest_client.post(
-            endpoint="/org/qatrack/board/article/delete/",
-            headers=headers,
-            form_data=delete_payload
-        )
-        if delete_res.json()["_result"]["status"] == "ok":
-            logger.info(f"임시 테스트 데이터 삭제 완료 (ID: {article_id})")
-        else:
-            logger.error(f"임시 데이터 삭제 실패 (ID: {article_id})")
+    res_data = response.json()
+    logger.debug(f"수정 API 응답 데이터: {res_data}")
+    
+    assert res_data["_result"]["status"] == "ok"
+    assert res_data["_result"]["status_code"] == 200
+    assert res_data["board_article_id"] == created_article_id
+    logger.info(f"게시글 ID {created_article_id} 수정 검증 완료")
 
     logger.info("=== STU_BOARD_02_007: 테스트 종료 ===")
 
@@ -395,42 +369,24 @@ def test_update_others_article_fail(rest_client, valid_headers, classroom_id, te
 
     logger.info(f"=== STU_BOARD_03_002: 타인 게시글({article_id}) 수정 차단 확인 완료 ===")
 
-def test_delete_article_success(rest_client, valid_headers, classroom_id, create_article_data):
-    """
-    STU_BOARD_02_009: 게시글 삭제
-    반복 테스트를 위해 게시글 생성 후 삭제 로직
-    """
+def test_delete_article_success(rest_client, valid_headers, created_article_id):
+    """STU_BOARD_02_009: 게시글 삭제"""
     logger.info("=== STU_BOARD_02_009: 게시글 삭제 테스트 시작 ===")
 
-    # 1. ID 확보용 게시글 생성
-    create_payload = {**create_article_data, "classroom_id": classroom_id}
     headers = valid_headers.copy()
     headers.pop("Content-Type", None)
-
-    create_res = rest_client.post(
-        endpoint="/org/qatrack/board/article/edit/",
-        headers=headers,
-        form_data=create_payload
-    )
-    
-    # 생성된 글의 ID를 가져옵니다.
-    article_id = create_res.json().get("board_article_id")
-    logger.info(f"삭제 테스트를 위한 임시 게시글 생성 완료 (ID: {article_id})")
-
-    # 2. 방금 생성된 ID로 삭제 요청
-    delete_payload = {"board_article_id": article_id}
 
     response = rest_client.post(
         endpoint="/org/qatrack/board/article/delete/",
         headers=headers,
-        form_data=delete_payload
+        form_data={"board_article_id": created_article_id}
     )
 
     res_data = response.json()
     assert res_data["_result"]["status"] == "ok"
     assert res_data["_result"]["status_code"] == 200
     
-    logger.info(f"=== STU_BOARD_02_009: 게시글 삭제 테스트 ID {article_id} 삭제 검증 완료 ===")
+    logger.info(f"=== STU_BOARD_02_009: 게시글 삭제 테스트 ID {created_article_id} 삭제 검증 완료 ===")
 
 @pytest.mark.xfail(reason="보안 버그: 타인의 게시글이 권한 체크 없이 삭제됨")
 def test_delete_others_article_xfail(rest_client, valid_headers, board_id, test_board_data):
@@ -525,53 +481,41 @@ def test_create_article_max_title_over_fail(rest_client, valid_headers, classroo
 
 # ---------------- STU_BOARD_03 ----------------
 
-def test_article_like_add_and_delete_flow(rest_client, valid_headers, classroom_id, test_board_data):
+def test_article_like_add_and_delete_flow(rest_client, valid_headers, created_article_id):
     """
     STU_BOARD_03-001: 게시글 좋아요 정상 동작
     STU_BOARD_03-002: 게시글 좋아요 취소 확인
-    순서: 새 글 작성 -> 좋아요 추가 -> 좋아요 취소
     """
     logger.info("=== STU_BOARD_03-001,002: 좋아요 추가/취소 테스트 시작 ===")
-
-    like_test_data = test_board_data["like_article_data"]["like_test"]
     
     headers = valid_headers.copy()
     headers.pop("Content-Type", None)
 
-    create_res = rest_client.post(
-        endpoint="/org/qatrack/board/article/edit/",
-        headers=headers,
-        form_data={
-            "classroom_id": classroom_id,
-            **like_test_data 
-        }
-    )
-    article_id = create_res.json().get("board_article_id")
-    logger.info(f"테스트용 게시글 생성 완료 (ID: {article_id})")
-
     # 좋아요 추가
+    logger.info("단계 1: 좋아요 추가 요청")
     like_add_res = rest_client.post(
         endpoint="/org/qatrack/board/article/like/add/",
         headers=headers,
-        form_data={"board_article_id": article_id}
+        form_data={"board_article_id": created_article_id}
     )
     
     like_add_body = like_add_res.json()
     assert like_add_body["_result"]["status"] == "ok"
     assert like_add_body["_result"]["status_code"] == 200
-    logger.info(f"ID {article_id} 게시글 좋아요 추가 성공")
+    logger.info(f"ID {created_article_id} 게시글 좋아요 추가 성공")
 
     # 좋아요 취소
+    logger.info("단계 2: 좋아요 취소 요청")
     like_del_res = rest_client.post(
         endpoint="/org/qatrack/board/article/like/delete/",
         headers=headers,
-        form_data={"board_article_id": article_id}
+        form_data={"board_article_id": created_article_id}
     )
     
     like_del_body = like_del_res.json()
     assert like_del_body["_result"]["status"] == "ok"
     assert like_del_body["_result"]["status_code"] == 200
-    logger.info(f"ID {article_id} 게시글 좋아요 취소 성공")
+    logger.info(f"ID {created_article_id} 게시글 좋아요 취소 성공")
 
     logger.info("=== STU_BOARD_03-001,002: 모든 좋아요 시나리오 검증 완료 ===")
 
@@ -579,16 +523,19 @@ def test_article_like_add_and_delete_flow(rest_client, valid_headers, classroom_
     ("valid_comment", "ok", 200, None),
     ("invalid_article_comment", "fail", 400, "resource_not_found")
 ])
-def test_create_comment(rest_client, valid_headers, test_board_data, 
+def test_create_comment(rest_client, valid_headers, test_board_data, created_article_id,
                                     data_key, expected_status, expected_code, expected_fail_code):
     """
     STU_BOARD_03-003: 댓글 작성 가능 확인
     STU_BOARD_03-004: 존재하지 않는 게시글 댓글 작성
     """
     logger.info(f"=== 댓글 작성 테스트 시작 ===")
-
-    payload = test_board_data["comment_data"][data_key]
     
+    payload = test_board_data["comment_data"][data_key].copy()
+    
+    if data_key == "valid_comment":
+        payload["board_article_id"] = created_article_id
+
     headers = valid_headers.copy()
     headers.pop("Content-Type", None)
 
@@ -614,96 +561,61 @@ def test_create_comment(rest_client, valid_headers, test_board_data,
 
     logger.info(f"=== STU_BOARD_03-003, 004 댓글 테스트 종료 ===")
 
-def test_comment_like_add_and_delete(rest_client, valid_headers, test_board_data):
+def test_comment_like_add_and_delete(rest_client, valid_headers, created_comment_id):
     """
     STU_BOARD_03-005: 댓글 좋아요 정상 동작
     STU_BOARD_03-006: 댓글 좋아요 취소 확인
     """
-    logger.info("=== 댓글 좋아요 및 취소 테스트 시작 ===")
-
-    comment_data = test_board_data["comment_data"]["like_test"]
-    comment_id = comment_data["article_comment_id"]
+    logger.info("=== 댓글 좋아요 및 취소 테스트 시작 (ID: {created_comment_id}) ===")
     
     headers = valid_headers.copy()
     headers.pop("Content-Type", None)
-    
-    logger.debug(f"테스트 대상 댓글 ID: {comment_id}")
 
-    # 1. 댓글 좋아요 추가
-    endpoint_add = "/org/qatrack/board/article/comment/like/add/"
-    logger.debug(f"좋아요 추가 요청 엔드포인트: {endpoint_add}")
-    
+    logger.info("단계 1: 댓글 좋아요 추가 요청")
     like_add_res = rest_client.post(
-        endpoint=endpoint_add,
+        endpoint="/org/qatrack/board/article/comment/like/add/",
         headers=headers,
-        form_data={"article_comment_id": comment_id}
+        form_data={"article_comment_id": created_comment_id}
     )
     
-    like_add_body = like_add_res.json()
-    logger.debug(f"좋아요 추가 응답: {like_add_body}")
-
-    assert like_add_body["_result"]["status"] == "ok"
-    assert like_add_body["_result"]["status_code"] == 200
-    logger.info(f"ID {comment_id} 댓글 좋아요 추가 성공")
+    add_body = like_add_res.json()
+    assert like_add_res.status_code == 200
+    assert add_body["_result"]["status"] == "ok"
+    logger.info(f"ID {created_comment_id} 댓글 좋아요 추가 성공")
 
     # 2. 댓글 좋아요 취소
-    endpoint_del = "/org/qatrack/board/article/comment/like/delete/"
-    logger.debug(f"좋아요 취소 요청 엔드포인트: {endpoint_del}")
-    
+    logger.info("단계 2: 댓글 좋아요 취소 요청")
     like_del_res = rest_client.post(
-        endpoint=endpoint_del,
+        endpoint="/org/qatrack/board/article/comment/like/delete/",
         headers=headers,
-        form_data={"article_comment_id": comment_id}
+        form_data={"article_comment_id": created_comment_id}
     )
     
-    like_del_body = like_del_res.json()
-    logger.debug(f"좋아요 취소 응답: {like_del_body}")
-
-    assert like_del_body["_result"]["status"] == "ok"
-    assert like_del_body["_result"]["status_code"] == 200
-    logger.info(f"ID {comment_id} 댓글 좋아요 취소 성공")
+    del_body = like_del_res.json()
+    assert like_del_res.status_code == 200
+    assert del_body["_result"]["status"] == "ok"
+    logger.info(f"ID {created_comment_id} 댓글 좋아요 취소 성공")
 
     logger.info("=== STU_BOARD_03-005, 006: 댓글 좋아요 시나리오 검증 완료 ===")
 
-def test_comment_update_delete(rest_client, valid_headers, test_board_data):
+def test_comment_update_delete(rest_client, valid_headers, created_article_id, created_comment_id, test_board_data):
     """
     STU_BOARD_03-007: 댓글 수정 반영 확인
     STU_BOARD_03-008: 댓글 삭제 확인
-    흐름: 댓글 작성 -> 작성된 댓글 수정 -> 해당 댓글 삭제
     """
-    logger.info("=== STU_BOARD_03-007,008: 댓글 수정, 삭제 테스트 시작 ===")
+    logger.info(f"=== STU_BOARD_03-007,008: 댓글 수정, 삭제 테스트 시작 (ID: {created_comment_id}) ===")
     
     test_data = test_board_data["comment_data"]["update_delete_test"]
-    board_article_id = test_data["board_article_id"]
-    
     headers = valid_headers.copy()
     headers.pop("Content-Type", None)
 
-    # --- 1. 댓글 작성 ---
-    create_payload = {
-        "board_article_id": board_article_id,
-        "content": test_data["create_content"]
-    }
-    logger.debug(f"댓글 작성 요청: {create_payload}")
-    
-    create_res = rest_client.post(
-        endpoint="/org/qatrack/board/article/comment/edit/",
-        headers=headers,
-        form_data=create_payload
-    )
-    
-    create_body = create_res.json()
-    assert create_body["_result"]["status"] == "ok"
-    comment_id = create_body["article_comment_id"]
-    logger.info(f"댓글 작성 성공 (ID: {comment_id})")
-
-    # --- 2. 댓글 수정 ---
+    # 1. 댓글 수정
+    logger.info("단계 1: 댓글 수정 요청")
     update_payload = {
-        "board_article_id": board_article_id,
-        "article_comment_id": comment_id,
+        "board_article_id": created_article_id,
+        "article_comment_id": created_comment_id,
         "content": test_data["update_content"]
     }
-    logger.debug(f"댓글 수정 요청: {update_payload}")
     
     update_res = rest_client.post(
         endpoint="/org/qatrack/board/article/comment/edit/",
@@ -712,30 +624,27 @@ def test_comment_update_delete(rest_client, valid_headers, test_board_data):
     )
     
     assert update_res.json()["_result"]["status"] == "ok"
-    logger.info(f" ID {comment_id} 댓글 수정 완료")
+    logger.info(f"ID {created_comment_id} 댓글 수정 완료 및 검증 성공")
 
-    # --- 3. 댓글 삭제 ---
-    delete_payload = {
-        "article_comment_id": comment_id
-    }
-    logger.debug(f"댓글 삭제 요청: {delete_payload}")
-    
+    # 2. 댓글 삭제
+    logger.info("단계 2: 댓글 삭제 요청")
     delete_res = rest_client.post(
         endpoint="/org/qatrack/board/article/comment/delete/",
         headers=headers,
-        form_data=delete_payload
+        form_data={"article_comment_id": created_comment_id}
     )
     
     assert delete_res.json()["_result"]["status"] == "ok"
-    logger.info(f" ID {comment_id} 댓글 삭제 완료")
+    logger.info(f"ID {created_comment_id} 댓글 삭제 완료 및 검증 성공")
 
     logger.info("=== STU_BOARD_03-007,008: 댓글 수정, 삭제 검증 완료 ===")
 
-def test_get_comment_list_success(rest_client, valid_headers, test_board_data):
+def test_get_comment_list_success(rest_client, valid_headers, test_board_data, created_article_id):
     """STU_BOARD_03-009: 특정 게시글 댓글 목록 조회"""
     logger.info("=== STU_BOARD_03-009: 댓글 목록 조회 테스트 시작 ===")
 
-    params = test_board_data["comment_data"]["list_params"]
+    params = test_board_data["comment_data"]["list_params"].copy()
+    params["board_article_id"] = created_article_id
     logger.debug(f"조회 조건: {params}")
 
     response = rest_client.get(
@@ -767,7 +676,7 @@ def test_get_comment_list_success(rest_client, valid_headers, test_board_data):
     ("invalid_order", "fail", 400),
     ("missing_field", "fail", 400)
 ])
-def test_get_comment_list_sort_parametrize(rest_client, valid_headers, test_board_data,
+def test_get_comment_list_sort_parametrize(rest_client, valid_headers, test_board_data,created_article_id,
                                            sort_key, expected_status, expected_code):
     """
     STU_BOARD_03-010: 댓글 최신순 정렬 조회
@@ -782,7 +691,7 @@ def test_get_comment_list_sort_parametrize(rest_client, valid_headers, test_boar
     
     params = {
         **base_query, 
-        "board_article_id": sort_config["board_article_id"],
+        "board_article_id": created_article_id,
         "sort_by": json.dumps(sort_value)
     }
 
