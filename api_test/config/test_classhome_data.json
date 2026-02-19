@@ -4,8 +4,8 @@
     "invalid_classroom_id": "00000000-0000-0000-0000-000000000000",
     "lectureroom_id": "135109",
     "invalid_lectureroom_id": "000000",
-    "student_id": "{STUDENT_ID}",
-    "other_student_id": "{OTHER_STUEDNT_ID}"
+    "student_id": "${STUDENT_ID}",
+    "other_student_id": "${OTHER_STUEDNT_ID}"
   },
 
   "schedule_common_data": {
