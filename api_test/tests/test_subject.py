@@ -380,7 +380,7 @@ def test_quiz_request_fail_missing_params(rest_client, valid_headers, case):
         assert field in invalid_params, f"에러 상세 내용에 {field} 필드가 누락되었습니다."
         logger.info(f"Step 3 성공: 오류 메시지에서 {field}가 누락됨을 확인.")
         assert invalid_params[field] == "required", f"{field}의 에러 사유가 'required'가 아닙니다."
-    logger.info("=== STU-SBJ-10-002 테스트 완료 ===")
+    logger.info(f"=== {test_id} 테스트 완료 ===")
 
 @pytest.mark.parametrize("case", load_test_data("subject")["quiz_response_cases"])
 def test_quiz_response(rest_client, hyojin_headers, subject_params, case):
