@@ -115,7 +115,7 @@ def created_article_id(rest_client, valid_headers, classroom_id, create_article_
     yield article_id 
 
     # [Teardown] 
-    logger.info(f"[Teardown] 테스트 종료 후 임시 데이터 삭제 시작 (ID: {article_id})")
+    logger.info(f"[Teardown] 테스트 종료 후 임시 게시글 삭제 시작 (ID: {article_id})")
     delete_res = rest_client.post(
         endpoint="/org/qatrack/board/article/delete/",
         headers=headers,
@@ -127,6 +127,27 @@ def created_article_id(rest_client, valid_headers, classroom_id, create_article_
         logger.info(f"[Teardown] ID {article_id} 자동 삭제 완료")
     else:
         logger.info(f"[Teardown] ID {article_id}는 이미 삭제되었거나 삭제할 수 없는 상태입니다.")
+
+@pytest.fixture
+def created_comment_id(rest_client, valid_headers, created_article_id):
+    # [Setup] 방금 생성된 article_id를 받아서 댓글 작성
+    headers = valid_headers.copy()
+    headers.pop("Content-Type", None)
+    payload = {"board_article_id": created_article_id, "content": "테스트 댓글"}
+    res = rest_client.post(endpoint="/org/qatrack/board/article/comment/edit/", headers=headers, form_data=payload)
+    comment_id = res.json().get("article_comment_id")
+    
+    yield comment_id
+    
+    # [Teardown] 테스트 끝나면 댓글 먼저 삭제
+    logger.info(f"[Teardown] 테스트 종료 후 임시 댓글 삭제 시작 (ID: {comment_id})")
+    res = rest_client.post(
+        endpoint="/org/qatrack/board/article/comment/delete/", 
+        headers=headers, 
+        form_data={"article_comment_id": comment_id}
+    )
+    if res.json().get("_result", {}).get("status") == "ok":
+        logger.info(f"[Teardown] 댓글 ID {comment_id} 자동 삭제 완료")
 
 #-------------------- <정은> 클래스 홈 사용 데이터 ------------------------------
 
