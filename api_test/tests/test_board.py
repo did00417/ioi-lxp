@@ -231,7 +231,8 @@ def test_get_article_detail_cases(
     rest_client, 
     valid_headers,
     case_key,
-    test_board_data
+    test_board_data,
+    created_article_id
 ):
     """
     STU_BOARD_02_004: 특정 게시글 조회
@@ -239,7 +240,8 @@ def test_get_article_detail_cases(
     """
     
     case_data = test_board_data["article_data"]["detail_cases"][case_key]
-    article_id = case_data["article_id"]
+    article_id = created_article_id if case_key == "valid_article" else case_data["article_id"]
+    
     expected_status = case_data["expected_status"]
     expected_result = case_data["expected_result"]
     expected_fail_code = case_data["expected_fail_code"]
@@ -521,16 +523,19 @@ def test_article_like_add_and_delete_flow(rest_client, valid_headers, created_ar
     ("valid_comment", "ok", 200, None),
     ("invalid_article_comment", "fail", 400, "resource_not_found")
 ])
-def test_create_comment(rest_client, valid_headers, test_board_data, 
+def test_create_comment(rest_client, valid_headers, test_board_data, created_article_id,
                                     data_key, expected_status, expected_code, expected_fail_code):
     """
     STU_BOARD_03-003: 댓글 작성 가능 확인
     STU_BOARD_03-004: 존재하지 않는 게시글 댓글 작성
     """
     logger.info(f"=== 댓글 작성 테스트 시작 ===")
-
-    payload = test_board_data["comment_data"][data_key]
     
+    payload = test_board_data["comment_data"][data_key].copy()
+    
+    if data_key == "valid_comment":
+        payload["board_article_id"] = created_article_id
+
     headers = valid_headers.copy()
     headers.pop("Content-Type", None)
 
@@ -556,96 +561,61 @@ def test_create_comment(rest_client, valid_headers, test_board_data,
 
     logger.info(f"=== STU_BOARD_03-003, 004 댓글 테스트 종료 ===")
 
-def test_comment_like_add_and_delete(rest_client, valid_headers, test_board_data):
+def test_comment_like_add_and_delete(rest_client, valid_headers, created_comment_id):
     """
     STU_BOARD_03-005: 댓글 좋아요 정상 동작
     STU_BOARD_03-006: 댓글 좋아요 취소 확인
     """
-    logger.info("=== 댓글 좋아요 및 취소 테스트 시작 ===")
-
-    comment_data = test_board_data["comment_data"]["like_test"]
-    comment_id = comment_data["article_comment_id"]
+    logger.info("=== 댓글 좋아요 및 취소 테스트 시작 (ID: {created_comment_id}) ===")
     
     headers = valid_headers.copy()
     headers.pop("Content-Type", None)
-    
-    logger.debug(f"테스트 대상 댓글 ID: {comment_id}")
 
-    # 1. 댓글 좋아요 추가
-    endpoint_add = "/org/qatrack/board/article/comment/like/add/"
-    logger.debug(f"좋아요 추가 요청 엔드포인트: {endpoint_add}")
-    
+    logger.info("단계 1: 댓글 좋아요 추가 요청")
     like_add_res = rest_client.post(
-        endpoint=endpoint_add,
+        endpoint="/org/qatrack/board/article/comment/like/add/",
         headers=headers,
-        form_data={"article_comment_id": comment_id}
+        form_data={"article_comment_id": created_comment_id}
     )
     
-    like_add_body = like_add_res.json()
-    logger.debug(f"좋아요 추가 응답: {like_add_body}")
-
-    assert like_add_body["_result"]["status"] == "ok"
-    assert like_add_body["_result"]["status_code"] == 200
-    logger.info(f"ID {comment_id} 댓글 좋아요 추가 성공")
+    add_body = like_add_res.json()
+    assert like_add_res.status_code == 200
+    assert add_body["_result"]["status"] == "ok"
+    logger.info(f"ID {created_comment_id} 댓글 좋아요 추가 성공")
 
     # 2. 댓글 좋아요 취소
-    endpoint_del = "/org/qatrack/board/article/comment/like/delete/"
-    logger.debug(f"좋아요 취소 요청 엔드포인트: {endpoint_del}")
-    
+    logger.info("단계 2: 댓글 좋아요 취소 요청")
     like_del_res = rest_client.post(
-        endpoint=endpoint_del,
+        endpoint="/org/qatrack/board/article/comment/like/delete/",
         headers=headers,
-        form_data={"article_comment_id": comment_id}
+        form_data={"article_comment_id": created_comment_id}
     )
     
-    like_del_body = like_del_res.json()
-    logger.debug(f"좋아요 취소 응답: {like_del_body}")
-
-    assert like_del_body["_result"]["status"] == "ok"
-    assert like_del_body["_result"]["status_code"] == 200
-    logger.info(f"ID {comment_id} 댓글 좋아요 취소 성공")
+    del_body = like_del_res.json()
+    assert like_del_res.status_code == 200
+    assert del_body["_result"]["status"] == "ok"
+    logger.info(f"ID {created_comment_id} 댓글 좋아요 취소 성공")
 
     logger.info("=== STU_BOARD_03-005, 006: 댓글 좋아요 시나리오 검증 완료 ===")
 
-def test_comment_update_delete(rest_client, valid_headers, test_board_data):
+def test_comment_update_delete(rest_client, valid_headers, created_article_id, created_comment_id, test_board_data):
     """
     STU_BOARD_03-007: 댓글 수정 반영 확인
     STU_BOARD_03-008: 댓글 삭제 확인
-    흐름: 댓글 작성 -> 작성된 댓글 수정 -> 해당 댓글 삭제
     """
-    logger.info("=== STU_BOARD_03-007,008: 댓글 수정, 삭제 테스트 시작 ===")
+    logger.info(f"=== STU_BOARD_03-007,008: 댓글 수정, 삭제 테스트 시작 (ID: {created_comment_id}) ===")
     
     test_data = test_board_data["comment_data"]["update_delete_test"]
-    board_article_id = test_data["board_article_id"]
-    
     headers = valid_headers.copy()
     headers.pop("Content-Type", None)
 
-    # --- 1. 댓글 작성 ---
-    create_payload = {
-        "board_article_id": board_article_id,
-        "content": test_data["create_content"]
-    }
-    logger.debug(f"댓글 작성 요청: {create_payload}")
-    
-    create_res = rest_client.post(
-        endpoint="/org/qatrack/board/article/comment/edit/",
-        headers=headers,
-        form_data=create_payload
-    )
-    
-    create_body = create_res.json()
-    assert create_body["_result"]["status"] == "ok"
-    comment_id = create_body["article_comment_id"]
-    logger.info(f"댓글 작성 성공 (ID: {comment_id})")
-
-    # --- 2. 댓글 수정 ---
+    # 1. 댓글 수정
+    logger.info("단계 1: 댓글 수정 요청")
     update_payload = {
-        "board_article_id": board_article_id,
-        "article_comment_id": comment_id,
+        "board_article_id": created_article_id,
+        "article_comment_id": created_comment_id,
         "content": test_data["update_content"]
     }
-    logger.debug(f"댓글 수정 요청: {update_payload}")
     
     update_res = rest_client.post(
         endpoint="/org/qatrack/board/article/comment/edit/",
@@ -654,30 +624,27 @@ def test_comment_update_delete(rest_client, valid_headers, test_board_data):
     )
     
     assert update_res.json()["_result"]["status"] == "ok"
-    logger.info(f" ID {comment_id} 댓글 수정 완료")
+    logger.info(f"ID {created_comment_id} 댓글 수정 완료 및 검증 성공")
 
-    # --- 3. 댓글 삭제 ---
-    delete_payload = {
-        "article_comment_id": comment_id
-    }
-    logger.debug(f"댓글 삭제 요청: {delete_payload}")
-    
+    # 2. 댓글 삭제
+    logger.info("단계 2: 댓글 삭제 요청")
     delete_res = rest_client.post(
         endpoint="/org/qatrack/board/article/comment/delete/",
         headers=headers,
-        form_data=delete_payload
+        form_data={"article_comment_id": created_comment_id}
     )
     
     assert delete_res.json()["_result"]["status"] == "ok"
-    logger.info(f" ID {comment_id} 댓글 삭제 완료")
+    logger.info(f"ID {created_comment_id} 댓글 삭제 완료 및 검증 성공")
 
     logger.info("=== STU_BOARD_03-007,008: 댓글 수정, 삭제 검증 완료 ===")
 
-def test_get_comment_list_success(rest_client, valid_headers, test_board_data):
+def test_get_comment_list_success(rest_client, valid_headers, test_board_data, created_article_id):
     """STU_BOARD_03-009: 특정 게시글 댓글 목록 조회"""
     logger.info("=== STU_BOARD_03-009: 댓글 목록 조회 테스트 시작 ===")
 
-    params = test_board_data["comment_data"]["list_params"]
+    params = test_board_data["comment_data"]["list_params"].copy()
+    params["board_article_id"] = created_article_id
     logger.debug(f"조회 조건: {params}")
 
     response = rest_client.get(
@@ -709,7 +676,7 @@ def test_get_comment_list_success(rest_client, valid_headers, test_board_data):
     ("invalid_order", "fail", 400),
     ("missing_field", "fail", 400)
 ])
-def test_get_comment_list_sort_parametrize(rest_client, valid_headers, test_board_data,
+def test_get_comment_list_sort_parametrize(rest_client, valid_headers, test_board_data,created_article_id,
                                            sort_key, expected_status, expected_code):
     """
     STU_BOARD_03-010: 댓글 최신순 정렬 조회
@@ -724,7 +691,7 @@ def test_get_comment_list_sort_parametrize(rest_client, valid_headers, test_boar
     
     params = {
         **base_query, 
-        "board_article_id": sort_config["board_article_id"],
+        "board_article_id": created_article_id,
         "sort_by": json.dumps(sort_value)
     }
 
