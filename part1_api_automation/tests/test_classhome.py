@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 작성자: 양정은
 passed: 29 ~ 30개(정상)
 skipped: 0 ~1 1개(정상)
-fail: 1개(정상) -> skip로 처리
+fail: 1개(정상)
 '''
 
 # 테스트 케이스: STU-CHM-01-001(유효한 토큰 사용 시 사용자 정보 조회)
