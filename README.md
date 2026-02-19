@@ -66,7 +66,7 @@ LXP 서비스의 주요 기능에 대한 API 검증, 테스트 케이스 설계,
 - Python 3.11
 - pytest
 - Requests
-- JSON 데이터 처리
+- JSONReader
 - Allure Report
 - Jenkins Pipeline
 - JMeter
@@ -75,7 +75,7 @@ LXP 서비스의 주요 기능에 대한 API 검증, 테스트 케이스 설계,
 
 ```bash
 IOI-LXP/
-├─ part1_api_automation/       (API 자동화 테스트 코드 폴더)
+├─ api_test/       (API 자동화 테스트 코드 폴더)
 │   ├─ api/
 │   │   └─ api_client.py       (API 클라이언트 관련 공통 모듈)
 │   ├─ config/                 (테스트에 사용할 데이터 관리)
@@ -84,11 +84,12 @@ IOI-LXP/
 │   │   └─ test_<도메인명>.py   (실제 Pytest 테스트 케이스)
 │   ├─ utils/                  (공통 유틸리티 함수 및 도구)
 │   │   ├─ config_loader.py    (config 폴더 데이터 불러오는 함수)
-│   │   └─ json_reader.py      (JSON 파일 읽기 함수)
+│   │   ├─ json_reader.py      (JSON 파일 읽기 함수)
+│   │   └─ test_helpers.py     (assert문 헬퍼 함수)
 │   ├─ conftest.py             (테스트 초기 설정 관리(fixture 등))
 │   └─ pytest.ini              (Pytest 실행 옵션)
 │
-├─ part2_load_test/
+├─ performance_test/
 │   ├─ dashboard/              (JMeter HTML 대시보드 리포트 폴더)
 │   ├─ results/                (실행 결과 데이터)
 │   └─ scripts/                (JMeter 스크립트 파일)
@@ -98,7 +99,7 @@ IOI-LXP/
 └─ setup.bat/sh                (가상 환경 & 라이브러리 설치 파일)
 ```
 
-## 🌟 part1_api_automation 규칙
+## 🌟 api_test 규칙
 
 ### config/
 
@@ -106,10 +107,11 @@ IOI-LXP/
 2. header_data.json -> 공용으로 사용할 헤더 데이터
 3. test\_<도메인명>\_data.json -> 각자 테스트할 도메인에서 사용할 데이터
 
+> 개인 정보가 포함된 데이터는 환경 변수(${변수 명})로 설정합니다. 이때 이 변수 명은 .env의 변수 명과 통일해야 합니다.
+
 ### utils/config_loader.py
 
 1. `load_test_data("도메인명")`의 도메인명은 test_<**도메인명**>_data.json 파일의 도메인명과 통일해야 합니다.
-2. config 폴더 안의 json 파일에서 환경 변수를 설정할 시 .env의 변수 명과 통일해야 합니다.
 
 ### conftest.py
 
@@ -183,7 +185,7 @@ Jenkins Pipeline에서 저장소의 Jenkinsfile을 사용하여 빌드를 실행
 
 ---
 
-## 🌟 part2_load_test 설정
+## 🌟 performance_test 설정
 
 ### 1. 테스트 환경 (Test Environment)
 
