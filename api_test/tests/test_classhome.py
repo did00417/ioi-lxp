@@ -64,7 +64,7 @@ def test_get_user_invalid_token(rest_client, invalid_headers):
     logger.info("=== STU-CHM-01-003 테스트 완료 ===")
 
 # 테스트 케이스: STU-CHM-02-001(수강생이 이어서 해야하는 학습 내용과 정상적으로 연결이 되는지 확인)
-def test_get_contiune_learning_lecture(dashboard_client, valid_headers, classroom_id):
+def test_get_continue_learning_lecture(dashboard_client, valid_headers, classroom_id):
     logger.info("=== STU-CHM-02-001: 수강생이 이어서 해야하는 학습 내용과 정상적으로 연결이 되는지 확인 ===")
     endpoint = f"/classroom/{classroom_id}/next_lecture_page"
     
@@ -474,7 +474,7 @@ def test_get_learning_status_unauthorized_user(
     
     params = {
         "classroom_id":classhome_params["classroom_id"],
-        **classhome_student_course_case["STU_CHM-06-007"]
+        **classhome_student_course_case["STU-CHM-06-007"]
     }
     
     response = dashboard_client.get(
@@ -549,7 +549,7 @@ def test_get_board_articles_no_classroom_id(
     
     logger.info("=== STU-CHM-07-002 테스트 완료 ===")
 
-# 테스트 케이스 : STU-CHM-07-003(skip/conut 값 오류시 조회 차단)
+# 테스트 케이스 : STU-CHM-07-003(skip/count 값 오류시 조회 차단)
 def test_get_board_articles_with_invalid_skip_count(
     classroom_client,
     valid_headers,
@@ -596,6 +596,7 @@ def test_get_emotion(
     emotion_data = assert_success(response)
     
     assert isinstance(emotion_data, list), "응답이 리스트가 아님"
+    assert emotion_data, "응답 리스트가 비어 있음"
     emotion_item = emotion_data[0]
     assert isinstance(emotion_item.get("emoji"), str), f"emoji={emotion_item.get('emoji')}"
 
