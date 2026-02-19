@@ -30,15 +30,15 @@ def course_client():
 def header_data():
     return get_header()
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def valid_headers(header_data):
     return header_data["headers"]
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def invalid_headers(header_data):
     return header_data["invalid_headers"]
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def hyojin_headers(header_data):
     return header_data["hyojin_headers"]
 
@@ -57,8 +57,8 @@ def test_board_data():
     return load_test_data("board")
 
 @pytest.fixture(scope="session")
-def test_dash_data():
-    return load_test_data("dash")
+def test_dashboard_data():
+    return load_test_data("dashboard")
 
 @pytest.fixture(scope="session")
 def test_classhome_data():
@@ -71,12 +71,12 @@ def test_subject_data():
 #-------------- <수진> 학습 대시보드 메뉴 데이터 -----------------------
 
 @pytest.fixture(scope="session")
-def dash_params(test_dash_data):
-    return test_dash_data["params"]
+def dashboard_params(test_dashboard_data):
+    return test_dashboard_data["params"]
 
 @pytest.fixture(scope="session")
-def dash_page(test_dash_data):
-    return test_dash_data["page"]
+def dashboard_page(test_dashboard_data):
+    return test_dashboard_data["page"]
 
 #-------------------- <유진> 게시판 메뉴 데이터 ------------------------------
 
@@ -94,7 +94,7 @@ def create_article_data(test_board_data):
 
 #-------------------- <정은> 클래스 홈 사용 데이터 ------------------------------
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def classhome_params(test_classhome_data):
     return test_classhome_data["params"]
 

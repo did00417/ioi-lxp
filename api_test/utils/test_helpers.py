@@ -1,0 +1,54 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+def assert_success(response):
+    """200 OK 응답을 검증하고 JSON 바디를 반환합니다."""
+    assert response.status_code == 200, f"상태 코드 오류: 예상 200, 실제 {response.status_code}"
+    logger.info("Step 성공: 예상대로 200 OK 반환됨")
+    return response.json()
+
+def assert_error(response, expected_status, expected_keyword):
+    """에러 응답(4xx)의 상태 코드와 에러 키워드를 한 번에 검증합니다."""
+    assert response.status_code == expected_status, f"상태 코드 오류: 예상 {expected_status}, 실제 {response.status_code}"
+    logger.info(f"Step 성공: 예상대로 {expected_status} 에러 반환됨")
+    
+    body = response.json()
+    if expected_status == 422:
+        # 422 Validation Error 구조 대응
+        error_detail = str(body.get("detail", []))
+        assert expected_keyword in error_detail, f"에러 내용 누락: '{expected_keyword}' 키워드가 에러 상세(detail)에 없음"
+    else:
+        # 일반적인 403, 409 등의 에러 구조 대응
+        error_msg = body.get("message", "")
+        assert expected_keyword in error_msg, f"에러 메시지 누락: '{expected_keyword}' 키워드가 에러 메시지(message)에 없음"
+        
+    logger.info(f"Step 성공: 적절한 요청 거부 메시지('{expected_keyword}')가 제공됨")
+    
+def assert_id_match(actual_id, expected_id, target_name="ID"):
+    """응답받은 ID가 요청한 ID와 일치하는지 검증합니다."""
+    assert int(actual_id) == int(expected_id), f"{target_name} 불일치 - 기대값: {expected_id}, 실제값: {actual_id}"
+    logger.info(f"Step 성공: 올바른 {target_name}({actual_id}) 반환됨")
+
+def assert_progress_exists(progress_data):
+    """학습 진행도(learning_progress) 데이터가 존재하는지 검증합니다."""
+    assert len(progress_data) > 0, "learning_progress 데이터가 존재하지 않음 (빈 배열/객체)"
+    logger.info("Step 성공: learning_progress 데이터 정상 존재")
+
+def assert_title_contains(actual_title, expected_keyword):
+    """제목(title)에 특정 키워드가 포함되어 있는지 검증합니다."""
+    assert expected_keyword in actual_title, f"title 데이터 오류 - '{expected_keyword}'가 포함되지 않음 (실제: {actual_title})"
+    logger.info(f"Step 성공: title에 '{expected_keyword}' 포함 확인")
+    
+def assert_valid_course_ids(actual_items, valid_ids_set):
+    """리스트 내의 course_id들이 유효한 ID 목록에만 속하는지 검증합니다."""
+    invalid_ids = [item["course"]["id"] for item in actual_items if item["course"]["id"] not in valid_ids_set]
+    assert not invalid_ids, f"유효하지 않은 course_id 발견 - {invalid_ids}"
+    logger.info("Step 성공: 요청한 페이지의 과목 리스트 정상 반환됨")
+    
+def assert_success_and_empty_list(response):
+    """200 OK 응답을 검증하고, 반환된 데이터가 빈 배열([])인지 확인합니다."""
+    body = assert_success(response)  # 기존에 만든 200 OK 검증 함수 재사용
+    assert body == [], f"응답 데이터 오류: 빈 배열([])을 기대했으나 데이터가 존재함 (실제: {body})"
+    logger.info("Step 성공: 예상대로 빈 배열([]) 반환됨")
+    return body

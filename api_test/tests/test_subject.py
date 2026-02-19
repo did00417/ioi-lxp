@@ -334,7 +334,7 @@ def test_quiz_request_success(rest_client, hyojin_headers, subject_params):
     response = rest_client.post(
         endpoint=endpoint,
         headers=headers,
-        data={
+        form_data={
             "material_quiz_id": subject_params["material_quiz_id"],
             "answer": str(subject_params["answer"])
         }
@@ -361,7 +361,7 @@ def test_quiz_request_fail_missing_params(rest_client, valid_headers, case):
     response = rest_client.post(
         endpoint=endpoint,
         headers=headers,
-        data=missing_data
+        form_data=missing_data
     )
     data = response.json()
     result = data.get("_result", {})
