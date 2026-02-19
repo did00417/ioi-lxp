@@ -52,3 +52,24 @@ def assert_success_and_empty_list(response):
     assert body == [], f"응답 데이터 오류: 빈 배열([])을 기대했으나 데이터가 존재함 (실제: {body})"
     logger.info("Step 성공: 예상대로 빈 배열([]) 반환됨")
     return body
+
+def assert_status_code(result_status, exp_status, step=""):
+    """응답 코드가 기대한 응답 코드와 일치하는지 확인합니다."""
+    assert result_status == exp_status, f"Step {step} 실패: {exp_status} 기대했으나 {result_status} 반환됨"
+    logger.info(f"Step {step} 성공: {exp_status} 반환됨")
+
+def assert_response_match(response_data, expected_data, step=""):
+    assert str(expected_data) in str(response_data), f"Step {step} 실패: '{expected_data}' 미포함 (실제값: {response_data})"
+    logger.info(f"Step {step} 성공: '{response_data}' 확인 완료")
+
+def assert_business_code(result, exp_res, step=""):
+    assert result.get("status_code") == exp_res["status_code"], f"Step {step} 실패(비즈니스 코드 불일치): {result.get('status_code')}"
+    logger.info(f"Step {step} 성공: 예상된 실패 코드({exp_res['status_code']}) 확인 완료")
+
+def assert_business_status(result, exp_res, step=""):
+    assert result.get("status") == exp_res, f"Step {step} 실패(Status 불일치): {result.get('status')}"
+    logger.info(f"Step {step} 성공: 예상된 실패 상태({exp_res}) 확인 완료")
+
+def assert_equal_value(res_val, exp_val, key, step="", ):
+    assert res_val == exp_val, f"Step {step} 실패: {key} 불일치, 기대값({exp_val}), 결과값({res_val})"
+    logger.info(f"Step {step} 성공: {key} 일치 ({res_val})")
