@@ -129,7 +129,7 @@ def test_create_article_success(rest_client, valid_headers, classroom_id, create
     response = rest_client.post(
         endpoint="/org/qatrack/board/article/edit/",
         headers=headers,
-        data=payload
+        form_data=payload
     )
 
     assert response.status_code == 200, f"작성 실패: {response.status_code}"
@@ -144,7 +144,7 @@ def test_create_article_success(rest_client, valid_headers, classroom_id, create
     delete_response = rest_client.post(
         endpoint="/org/qatrack/board/article/delete/",
         headers=headers,
-        data={"board_article_id": article_id}
+        form_data={"board_article_id": article_id}
     )
     
     delete_res_data = delete_response.json()
@@ -182,7 +182,7 @@ def test_create_article_fail_by_missing_param(
     response = rest_client.post(
         endpoint="/org/qatrack/board/article/edit/",
         headers=headers,
-        data=payload
+        form_data=payload
     )
 
     res_data = response.json()
@@ -320,7 +320,7 @@ def test_update_article_success(rest_client, valid_headers, classroom_id, create
     create_res = rest_client.post(
         endpoint="/org/qatrack/board/article/edit/",
         headers=headers,
-        data=create_payload
+        form_data=create_payload
     )
     article_id = create_res.json().get("board_article_id")
     logger.info(f"수정 테스트를 위한 임시 게시글 생성 완료 (ID: {article_id})")
@@ -337,7 +337,7 @@ def test_update_article_success(rest_client, valid_headers, classroom_id, create
         response = rest_client.post(
             endpoint="/org/qatrack/board/article/edit/",
             headers=headers,
-            data=update_payload
+            form_data=update_payload
         )
 
         res_data = response.json()
@@ -354,7 +354,7 @@ def test_update_article_success(rest_client, valid_headers, classroom_id, create
         delete_res = rest_client.post(
             endpoint="/org/qatrack/board/article/delete/",
             headers=headers,
-            data=delete_payload
+            form_data=delete_payload
         )
         if delete_res.json()["_result"]["status"] == "ok":
             logger.info(f"임시 테스트 데이터 삭제 완료 (ID: {article_id})")
@@ -382,7 +382,7 @@ def test_update_others_article_fail(rest_client, valid_headers, classroom_id, te
     response = rest_client.post(
         endpoint="/org/qatrack/board/article/edit/",
         headers=headers,
-        data=payload
+        form_data=payload
     )
 
     res_data = response.json()
@@ -410,7 +410,7 @@ def test_delete_article_success(rest_client, valid_headers, classroom_id, create
     create_res = rest_client.post(
         endpoint="/org/qatrack/board/article/edit/",
         headers=headers,
-        data=create_payload
+        form_data=create_payload
     )
     
     # 생성된 글의 ID를 가져옵니다.
@@ -423,7 +423,7 @@ def test_delete_article_success(rest_client, valid_headers, classroom_id, create
     response = rest_client.post(
         endpoint="/org/qatrack/board/article/delete/",
         headers=headers,
-        data=delete_payload
+        form_data=delete_payload
     )
 
     res_data = response.json()
@@ -478,7 +478,7 @@ def test_delete_others_article_xfail(rest_client, valid_headers, board_id, test_
     response = rest_client.post(
         endpoint="/org/qatrack/board/article/delete/",
         headers=headers,
-        data={"board_article_id": target_id}
+        form_data={"board_article_id": target_id}
     )
 
     body = response.json()
@@ -511,7 +511,7 @@ def test_create_article_max_title_over_fail(rest_client, valid_headers, classroo
     response = rest_client.post(
         endpoint="/org/qatrack/board/article/edit/",
         headers=headers,
-        data=payload
+        form_data=payload
     )
 
     res_data = response.json()
@@ -541,7 +541,7 @@ def test_article_like_add_and_delete_flow(rest_client, valid_headers, classroom_
     create_res = rest_client.post(
         endpoint="/org/qatrack/board/article/edit/",
         headers=headers,
-        data={
+        form_data={
             "classroom_id": classroom_id,
             **like_test_data 
         }
@@ -553,7 +553,7 @@ def test_article_like_add_and_delete_flow(rest_client, valid_headers, classroom_
     like_add_res = rest_client.post(
         endpoint="/org/qatrack/board/article/like/add/",
         headers=headers,
-        data={"board_article_id": article_id}
+        form_data={"board_article_id": article_id}
     )
     
     like_add_body = like_add_res.json()
@@ -565,7 +565,7 @@ def test_article_like_add_and_delete_flow(rest_client, valid_headers, classroom_
     like_del_res = rest_client.post(
         endpoint="/org/qatrack/board/article/like/delete/",
         headers=headers,
-        data={"board_article_id": article_id}
+        form_data={"board_article_id": article_id}
     )
     
     like_del_body = like_del_res.json()
@@ -595,7 +595,7 @@ def test_create_comment(rest_client, valid_headers, test_board_data,
     response = rest_client.post(
         endpoint="/org/qatrack/board/article/comment/edit/",
         headers=headers,
-        data=payload
+        form_data=payload
     )
 
     res_data = response.json()
@@ -636,7 +636,7 @@ def test_comment_like_add_and_delete(rest_client, valid_headers, test_board_data
     like_add_res = rest_client.post(
         endpoint=endpoint_add,
         headers=headers,
-        data={"article_comment_id": comment_id}
+        form_data={"article_comment_id": comment_id}
     )
     
     like_add_body = like_add_res.json()
@@ -653,7 +653,7 @@ def test_comment_like_add_and_delete(rest_client, valid_headers, test_board_data
     like_del_res = rest_client.post(
         endpoint=endpoint_del,
         headers=headers,
-        data={"article_comment_id": comment_id}
+        form_data={"article_comment_id": comment_id}
     )
     
     like_del_body = like_del_res.json()
@@ -689,7 +689,7 @@ def test_comment_update_delete(rest_client, valid_headers, test_board_data):
     create_res = rest_client.post(
         endpoint="/org/qatrack/board/article/comment/edit/",
         headers=headers,
-        data=create_payload
+        form_data=create_payload
     )
     
     create_body = create_res.json()
@@ -708,7 +708,7 @@ def test_comment_update_delete(rest_client, valid_headers, test_board_data):
     update_res = rest_client.post(
         endpoint="/org/qatrack/board/article/comment/edit/",
         headers=headers,
-        data=update_payload
+        form_data=update_payload
     )
     
     assert update_res.json()["_result"]["status"] == "ok"
@@ -723,7 +723,7 @@ def test_comment_update_delete(rest_client, valid_headers, test_board_data):
     delete_res = rest_client.post(
         endpoint="/org/qatrack/board/article/comment/delete/",
         headers=headers,
-        data=delete_payload
+        form_data=delete_payload
     )
     
     assert delete_res.json()["_result"]["status"] == "ok"

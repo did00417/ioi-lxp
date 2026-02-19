@@ -850,7 +850,7 @@ def test_post_emotion(
         endpoint,
         headers=valid_headers,
         params=params,
-        payload = payload
+        json_body = payload
     )
     
     # 하루 1회 제한 대응
