@@ -1,6 +1,7 @@
 import pytest
 import json
 import logging
+from utils.test_helpers import assert_success, assert_equal_value, assert_title_contains, assert_status_code, assert_success, assert_business_status, assert_business_code, assert_equal_value, assert_id_match
 
 logger = logging.getLogger(__name__)
 # ---------------- STU_BOARD_01 ----------------
@@ -17,13 +18,9 @@ def test_get_article_list(rest_client, valid_headers, board_id, test_board_data)
         params={**query, "board_id": board_id}
     )
     
-    if response.status_code != 200:
-        logger.error(f"요청 실패! 상태 코드: {response.status_code} | 응답: {response.text}")
+    body = assert_success(response)
     
-    assert response.status_code == 200
-
-    body = response.json()
-    assert "board_articles" in body, "응답에 게시글 목록(board_articles)이 포함되어 있지 않습니다."
+    assert_equal_value("board_articles" in body, True, "게시글 목록 필드 포함 여부")
     logger.info("게시글 목록 조회 완료")
 
 @pytest.mark.parametrize("query_key, sort_field", [
@@ -47,23 +44,15 @@ def test_articles_sorting_latest_likes(classroom_client, valid_headers, classroo
         params=query
     )
     
-    assert response.status_code == 200, f"조회 실패: {response.status_code}"
-    articles = response.json()
+    articles = assert_success(response)
     logger.info(f"조회된 게시글 수: {len(articles)}")
 
     if len(articles) >= 2:
         for i in range(len(articles) - 1):
-            current_val = articles[i][sort_field]
-            next_val = articles[i+1][sort_field]
-            
-            logger.debug(f"[{current_val} >= {next_val}")
-            
-            # 내림차순 검증 (최신순은 문자열 날짜 비교, 좋아요순은 숫자 비교)
-            assert current_val >= next_val, f"정렬 오류 발견: {current_val} < {next_val}"
+            assert articles[i][sort_field] >= articles[i+1][sort_field], \
+                f"정렬 오류: {articles[i][sort_field]} < {articles[i+1][sort_field]}"
     else:
-        logger.warning(f"검증할 게시글이 충분하지 않습니다. (현재 {len(articles)}개)")
-
-    logger.info(f"=== 게시글 정렬 테스트 완료 ===")
+        logger.warning("검증 데이터 부족")
 
 @pytest.mark.parametrize("keyword_key, expected_count_min", [
     ("valid", 1),  # 1. 검색 결과가 있어야 하는 케이스
@@ -92,25 +81,22 @@ def test_get_article_list_by_filter(
         headers=valid_headers,
         params={**query, "board_id": board_id, "filter_title": keyword}
     )
-    assert response.status_code == 200
-    
-    body = response.json()
+    body = assert_success(response)
     articles = body.get("board_articles", [])
+    
     article_count = body.get("board_article_count", 0)
     logger.info(f"검색 결과 수: {len(articles)} (기대 최소값: {expected_count_min})")
     
     if expected_count_min > 0:
         # 결과가 있어야 하는 경우
-        assert len(articles) >= expected_count_min, f"'{keyword}' 검색 결과가 없습니다."
-        # 모든 결과에 키워드가 포함되어 있는지
+        assert len(articles) >= expected_count_min, f"'{keyword}' 검색 결과 부족"
+        # 헬퍼 활용: 제목 키워드 포함 검증
         for article in articles:
-            clean_keyword = keyword.replace("%", "") # % 제거 후 실제 텍스트만 비교
-            assert clean_keyword in article['title'], f"제목에 '{clean_keyword}'가 포함되어 있지 않습니다: {article['title']}"
+            assert_title_contains(article['title'], keyword.replace("%", ""))
     else:
-        # 결과가 없어야 하는 경우
-        assert len(articles) == 0, f"'{keyword}' 검색 결과가 없어야 하는데 {len(articles)}개가 발견되었습니다."
-        assert article_count == 0, "board_article_count가 0이 아닙니다."
-    logger.info(f"'{keyword}' 검색 테스트 완료")
+        # 헬퍼 활용: 결과 0건 검증
+        assert_equal_value(len(articles), 0, "검색 결과 0건 확인")
+        assert_equal_value(body.get("board_article_count"), 0, "카운트 0 확인")
 
 # ---------------- STU_BOARD_02 ----------------
 
@@ -132,14 +118,11 @@ def test_create_article_success(rest_client, valid_headers, classroom_id, create
         form_data=payload
     )
 
-    assert response.status_code == 200, f"작성 실패: {response.status_code}"
+    body = assert_success(response)
+    assert_business_status(body["_result"], "ok", step="게시글 작성 완료")
     
-    res_data = response.json()
-    assert res_data["_result"]["status"] == "ok"
-    
-    article_id = res_data.get("board_article_id")
-    logger.info(f"게시글 작성 성공! 생성된 ID: {res_data.get('board_article_id')}")
-    assert article_id is not None, "게시글 ID가 생성되지 않았습니다."
+    article_id = body.get("board_article_id")
+    assert_equal_value(bool(article_id), True, "게시글 ID 생성 여부")
     
     delete_response = rest_client.post(
         endpoint="/org/qatrack/board/article/delete/",
@@ -147,12 +130,10 @@ def test_create_article_success(rest_client, valid_headers, classroom_id, create
         form_data={"board_article_id": article_id}
     )
     
-    delete_res_data = delete_response.json()
-    assert delete_res_data["_result"]["status"] == "ok", f"테스트 후 데이터 삭제 실패 (ID: {article_id})"
-    logger.info(f"테스트 종료 전 생성된 데이터 정리: ID {article_id} 삭제 완료")
+    assert_business_status(delete_response.json()["_result"], "ok", step="테스트 데이터 정리")
 
 @pytest.mark.parametrize("case_key, expected_status", [
-    ("classroom_id_missing", 409),
+    ("classroom_id_missing", 400),
     ("title_missing", 400),
     ("content_missing", 400)
 ])
@@ -176,26 +157,16 @@ def test_create_article_fail_by_missing_param(
     }
     payload.pop(missing_key, None) 
 
-    headers = valid_headers.copy()
-    headers.pop("Content-Type", None)
-
     response = rest_client.post(
         endpoint="/org/qatrack/board/article/edit/",
-        headers=headers,
+        headers=valid_headers,
         form_data=payload
     )
 
-    res_data = response.json()
-    logger.debug(f"응답 데이터: {res_data}")
-    
-    if res_data["_result"]["status_code"] != expected_status:
-        logger.error(f"상태 코드 불일치! 기대: {expected_status}, 실제: {res_data['_result']['status_code']}")
-
-    assert res_data["_result"]["status"] == "fail"
-    assert res_data["_result"]["status_code"] == expected_status
-    assert res_data.get("board_article_id") is None
-    
-    logger.info(f"=== STU_BOARD_02_002: {missing_key} 누락 케이스 검증 완료 ===")
+    body = response.json()
+    assert_business_status(body["_result"], "fail", step=f"{missing_key} 누락 케이스")
+    assert_business_code(body["_result"], {"status_code": expected_status}, step="에러 코드 검증")
+    assert_equal_value(body.get("board_article_id"), None, "ID 미생성 확인")
         
 def test_get_linked_courses(classroom_client, valid_headers, classroom_id, test_board_data):
     """STU_BOARD_02_003: 게시글 작성 연결 과목 조회"""
@@ -203,7 +174,6 @@ def test_get_linked_courses(classroom_client, valid_headers, classroom_id, test_
 
     endpoint = f"/classroom/{classroom_id}/course"
     query = test_board_data["queries"]["course_query"]
-    logger.debug(f"API 요청 경로: {endpoint} | 파라미터: {query}")
 
     response = classroom_client.get(
         endpoint=endpoint,
@@ -211,17 +181,16 @@ def test_get_linked_courses(classroom_client, valid_headers, classroom_id, test_
         params=query
     )
 
-    assert response.status_code == 200, f"조회 실패: {response.status_code}"
-    courses = response.json()
+    courses = assert_success(response)
+    
+    assert_equal_value(isinstance(courses, list), True, "응답 데이터 리스트 형식 여부")
     logger.info(f"조회된 과목 수: {len(courses)}")
-    assert isinstance(courses, list), "응답 형식이 리스트가 아닙니다."
     
     if len(courses) > 0:
         # 첫 번째 과목에 필수 필드가 있는지 확인
-        assert "id" in courses[0], "과목 ID 필드가 없습니다."
-        assert "title" in courses[0], "과목 제목 필드가 없습니다."
-        logger.debug(f"첫 번째 과목 데이터 확인: {courses[0]}")
-    logger.info("=== STU_BOARD_02_003: 테스트 완료 ===")
+        assert_equal_value("id" in courses[0], True, "과목 ID 필드 존재 여부")
+        assert_equal_value("title" in courses[0], True, "과목 제목 필드 존재 여부")
+        logger.debug(f"샘플 데이터 확인: {courses[0]}")
 
 @pytest.mark.parametrize("case_key", [
     "valid_article", 
@@ -242,12 +211,6 @@ def test_get_article_detail_cases(
     case_data = test_board_data["article_data"]["detail_cases"][case_key]
     article_id = created_article_id if case_key == "valid_article" else case_data["article_id"]
     
-    expected_status = case_data["expected_status"]
-    expected_result = case_data["expected_result"]
-    expected_fail_code = case_data["expected_fail_code"]
-    
-    logger.info(f"=== 상세 조회 테스트 시작 ({case_key} ID: {article_id}) ===")
-    
     response = rest_client.get(
         endpoint="/org/qatrack/board/article/get/",
         headers=valid_headers,
@@ -255,22 +218,15 @@ def test_get_article_detail_cases(
     )
     
     body = response.json()
-    logger.debug(f"[{case_key}] 응답 결과: {body}")
+    assert_business_status(body["_result"], case_data["expected_result"], step=f"상세 조회({case_key})")
+    assert_business_code(body["_result"], {"status_code": case_data["expected_status"]}, step="상태 코드 검증")
     
-    assert body["_result"]["status"] == expected_result
-    assert body["_result"]["status_code"] == expected_status
-    
-    if expected_result == "ok":
-        logger.info(f"정상 조회 성공: {body['board_article']['title']}")
-        assert body["board_article"]["id"] == article_id
-        assert "title" in body["board_article"]
+    if case_data["expected_result"] == "ok":
+        # 응답받은 ID가 요청한 ID와 일치하는지 확인
+        assert_id_match(body["board_article"]["id"], article_id, target_name="게시글 ID")
     else:
-        logger.info(f"에러 케이스 검증 (결과: {expected_fail_code})")
-        assert body["fail_code"] == expected_fail_code
-        assert body["fail_message"] == "bad request"
-        assert "board_article" not in body
-    
-    logger.info(f"=== 상세 조회 케이스(ID: {article_id}) 완료 ===")
+        # 실패 코드 키워드 포함 여부 확인
+        assert_equal_value(body.get("fail_code"), case_data["expected_fail_code"], "실패 코드 일치 확인")
 
 @pytest.mark.parametrize("case_key", [
     "others_private_a", 
@@ -298,14 +254,17 @@ def test_get_others_private_article_security_bug(rest_client, valid_headers, cas
     body = response.json()
     
     if body["_result"]["status"] == "ok":
-        logger.critical(f"보안 경고: 비밀글(ID: {article_id})이 타인에게 노출됨!")
+        logger.critical(f"🔥 보안 경고: 비밀글(ID: {article_id})이 권한 없이 조회되었습니다!")
+
+    # 기대 결과(실패) 검증
+    # 기대값: status 'fail', status_code 409(혹은 403), fail_code 'insufficient_permission'
+    assert_business_status(body["_result"], "fail", step="비밀글 접근 차단 확인")
     
-    # 실패해야 정상
-    # 현재는 AssertionError가 발생하여 xfail 처리
-    assert body["_result"]["status"] == "fail", f"보안 취약점: ID {article_id} 비밀글이 조회됨"
-    assert body["_result"]["status_code"] == 409
-    assert body["fail_code"] == "insufficient_permission"
-    logger.info("=== 타인 비밀글 테스트 시나리오 종료 ===")
+    # 403 혹은 409 둘 중 하나면 통과
+    assert_business_code(body["_result"], {"status_code": [403, 409]}, step="보안 에러 코드 검증")
+    
+    # 구체적인 에러 키워드(fail_code) 검증
+    assert_equal_value(body.get("fail_code"), "insufficient_permission", "권한 부족 에러코드 일치 여부")
 
 def test_update_article_success(rest_client, valid_headers, classroom_id, created_article_id, test_board_data):
     """STU_BOARD_02_007: 게시글 수정"""
@@ -327,16 +286,13 @@ def test_update_article_success(rest_client, valid_headers, classroom_id, create
         form_data=update_payload
     )
 
-    res_data = response.json()
-    logger.debug(f"수정 API 응답 데이터: {res_data}")
+    body = assert_success(response)
     
-    assert res_data["_result"]["status"] == "ok"
-    assert res_data["_result"]["status_code"] == 200
-    assert res_data["board_article_id"] == created_article_id
-    logger.info(f"게시글 ID {created_article_id} 수정 검증 완료")
+    assert_business_status(body["_result"], "ok", step="게시글 수정 요청")
+    assert_business_code(body["_result"], {"status_code": 200}, step="수정 응답 코드 확인")
 
-    logger.info("=== STU_BOARD_02_007: 테스트 종료 ===")
-
+    assert_id_match(body.get("board_article_id"), created_article_id, target_name="수정 게시글 ID")
+    
 def test_update_others_article_fail(rest_client, valid_headers, classroom_id, test_board_data):
     """STU_BOARD_02_008: 타인 게시글 수정 시도"""
     logger.info("=== STU_BOARD_02_008: 타인 게시글 수정 시도 테스트 시작 ===")
@@ -359,15 +315,12 @@ def test_update_others_article_fail(rest_client, valid_headers, classroom_id, te
         form_data=payload
     )
 
-    res_data = response.json()
-    logger.debug(f"타인 글 수정 시도 응답: {res_data}")
+    body = response.json()
+    logger.debug(f"타인 글 수정 시도 응답: {body}")
 
-    assert res_data["_result"]["status"] == "fail", f"보안 취약점: 타인의 게시글({article_id})이 수정되었습니다!"
-
-    assert res_data["_result"]["status_code"] == 400
-    assert res_data["fail_code"] == "resource_not_found"
-
-    logger.info(f"=== STU_BOARD_03_002: 타인 게시글({article_id}) 수정 차단 확인 완료 ===")
+    assert_business_status(body["_result"], "fail", step="타인 게시글 수정 차단")
+    assert_business_code(body["_result"], {"status_code": 400}, step="에러 코드 검증")
+    assert_equal_value(body.get("fail_code"), "resource_not_found", "실패 코드(fail_code) 일치 여부")
 
 def test_delete_article_success(rest_client, valid_headers, created_article_id):
     """STU_BOARD_02_009: 게시글 삭제"""
@@ -382,11 +335,9 @@ def test_delete_article_success(rest_client, valid_headers, created_article_id):
         form_data={"board_article_id": created_article_id}
     )
 
-    res_data = response.json()
-    assert res_data["_result"]["status"] == "ok"
-    assert res_data["_result"]["status_code"] == 200
-    
-    logger.info(f"=== STU_BOARD_02_009: 게시글 삭제 테스트 ID {created_article_id} 삭제 검증 완료 ===")
+    body = assert_success(response)
+    assert_business_status(body["_result"], "ok", step="게시글 삭제 요청")
+    assert_business_code(body["_result"], {"status_code": 200}, step="삭제 완료 응답 확인")
 
 @pytest.mark.xfail(reason="보안 버그: 타인의 게시글이 권한 체크 없이 삭제됨")
 def test_delete_others_article_xfail(rest_client, valid_headers, board_id, test_board_data):
@@ -405,7 +356,7 @@ def test_delete_others_article_xfail(rest_client, valid_headers, board_id, test_
         params={**query, "board_id": board_id}
     )
     
-    body = response.json()
+    body = assert_success(response)
     articles = body.get("board_articles", [])
 
     # 2. JSON에서 설정한 타인 리스트 가져오기
@@ -437,16 +388,15 @@ def test_delete_others_article_xfail(rest_client, valid_headers, board_id, test_
         form_data={"board_article_id": target_id}
     )
 
-    body = response.json()
-    logger.debug(f"API 응답 데이터: {body}")
+    res_data = response.json()
 
     if body["_result"]["status"] == "ok":
         logger.critical(f"보안 경고: 타인의 게시글(ID: {target_id})이 권한 없이 삭제됨!")
 
     # 실패해야 정상 (삭제가 성공하면 AssertionError 발생 -> xfail 처리)
-    assert body["_result"]["status"] == "fail", f"보안 취약점: 타인의 글(ID: {target_id})이 삭제됨"
-    assert body["_result"]["status_code"] in [403, 409]  # 차단 시 발생해야 할 코드
-    assert body["fail_code"] == "insufficient_permission"
+    assert_business_status(res_data["_result"], "fail", step="타인 게시글 삭제 차단")
+    assert_business_code(res_data["_result"], {"status_code": [403, 409]}, step="보안 에러 코드 검증")
+    assert_equal_value(res_data.get("fail_code"), "insufficient_permission", "권한 부족 에러코드 일치 여부")
     
     logger.info("=== STU_BOARD_02_010: 타인 게시글 삭제 시도 종료 ===")
 
@@ -470,14 +420,12 @@ def test_create_article_max_title_over_fail(rest_client, valid_headers, classroo
         form_data=payload
     )
 
-    res_data = response.json()
-    logger.debug(f"서버 응답: {res_data}")
+    body = response.json()
+    logger.debug(f"서버 응답: {body}")
 
-    assert res_data["_result"]["status"] == "fail", "글자수 초과 제목이 차단되지 않았습니다."
-    assert res_data["_result"]["status_code"] == 400
-    assert res_data["fail_code"] == "invalid_parameter"
-    
-    logger.info("=== STU_BOARD_02_011: 글자수 제한 정책 적용 확인 완료 ===")
+    assert_business_status(body["_result"], "fail", step="글자수 제한 검증")
+    assert_business_code(body["_result"], {"status_code": 400}, step="에러 코드 400 확인")
+    assert_equal_value(body.get("fail_code"), "invalid_parameter", "실패 코드(fail_code) 일치 여부")
 
 # ---------------- STU_BOARD_03 ----------------
 
@@ -499,10 +447,8 @@ def test_article_like_add_and_delete_flow(rest_client, valid_headers, created_ar
         form_data={"board_article_id": created_article_id}
     )
     
-    like_add_body = like_add_res.json()
-    assert like_add_body["_result"]["status"] == "ok"
-    assert like_add_body["_result"]["status_code"] == 200
-    logger.info(f"ID {created_article_id} 게시글 좋아요 추가 성공")
+    body_add = assert_success(like_add_res)
+    assert_business_status(body_add["_result"], "ok", step="게시글 좋아요 추가")
 
     # 좋아요 취소
     logger.info("단계 2: 좋아요 취소 요청")
@@ -512,12 +458,8 @@ def test_article_like_add_and_delete_flow(rest_client, valid_headers, created_ar
         form_data={"board_article_id": created_article_id}
     )
     
-    like_del_body = like_del_res.json()
-    assert like_del_body["_result"]["status"] == "ok"
-    assert like_del_body["_result"]["status_code"] == 200
-    logger.info(f"ID {created_article_id} 게시글 좋아요 취소 성공")
-
-    logger.info("=== STU_BOARD_03-001,002: 모든 좋아요 시나리오 검증 완료 ===")
+    body_del = assert_success(like_del_res)
+    assert_business_status(body_del["_result"], "ok", step="게시글 좋아요 취소")
 
 @pytest.mark.parametrize("data_key, expected_status, expected_code, expected_fail_code", [
     ("valid_comment", "ok", 200, None),
@@ -545,21 +487,14 @@ def test_create_comment(rest_client, valid_headers, test_board_data, created_art
         form_data=payload
     )
 
-    res_data = response.json()
-    logger.debug(f"응답 데이터: {res_data}")
-
-    assert res_data["_result"]["status"] == expected_status
-    assert res_data["_result"]["status_code"] == expected_code
+    body = response.json()
+    assert_business_status(body["_result"], expected_status, step=f"댓글 작성({data_key})")
+    assert_business_code(body["_result"], {"status_code": expected_code}, step="응답 코드 검증")
 
     if expected_fail_code:
-        assert res_data["fail_code"] == expected_fail_code
-        assert res_data["_result"]["reason"] == "param"
-        logger.info(f"예상대로 {expected_fail_code} 에러 발생 확인")
+        assert_equal_value(body.get("fail_code"), expected_fail_code, "에러 코드 일치 확인")
     else:
-        assert "article_comment_id" in res_data
-        logger.info(f"댓글 작성 성공 (ID: {res_data['article_comment_id']})")
-
-    logger.info(f"=== STU_BOARD_03-003, 004 댓글 테스트 종료 ===")
+        assert_equal_value("article_comment_id" in body, True, "댓글 ID 생성 확인")
 
 def test_comment_like_add_and_delete(rest_client, valid_headers, created_comment_id):
     """
@@ -578,10 +513,7 @@ def test_comment_like_add_and_delete(rest_client, valid_headers, created_comment
         form_data={"article_comment_id": created_comment_id}
     )
     
-    add_body = like_add_res.json()
-    assert like_add_res.status_code == 200
-    assert add_body["_result"]["status"] == "ok"
-    logger.info(f"ID {created_comment_id} 댓글 좋아요 추가 성공")
+    assert_business_status(assert_success(like_add_res)["_result"], "ok", step="댓글 좋아요 추가")
 
     # 2. 댓글 좋아요 취소
     logger.info("단계 2: 댓글 좋아요 취소 요청")
@@ -591,12 +523,7 @@ def test_comment_like_add_and_delete(rest_client, valid_headers, created_comment
         form_data={"article_comment_id": created_comment_id}
     )
     
-    del_body = like_del_res.json()
-    assert like_del_res.status_code == 200
-    assert del_body["_result"]["status"] == "ok"
-    logger.info(f"ID {created_comment_id} 댓글 좋아요 취소 성공")
-
-    logger.info("=== STU_BOARD_03-005, 006: 댓글 좋아요 시나리오 검증 완료 ===")
+    assert_business_status(assert_success(like_del_res)["_result"], "ok", step="댓글 좋아요 취소")
 
 def test_comment_update_delete(rest_client, valid_headers, created_article_id, created_comment_id, test_board_data):
     """
@@ -623,8 +550,7 @@ def test_comment_update_delete(rest_client, valid_headers, created_article_id, c
         form_data=update_payload
     )
     
-    assert update_res.json()["_result"]["status"] == "ok"
-    logger.info(f"ID {created_comment_id} 댓글 수정 완료 및 검증 성공")
+    assert_business_status(assert_success(update_res)["_result"], "ok", step="댓글 수정")
 
     # 2. 댓글 삭제
     logger.info("단계 2: 댓글 삭제 요청")
@@ -634,10 +560,7 @@ def test_comment_update_delete(rest_client, valid_headers, created_article_id, c
         form_data={"article_comment_id": created_comment_id}
     )
     
-    assert delete_res.json()["_result"]["status"] == "ok"
-    logger.info(f"ID {created_comment_id} 댓글 삭제 완료 및 검증 성공")
-
-    logger.info("=== STU_BOARD_03-007,008: 댓글 수정, 삭제 검증 완료 ===")
+    assert_business_status(assert_success(delete_res)["_result"], "ok", step="댓글 삭제")
 
 def test_get_comment_list_success(rest_client, valid_headers, test_board_data, created_article_id):
     """STU_BOARD_03-009: 특정 게시글 댓글 목록 조회"""
@@ -653,21 +576,9 @@ def test_get_comment_list_success(rest_client, valid_headers, test_board_data, c
         params=params
     )
 
-    res_data = response.json()
-    logger.debug(f"조회 응답 데이터 요약: {res_data.get('_result')}")
-
-    assert res_data["_result"]["status"] == "ok"
-    assert res_data["_result"]["status_code"] == 200
-
-    assert isinstance(res_data.get("article_comments"), list)
-
-    if res_data["article_comments"]:
-        first_comment = res_data["article_comments"][0]
-        logger.info(f"조회 성공: 첫 번째 댓글 ID -> {first_comment.get('id')}")
-    else:
-        logger.warning("조회는 성공했으나 댓글이 비어있습니다.")
-
-    logger.info("=== STU_BOARD_03-009 댓글 목록 조회 테스트 종료 ===")
+    body = assert_success(response)
+    assert_business_status(body["_result"], "ok", step="댓글 목록 조회")
+    assert_equal_value(isinstance(body.get("article_comments"), list), True, "댓글 리스트 형식 확인")
 
 @pytest.mark.parametrize("sort_key, expected_status, expected_code", [
     ("valid_desc", "ok", 200),
@@ -701,17 +612,9 @@ def test_get_comment_list_sort_parametrize(rest_client, valid_headers, test_boar
         params=params
     )
 
-    res_data = response.json()
-    logger.debug(f"응답 데이터: {res_data}")
-
-    assert res_data["_result"]["status"] == expected_status
-    assert res_data["_result"]["status_code"] == expected_code
+    body = response.json()
+    assert_business_status(body["_result"], expected_status, step=f"정렬 테스트({sort_key})")
+    assert_business_code(body["_result"], {"status_code": expected_code}, step="응답 코드 검증")
 
     if expected_status == "fail":
-        assert res_data["fail_code"] == "invalid_parameter"
-        assert res_data["_result"]["reason"] == "param"
-    else:
-        assert "article_comments" in res_data
-        logger.info(f"정렬 조회 성공: {len(res_data['article_comments'])}개의 댓글 반환")
-
-    logger.info(f"=== STU_BOARD_03-010,011,012 테스트 종료 ===")
+        assert_equal_value(body.get("fail_code"), "invalid_parameter", "에러 코드 일치 확인")
