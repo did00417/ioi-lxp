@@ -75,7 +75,7 @@ LXP 서비스의 주요 기능에 대한 API 검증, 테스트 케이스 설계,
 
 ```bash
 IOI-LXP/
-├─ api_test/       (API 자동화 테스트 코드 폴더)
+├─ api_test/                   (API 자동화 테스트 코드 폴더)
 │   ├─ api/
 │   │   └─ api_client.py       (API 클라이언트 관련 공통 모듈)
 │   ├─ config/                 (테스트에 사용할 데이터 관리)
@@ -89,7 +89,7 @@ IOI-LXP/
 │   ├─ conftest.py             (테스트 초기 설정 관리(fixture 등))
 │   └─ pytest.ini              (Pytest 실행 옵션)
 │
-├─ performance_test/
+├─ performance_test/           (부하테스트 관련 폴더)
 │   ├─ dashboard/              (JMeter HTML 대시보드 리포트 폴더)
 │   ├─ results/                (실행 결과 데이터)
 │   └─ scripts/                (JMeter 스크립트 파일)
@@ -159,7 +159,7 @@ INVALID_HYOJIN_ID={학습 과목 도메인 용 user_id}
 
 ---
 
-## 💻 CI 파이프라인 구축 (Jenkins)
+## 💻 CI/CD 파이프라인 구축 (Jenkins)
 
 Jenkins를 사용하여 GitLab 저장소의 코드를 기반으로 API 자동화 테스트를 실행하고 Allure 리포트를 생성하는 CI 환경을 구성합니다.
 
@@ -175,7 +175,12 @@ Jenkins를 사용하여 GitLab 저장소의 코드를 기반으로 API 자동화
 
 ※ 주의: ID(이름)는 똑같아야 하지만, 그 안에 들어가는 실제 값(토큰이나 ID)은 본인의 계정 정보나 토큰 값을 넣어야 합니다.
 
-### 2. 테스트 결과 시각화
+### 2. GitLab Webhook 연동 (자동 빌드 트리거)
+
+GitLab 저장소에 새로운 코드가 Push(또는 Merge) 될 때마다 Jenkins가 이를 감지하고 자동으로 테스트 파이프라인을 실행하도록 Webhook이 설정되어 있습니다. <br>
+개발자가 수동으로 빌드를 실행할 필요 없이, 코드 변경 사항이 반영되는 즉시 API 회귀 테스트와 품질 검증이 자동으로 진행됩니다.
+
+### 3. 테스트 결과 시각화
 
 Jenkins Pipeline에서 저장소의 Jenkinsfile을 사용하여 빌드를 실행합니다. <br>
 실행 후 Jenkins UI에서 다음 결과를 확인할 수 있습니다.
