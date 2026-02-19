@@ -305,61 +305,33 @@ def test_get_others_private_article_security_bug(rest_client, valid_headers, cas
     assert body["fail_code"] == "insufficient_permission"
     logger.info("=== 타인 비밀글 테스트 시나리오 종료 ===")
 
-def test_update_article_success(rest_client, valid_headers, classroom_id, create_article_data, test_board_data):
-    """
-    STU_BOARD_02_007: 게시글 수정
-    테스트용 게시글 생성 -> 해당 ID로 내용 수정 -> 테스트 종료 후 삭제
-    """
+def test_update_article_success(rest_client, valid_headers, classroom_id, created_article_id, test_board_data):
+    """STU_BOARD_02_007: 게시글 수정"""
     logger.info("=== STU_BOARD_02_007: 게시글 수정 테스트 시작 ===")
 
     headers = valid_headers.copy()
     headers.pop("Content-Type", None)
     
-    # 1. 수정을 위한 임시 게시글 생성
-    create_payload = {**create_article_data, "classroom_id": classroom_id}
-    create_res = rest_client.post(
+    edit_content = test_board_data["edit_article"]["update_payload"]
+    update_payload = {
+        "board_article_id": created_article_id,
+        **edit_content,
+        "classroom_id": classroom_id
+    }
+    
+    response = rest_client.post(
         endpoint="/org/qatrack/board/article/edit/",
         headers=headers,
-        form_data=create_payload
+        form_data=update_payload
     )
-    article_id = create_res.json().get("board_article_id")
-    logger.info(f"수정 테스트를 위한 임시 게시글 생성 완료 (ID: {article_id})")
 
-    try:
-        # 2. 방금 생성한 ID를 사용하여 게시글 수정
-        edit_content = test_board_data["edit_article"]["update_payload"]
-        update_payload = {
-            "board_article_id": article_id,
-            **edit_content,
-            "classroom_id": classroom_id
-        }
-        
-        response = rest_client.post(
-            endpoint="/org/qatrack/board/article/edit/",
-            headers=headers,
-            form_data=update_payload
-        )
-
-        res_data = response.json()
-        logger.debug(f"수정 API 응답 데이터: {res_data}")
-        
-        assert res_data["_result"]["status"] == "ok"
-        assert res_data["_result"]["status_code"] == 200
-        assert res_data["board_article_id"] == article_id
-        logger.info(f"게시글 ID {article_id} 수정 검증 완료")
-
-    finally:
-        # 3. 테스트 종료 후 임시 게시글 삭제
-        delete_payload = {"board_article_id": article_id}
-        delete_res = rest_client.post(
-            endpoint="/org/qatrack/board/article/delete/",
-            headers=headers,
-            form_data=delete_payload
-        )
-        if delete_res.json()["_result"]["status"] == "ok":
-            logger.info(f"임시 테스트 데이터 삭제 완료 (ID: {article_id})")
-        else:
-            logger.error(f"임시 데이터 삭제 실패 (ID: {article_id})")
+    res_data = response.json()
+    logger.debug(f"수정 API 응답 데이터: {res_data}")
+    
+    assert res_data["_result"]["status"] == "ok"
+    assert res_data["_result"]["status_code"] == 200
+    assert res_data["board_article_id"] == created_article_id
+    logger.info(f"게시글 ID {created_article_id} 수정 검증 완료")
 
     logger.info("=== STU_BOARD_02_007: 테스트 종료 ===")
 
@@ -395,42 +367,24 @@ def test_update_others_article_fail(rest_client, valid_headers, classroom_id, te
 
     logger.info(f"=== STU_BOARD_03_002: 타인 게시글({article_id}) 수정 차단 확인 완료 ===")
 
-def test_delete_article_success(rest_client, valid_headers, classroom_id, create_article_data):
-    """
-    STU_BOARD_02_009: 게시글 삭제
-    반복 테스트를 위해 게시글 생성 후 삭제 로직
-    """
+def test_delete_article_success(rest_client, valid_headers, created_article_id):
+    """STU_BOARD_02_009: 게시글 삭제"""
     logger.info("=== STU_BOARD_02_009: 게시글 삭제 테스트 시작 ===")
 
-    # 1. ID 확보용 게시글 생성
-    create_payload = {**create_article_data, "classroom_id": classroom_id}
     headers = valid_headers.copy()
     headers.pop("Content-Type", None)
-
-    create_res = rest_client.post(
-        endpoint="/org/qatrack/board/article/edit/",
-        headers=headers,
-        form_data=create_payload
-    )
-    
-    # 생성된 글의 ID를 가져옵니다.
-    article_id = create_res.json().get("board_article_id")
-    logger.info(f"삭제 테스트를 위한 임시 게시글 생성 완료 (ID: {article_id})")
-
-    # 2. 방금 생성된 ID로 삭제 요청
-    delete_payload = {"board_article_id": article_id}
 
     response = rest_client.post(
         endpoint="/org/qatrack/board/article/delete/",
         headers=headers,
-        form_data=delete_payload
+        form_data={"board_article_id": created_article_id}
     )
 
     res_data = response.json()
     assert res_data["_result"]["status"] == "ok"
     assert res_data["_result"]["status_code"] == 200
     
-    logger.info(f"=== STU_BOARD_02_009: 게시글 삭제 테스트 ID {article_id} 삭제 검증 완료 ===")
+    logger.info(f"=== STU_BOARD_02_009: 게시글 삭제 테스트 ID {created_article_id} 삭제 검증 완료 ===")
 
 @pytest.mark.xfail(reason="보안 버그: 타인의 게시글이 권한 체크 없이 삭제됨")
 def test_delete_others_article_xfail(rest_client, valid_headers, board_id, test_board_data):
@@ -525,53 +479,41 @@ def test_create_article_max_title_over_fail(rest_client, valid_headers, classroo
 
 # ---------------- STU_BOARD_03 ----------------
 
-def test_article_like_add_and_delete_flow(rest_client, valid_headers, classroom_id, test_board_data):
+def test_article_like_add_and_delete_flow(rest_client, valid_headers, created_article_id):
     """
     STU_BOARD_03-001: 게시글 좋아요 정상 동작
     STU_BOARD_03-002: 게시글 좋아요 취소 확인
-    순서: 새 글 작성 -> 좋아요 추가 -> 좋아요 취소
     """
     logger.info("=== STU_BOARD_03-001,002: 좋아요 추가/취소 테스트 시작 ===")
-
-    like_test_data = test_board_data["like_article_data"]["like_test"]
     
     headers = valid_headers.copy()
     headers.pop("Content-Type", None)
 
-    create_res = rest_client.post(
-        endpoint="/org/qatrack/board/article/edit/",
-        headers=headers,
-        form_data={
-            "classroom_id": classroom_id,
-            **like_test_data 
-        }
-    )
-    article_id = create_res.json().get("board_article_id")
-    logger.info(f"테스트용 게시글 생성 완료 (ID: {article_id})")
-
     # 좋아요 추가
+    logger.info("단계 1: 좋아요 추가 요청")
     like_add_res = rest_client.post(
         endpoint="/org/qatrack/board/article/like/add/",
         headers=headers,
-        form_data={"board_article_id": article_id}
+        form_data={"board_article_id": created_article_id}
     )
     
     like_add_body = like_add_res.json()
     assert like_add_body["_result"]["status"] == "ok"
     assert like_add_body["_result"]["status_code"] == 200
-    logger.info(f"ID {article_id} 게시글 좋아요 추가 성공")
+    logger.info(f"ID {created_article_id} 게시글 좋아요 추가 성공")
 
     # 좋아요 취소
+    logger.info("단계 2: 좋아요 취소 요청")
     like_del_res = rest_client.post(
         endpoint="/org/qatrack/board/article/like/delete/",
         headers=headers,
-        form_data={"board_article_id": article_id}
+        form_data={"board_article_id": created_article_id}
     )
     
     like_del_body = like_del_res.json()
     assert like_del_body["_result"]["status"] == "ok"
     assert like_del_body["_result"]["status_code"] == 200
-    logger.info(f"ID {article_id} 게시글 좋아요 취소 성공")
+    logger.info(f"ID {created_article_id} 게시글 좋아요 취소 성공")
 
     logger.info("=== STU_BOARD_03-001,002: 모든 좋아요 시나리오 검증 완료 ===")
 
