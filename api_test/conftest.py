@@ -78,6 +78,10 @@ def dashboard_params(test_dashboard_data):
 def dashboard_page(test_dashboard_data):
     return test_dashboard_data["page"]
 
+@pytest.fixture(scope="session")
+def dashboard_scenarios(test_dashboard_data):
+    return test_dashboard_data["scenarios"]
+
 #-------------------- <유진> 게시판 메뉴 데이터 ------------------------------
 
 @pytest.fixture(scope="session")
