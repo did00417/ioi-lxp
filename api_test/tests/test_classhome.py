@@ -446,7 +446,7 @@ def test_get_learning_status_invalid_offset_count(
     classhome_student_course_case
  ):
     logger.info("=== STU-CHM-06-006: offset/count 값 오류시 학습 현황 조회 차단 확인 ===")
-    endpoint = endpoint = f"/student/{classhome_params['student_id']}/course"
+    endpoint = f"/student/{classhome_params['student_id']}/course"
     
     params = {
         "classroom_id":classhome_params["classroom_id"],
