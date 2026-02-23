@@ -133,7 +133,7 @@ $(document).ready(function() {
         widgets: ['zebra']
     });
 
-    var data = {"OkPercent": 100.0, "KoPercent": 0.0};
+    var data = {"OkPercent": 99.37694704049844, "KoPercent": 0.6230529595015576};
     var dataset = [
         {
             "label" : "FAIL",
@@ -173,7 +173,7 @@ $(document).ready(function() {
     });
 
     // Creates APDEX table
-    createTable($("#apdexTable"), {"supportsControllersDiscrimination": true, "overall": {"data": [0.9860655737704918, 500, 1500, "Total"], "isController": false}, "titles": ["Apdex", "T (Toleration threshold)", "F (Frustration threshold)", "Label"], "items": [{"data": [0.92, 500, 1500, "Auth"], "isController": false}, {"data": [1.0, 500, 1500, "3. 시험 시작"], "isController": false}, {"data": [1.0, 500, 1500, "5. 재응시"], "isController": false}, {"data": [1.0, 500, 1500, "1. 과목 정보"], "isController": false}, {"data": [0.9950980392156863, 500, 1500, "2. 시험 입장"], "isController": false}, {"data": [1.0, 500, 1500, "4. 시험 제출"], "isController": false}]}, function(index, item){
+    createTable($("#apdexTable"), {"supportsControllersDiscrimination": true, "overall": {"data": [0.9781931464174455, 500, 1500, "Total"], "isController": false}, "titles": ["Apdex", "T (Toleration threshold)", "F (Frustration threshold)", "Label"], "items": [{"data": [0.9381443298969072, 500, 1500, "Auth"], "isController": false}, {"data": [0.9767441860465116, 500, 1500, "3. 시험 시작"], "isController": false}, {"data": [1.0, 500, 1500, "5. 재응시"], "isController": false}, {"data": [1.0, 500, 1500, "1. 과목 정보"], "isController": false}, {"data": [1.0, 500, 1500, "2. 시험 입장"], "isController": false}, {"data": [1.0, 500, 1500, "4. 시험 제출"], "isController": false}]}, function(index, item){
         switch(index){
             case 0:
                 item = item.toFixed(3);
@@ -187,7 +187,7 @@ $(document).ready(function() {
     }, [[0, 0]], 3);
 
     // Create statistics table
-    createTable($("#statisticsTable"), {"supportsControllersDiscrimination": true, "overall": {"data": ["Total", 610, 0, 0.0, 164.6426229508195, 74, 724, 100.5, 443.0, 456.0, 539.67, 2.620286169614131, 1.4111220945966263, 1.63142010382347], "isController": false}, "titles": ["Label", "#Samples", "FAIL", "Error %", "Average", "Min", "Max", "Median", "90th pct", "95th pct", "99th pct", "Transactions/s", "Received", "Sent"], "items": [{"data": ["Auth", 100, 0, 0.0, 463.9399999999999, 422, 724, 445.0, 529.4000000000001, 548.55, 723.5699999999998, 1.522742154071051, 0.8372107741621111, 0.49670540459259027], "isController": false}, {"data": ["3. 시험 시작", 102, 0, 0.0, 94.0392156862745, 74, 191, 91.0, 104.10000000000001, 117.39999999999998, 190.27999999999997, 0.8631267188491644, 0.40290485508779356, 0.6274129997884493], "isController": false}, {"data": ["5. 재응시", 102, 0, 0.0, 94.51960784313725, 76, 176, 91.0, 105.0, 143.4499999999998, 175.76, 0.8532994244411725, 0.3199872841654397, 0.62350463458707], "isController": false}, {"data": ["1. 과목 정보", 102, 0, 0.0, 117.17647058823529, 79, 236, 108.5, 157.0, 212.09999999999997, 235.64, 0.9006304413089162, 0.9815464575202641, 0.4441585672470729], "isController": false}, {"data": ["2. 시험 입장", 102, 0, 0.0, 110.32352941176471, 80, 519, 102.0, 126.7, 167.1499999999999, 509.0699999999996, 0.8895478131949592, 0.3335804299481097, 0.6459032834779574], "isController": false}, {"data": ["4. 시험 제출", 102, 0, 0.0, 113.72549019607841, 74, 387, 100.0, 166.20000000000002, 193.39999999999998, 383.27999999999986, 0.8569556231411625, 0.32135835867793594, 0.6228287306974947], "isController": false}]}, function(index, item){
+    createTable($("#statisticsTable"), {"supportsControllersDiscrimination": true, "overall": {"data": ["Total", 321, 2, 0.6230529595015576, 228.13707165109054, 26, 843, 144.0, 449.8, 462.9, 618.2799999999979, 5.181598062953995, 3.2691434624697333, 2.8163463478611783], "isController": false}, "titles": ["Label", "#Samples", "FAIL", "Error %", "Average", "Min", "Max", "Median", "90th pct", "95th pct", "99th pct", "Transactions/s", "Received", "Sent"], "items": [{"data": ["Auth", 97, 1, 1.0309278350515463, 452.2680412371134, 27, 843, 441.0, 501.4, 531.0999999999998, 843.0, 1.5661074963269128, 0.8609744074624215, 0.5102526054700744], "isController": false}, {"data": ["3. 시험 시작", 43, 1, 2.3255813953488373, 148.41860465116284, 26, 249, 143.0, 198.00000000000003, 220.79999999999995, 249.0, 1.332300542215337, 0.7034880906274207, 0.9448525852052673], "isController": false}, {"data": ["5. 재응시", 10, 0, 0.0, 161.6, 103, 241, 151.5, 240.3, 241.0, 241.0, 0.5644615037254459, 0.2116730638970422, 0.40901409742605555], "isController": false}, {"data": ["1. 과목 정보", 82, 0, 0.0, 96.28048780487804, 79, 206, 90.0, 122.60000000000002, 137.85, 206.0, 1.5517959199121911, 1.691215084591802, 0.7652899800348208], "isController": false}, {"data": ["2. 시험 입장", 64, 0, 0.0, 138.95312499999991, 101, 326, 128.5, 177.5, 225.25, 326.0, 1.4137397835210956, 0.5301524188204109, 1.0278390421360724], "isController": false}, {"data": ["4. 시험 제출", 25, 0, 0.0, 183.04000000000002, 121, 377, 167.0, 257.0, 340.9999999999999, 377.0, 1.1332215221431485, 0.4249580708036807, 0.8230906633878791], "isController": false}]}, function(index, item){
         switch(index){
             // Errors pct
             case 3:
@@ -217,7 +217,7 @@ $(document).ready(function() {
     }, [[0, 0]], 0, summaryTableHeader);
 
     // Create error table
-    createTable($("#errorsTable"), {"supportsControllersDiscrimination": false, "titles": ["Type of error", "Number of errors", "% in errors", "% in all samples"], "items": []}, function(index, item){
+    createTable($("#errorsTable"), {"supportsControllersDiscrimination": false, "titles": ["Type of error", "Number of errors", "% in errors", "% in all samples"], "items": [{"data": ["Non HTTP response code: java.net.SocketException/Non HTTP response message: Socket closed", 1, 50.0, 0.3115264797507788], "isController": false}, {"data": ["422/Unprocessable Entity", 1, 50.0, 0.3115264797507788], "isController": false}]}, function(index, item){
         switch(index){
             case 2:
             case 3:
@@ -228,7 +228,7 @@ $(document).ready(function() {
     }, [[1, 1]]);
 
         // Create top5 errors by sampler
-    createTable($("#top5ErrorsBySamplerTable"), {"supportsControllersDiscrimination": false, "overall": {"data": ["Total", 610, 0, "", "", "", "", "", "", "", "", "", ""], "isController": false}, "titles": ["Sample", "#Samples", "#Errors", "Error", "#Errors", "Error", "#Errors", "Error", "#Errors", "Error", "#Errors", "Error", "#Errors"], "items": [{"data": [], "isController": false}, {"data": [], "isController": false}, {"data": [], "isController": false}, {"data": [], "isController": false}, {"data": [], "isController": false}, {"data": [], "isController": false}]}, function(index, item){
+    createTable($("#top5ErrorsBySamplerTable"), {"supportsControllersDiscrimination": false, "overall": {"data": ["Total", 321, 2, "Non HTTP response code: java.net.SocketException/Non HTTP response message: Socket closed", 1, "422/Unprocessable Entity", 1, "", "", "", "", "", ""], "isController": false}, "titles": ["Sample", "#Samples", "#Errors", "Error", "#Errors", "Error", "#Errors", "Error", "#Errors", "Error", "#Errors", "Error", "#Errors"], "items": [{"data": ["Auth", 97, 1, "422/Unprocessable Entity", 1, "", "", "", "", "", "", "", ""], "isController": false}, {"data": ["3. 시험 시작", 43, 1, "Non HTTP response code: java.net.SocketException/Non HTTP response message: Socket closed", 1, "", "", "", "", "", "", "", ""], "isController": false}, {"data": [], "isController": false}, {"data": [], "isController": false}, {"data": [], "isController": false}, {"data": [], "isController": false}]}, function(index, item){
         return item;
     }, [[0, 0]], 0);
 
