@@ -1,0 +1,33 @@
+{
+  "params": {
+    "classroom_id": "a6bd98a3-83ff-4e5d-ba9e-6c04c69592fc",
+    "invalid_classroom_id" : "5e320225-8e8b-4d3e-892b-3bd60d327619",
+    "student_id": "${STUDENT_ID}",
+    "invalid_student_id" : 1000000,
+    "course_id" : 766477,
+    "invalid_course_id" : 766000,
+    "lecture_id" : 6643882,
+    "invalid_lecture_id" : 6643059,
+    "chapter_test_id" : 6643886,
+    "invalid_chapter_test_id" : 6644109,
+    "review_test_id" : 6644112,
+    "invalid_review_test_id" : 6644114,
+    "no_test_course_id" : 763817
+  },
+  "scenarios": {
+    "course_learning_base": {
+      "filter_parent_lecture_id": "null",
+      "offset": 0,
+      "count": 40
+    },
+    "review_note_base": {
+      "filter_test_admission_status": "completed",
+      "offset": 0,
+      "count": 40
+    }
+  },
+  "page" : {
+    "one_course_ids" : [762843, 762844, 759075, 763817, 759074],
+    "two_course_ids" : [764580, 764630, 764763, 764632, 765299]
+  }
+}

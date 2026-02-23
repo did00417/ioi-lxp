@@ -1,0 +1,417 @@
+{
+  "params": {
+    "classroom_id": "a6bd98a3-83ff-4e5d-ba9e-6c04c69592fc",
+    "invalid_classroom_id": "5e320225-8e8b-4d3e-892b-3bd60d327619",
+    "student_id": "${STUDENT_ID}",
+    "course_id": 766557,
+    "user_id": "${USER_ID}",
+    "invalid_course_id": 766558,
+    "invalid_user_id": "${INVALID_USER_ID}",
+    "hyojin_id": "${HYOJIN_ID}",
+    "invalid_hyojin_id": "${INVALID_HYOJIN_ID}",
+    "quiz_id": 54569309,
+    "invalid_quiz_id": 54569307,
+    "assignment_id": 54704617,
+    "invalid_assignment_id": 54704612,
+    "exercise_id": 54569324,
+    "invalid_exercise_id": 54569563,
+    "note_id": 54481713,
+    "invalid_note_id": 54481714,
+    "pdf_id": 54399844,
+    "invalid_pdf_id": 54399843,
+    "video_id": 54719079,
+    "invalid_video_id": 54719090,
+    "external_id": 54179386,
+    "invalid_external_id": 54179388,
+    "lecture_id_with_prev": 6657779,
+    "lecture_id_without_prev": 6657778,
+    "course_id_test_prev": 768550,
+    "lecture_id_with_next": 6644273,
+    "lecture_id_without_next": 6644280,
+    "course_id_test_next": 766557,
+    "material_quiz_id": 54569309,
+    "answer": [0],
+    "quiz_success_response_id": 33907469,
+    "quiz_fail_response_id": 33907293,
+    "exercise_room_id": 27181758,
+    "offset": 0,
+    "count": 1
+  },
+  "sbj_list_failure_cases": [
+    {
+      "test_id": "STU-SBJ-01-002",
+      "classroom_id_key": "invalid_classroom_id",
+      "query_params": { "skip": 0, "count": 10 },
+      "expected_status": 403,
+      "expected_content": { "key": "code", "value": "permission" }
+    },
+    {
+      "test_id": "STU-SBJ-01-003",
+      "classroom_id_key": "classroom_id",
+      "query_params": null,
+      "expected_status": 422,
+      "expected_content": { "key": "detail", "value": "Field required" }
+    }
+  ],
+  "sbj_detail_cases": [
+    {
+      "test_id": "STU-SBJ-02-001",
+      "classroom_id_key": "classroom_id",
+      "course_id_key": "course_id",
+      "expected_status": 200,
+      "expected_content": {
+        "key": "course_id",
+        "value_from_params": "course_id"
+      }
+    },
+    {
+      "test_id": "STU-SBJ-02-002",
+      "classroom_id_key": "classroom_id",
+      "course_id_key": "invalid_course_id",
+      "expected_status": 409,
+      "expected_content": { "key": "code", "value": "model_not_found" }
+    }
+  ],
+  "sbj_map_cases": [
+    {
+      "test_id": "STU-SBJ-03-001",
+      "student_id_key": "student_id",
+      "query_params": {
+        "classroom_id": "classroom_id",
+        "offset": 0,
+        "count": 40
+      },
+      "expected_status": 200,
+      "validate_type": "content_check"
+    },
+    {
+      "test_id": "STU-SBJ-03-002",
+      "student_id_key": "student_id",
+      "query_params": {
+        "classroom_id": "classroom_id"
+      },
+      "expected_status": 422,
+      "validate_type": "error_check",
+      "expected_msg": "Field required"
+    }
+  ],
+  "child_lectures_cases": [
+    {
+      "test_id": "STU-SBJ-05-001",
+      "course_id_key": "course_id",
+      "user_id_key": "hyojin_id",
+      "expected_http_status": 200,
+      "validate_type": "success",
+      "expected_result": null
+    },
+    {
+      "test_id": "STU-SBJ-05-002",
+      "course_id_key": "invalid_course_id",
+      "user_id_key": "hyojin_id",
+      "expected_http_status": 200,
+      "validate_type": "fail",
+      "expected_result": { "status": "fail", "status_code": 400 }
+    },
+    {
+      "test_id": "STU-SBJ-05-003",
+      "course_id_key": "course_id",
+      "user_id_key": "invalid_hyojin_id",
+      "expected_http_status": 200,
+      "validate_type": "fail",
+      "expected_result": { "status": "fail", "status_code": 409 }
+    }
+  ],
+  "lecture_cases": [
+    {
+      "test_id": "STU-SBJ-06-001",
+      "endpoint": "/org/qatrack/material_quiz/get/",
+      "param_key": "material_quiz_id",
+      "id_key": "quiz_id",
+      "expected_status_code": 200,
+      "expected_result": "success"
+    },
+    {
+      "test_id": "STU-SBJ-06-002",
+      "endpoint": "/org/qatrack/material_quiz/get/",
+      "param_key": "material_quiz_id",
+      "id_key": "invalid_quiz_id",
+      "expected_status_code": 409,
+      "expected_result": "fail"
+    },
+    {
+      "test_id": "STU-SBJ-06-003",
+      "endpoint": "/org/qatrack/material_assignment/get/",
+      "param_key": "material_assignment_id",
+      "id_key": "assignment_id",
+      "expected_status_code": 200,
+      "expected_result": "success"
+    },
+    {
+      "test_id": "STU-SBJ-06-004",
+      "endpoint": "/org/qatrack/material_assignment/get/",
+      "param_key": "material_assignment_id",
+      "id_key": "invalid_assignment_id",
+      "expected_status_code": 409,
+      "expected_result": "fail"
+    },
+    {
+      "test_id": "STU-SBJ-06-005",
+      "endpoint": "/org/qatrack/material_exercise/get/",
+      "param_key": "material_exercise_id",
+      "id_key": "exercise_id",
+      "expected_status_code": 200,
+      "expected_result": "success"
+    },
+    {
+      "test_id": "STU-SBJ-06-006",
+      "endpoint": "/org/qatrack/material_exercise/get/",
+      "param_key": "material_exercise_id",
+      "id_key": "invalid_exercise_id",
+      "expected_status_code": 409,
+      "expected_result": "fail"
+    },
+    {
+      "test_id": "STU-SBJ-06-007",
+      "endpoint": "/org/qatrack/material_note/get/",
+      "param_key": "material_note_id",
+      "id_key": "note_id",
+      "expected_status_code": 200,
+      "expected_result": "success"
+    },
+    {
+      "test_id": "STU-SBJ-06-008",
+      "endpoint": "/org/qatrack/material_note/get/",
+      "param_key": "material_note_id",
+      "id_key": "invalid_note_id",
+      "expected_status_code": 409,
+      "expected_result": "fail"
+    },
+    {
+      "test_id": "STU-SBJ-06-009",
+      "endpoint": "/org/qatrack/material_pdf/get/",
+      "param_key": "material_pdf_id",
+      "id_key": "pdf_id",
+      "expected_status_code": 200,
+      "expected_result": "success"
+    },
+    {
+      "test_id": "STU-SBJ-06-010",
+      "endpoint": "/org/qatrack/material_pdf/get/",
+      "param_key": "material_pdf_id",
+      "id_key": "invalid_pdf_id",
+      "expected_status_code": 409,
+      "expected_result": "fail"
+    },
+    {
+      "test_id": "STU-SBJ-06-015",
+      "endpoint": "/org/qatrack/material_video_file/get/",
+      "param_key": "material_video_file_id",
+      "id_key": "video_id",
+      "expected_status_code": 200,
+      "expected_result": "success"
+    },
+    {
+      "test_id": "STU-SBJ-06-016",
+      "endpoint": "/org/qatrack/material_video_file/get/",
+      "param_key": "material_video_file_id",
+      "id_key": "invalid_video_id",
+      "expected_status_code": 409,
+      "expected_result": "fail"
+    },
+    {
+      "test_id": "STU-SBJ-06-017",
+      "endpoint": "/org/qatrack/material_external/get/",
+      "param_key": "material_external_id",
+      "id_key": "external_id",
+      "expected_status_code": 200,
+      "expected_result": "success"
+    },
+    {
+      "test_id": "STU-SBJ-06-018",
+      "endpoint": "/org/qatrack/material_external/get/",
+      "param_key": "material_external_id",
+      "id_key": "invalid_external_id",
+      "expected_status_code": 409,
+      "expected_result": "fail"
+    }
+  ],
+  "adjacent_lecture_data": [
+    {
+      "test_id": "STU-SBJ-07-001",
+      "lecture_key": "lecture_id_with_prev",
+      "direction": "prev",
+      "offset": -1,
+      "is_null": false
+    },
+    {
+      "test_id": "STU-SBJ-07-002",
+      "lecture_key": "lecture_id_without_prev",
+      "direction": "prev",
+      "offset": -1,
+      "is_null": true
+    },
+    {
+      "test_id": "STU-SBJ-08-001",
+      "lecture_key": "lecture_id_with_next",
+      "direction": "next",
+      "offset": 1,
+      "is_null": false
+    },
+    {
+      "test_id": "STU-SBJ-08-002",
+      "lecture_key": "lecture_id_without_next",
+      "direction": "next",
+      "offset": 1,
+      "is_null": true
+    }
+  ],
+  "lecture_details_data": [
+    {
+      "test_id": "STU-SBJ-09-001",
+      "course_id_key": "course_id",
+      "query_params": {
+        "skip": 0,
+        "count": 10,
+        "elice_course_id": "course_id"
+      },
+      "expected_status": 200,
+      "validate_type": "success"
+    },
+    {
+      "test_id": "STU-SBJ-09-002",
+      "course_id_key": "course_id",
+      "query_params": {
+        "elice_course_id": "course_id"
+      },
+      "expected_status": 422,
+      "validate_type": "error",
+      "expected_msg": "field required",
+      "expected_loc": "skip"
+    },
+    {
+      "test_id": "STU-SBJ-09-003",
+      "course_id_key": "course_id",
+      "query_params": {
+        "count": 10,
+        "elice_course_id": "course_id"
+      },
+      "expected_status": 422,
+      "validate_type": "error",
+      "expected_msg": "field required",
+      "expected_loc": "skip"
+    },
+    {
+      "test_id": "STU-SBJ-09-004",
+      "course_id_key": "course_id",
+      "query_params": {
+        "skip": 0,
+        "elice_course_id": "course_id"
+      },
+      "expected_status": 422,
+      "validate_type": "error",
+      "expected_msg": "field required",
+      "expected_loc": "count"
+    }
+  ],
+  "quiz_missing_params_data": [
+    {
+      "test_id": "STU-SBJ-10-002",
+      "missing_data": {
+        "answer": [0]
+      },
+      "expected_missing_field": ["material_quiz_id"]
+    },
+    {
+      "test_id": "STU-SBJ-10-003",
+      "missing_data": {
+        "material_quiz_id": 54569309
+      },
+      "expected_missing_field": ["answer"]
+    },
+    {
+      "test_id": "STU-SBJ-10-004",
+      "missing_data": {},
+      "expected_missing_field": ["material_quiz_id", "answer"]
+    }
+  ],
+  "quiz_response_cases": [
+    {
+      "test_id": "STU-SBJ-11-001",
+      "title": "퀴즈 틀린 답을 선택했을 때 요청 결과 확인",
+      "quiz_response_key": "quiz_fail_response_id",
+      "expected_status_code": 200,
+      "expected_is_completed": false
+    },
+    {
+      "test_id": "STU-SBJ-11-002",
+      "title": "퀴즈 올바른 답을 선택했을 때 요청 결과 확인",
+      "quiz_response_key": "quiz_success_response_id",
+      "expected_status_code": 200,
+      "expected_is_completed": true
+    }
+  ],
+  "exercise_submit_fail_cases": [
+    {
+      "test_id": "STU-SBJ-13-002",
+      "title": "필수 파라미터가 제공되지 않았을 때 실습 결과 받아오기 실패",
+      "user_id_key": "user_id",
+      "params": {
+        "exercise_room_id": 27181758
+      },
+      "expected_status_code": 400,
+      "fail_reason": "param",
+      "fail_code": "invalid_parameter"
+    },
+    {
+      "test_id": "STU-SBJ-13-003",
+      "title": "exercise_room_id가 없이 요청을 보냈을 때 실패하는지 확인",
+      "user_id_key": "user_id",
+      "params": {
+        "offset": 0,
+        "count": 1
+      },
+      "expected_status_code": 409,
+      "fail_reason": "logic",
+      "fail_code": "invalid_exercise_room_id_or_material_exercise_id"
+    },
+    {
+      "test_id": "STU-SBJ-13-004",
+      "title": "user_id가 없이 요청을 보냈을 때 실패하는지 확인",
+      "user_id_key": "",
+      "params": {
+        "offset": 0,
+        "count": 1,
+        "exercise_room_id": 27181758
+      },
+      "expected_status_code": 409,
+      "fail_reason": "logic",
+      "fail_code": "insufficient_permission_to_other_user"
+    },
+    {
+      "test_id": "STU-SBJ-13-005",
+      "title": "올바르지 않은 room_id로 요청을 보냈을 때 실패하는지 확인",
+      "user_id_key": "user_id",
+      "params": {
+        "offset": 0,
+        "count": 1,
+        "exercise_room_id": 27181759
+      },
+      "expected_status_code": 409,
+      "fail_reason": "logic",
+      "fail_code": "insufficient_permission"
+    },
+    {
+      "test_id": "STU-SBJ-13-006",
+      "title": "올바르지 않은 user_id로 요청을 보냈을 때 실패하는지 확인",
+      "user_id_key": "invalid_user_id",
+      "params": {
+        "offset": 0,
+        "count": 1,
+        "exercise_room_id": 27181758
+      },
+      "expected_status_code": 409,
+      "fail_reason": "logic",
+      "fail_code": "insufficient_permission_to_other_user"
+    }
+  ]
+}

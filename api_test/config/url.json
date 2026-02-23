@@ -1,0 +1,14 @@
+{
+  "dashboard": {
+    "base_url": "https://api-dashboard.elice.io"
+  },
+  "classroom": {
+    "base_url": "https://api-classroom.elice.io"
+  },
+  "rest": {
+    "base_url": "https://api-rest.elice.io"
+  },
+  "course": {
+    "base_url": "https://api-course.elice.io"
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "params": {
+    "classroom_id": "a6bd98a3-83ff-4e5d-ba9e-6c04c69592fc",
+    "invalid_classroom_id": "00000000-0000-0000-0000-000000000000",
+    "lectureroom_id": "135109",
+    "invalid_lectureroom_id": "000000",
+    "student_id": "${STUDENT_ID}",
+    "other_student_id": "${OTHER_STUEDNT_ID}"
+  },
+
+  "schedule_common_data": {
+    "offset": 0,
+    "count": 40,
+    "timezone": "Asia/Seoul"
+  },
+
+  "schedule_cases_data": {
+    "STU-CHM-03-001": {
+      "dt_start_ge": "2026-02-01",
+      "dt_start_le": "2026-02-02"
+    },
+
+    "STU-CHM-03-002": {
+      "dt_start_ge": "2026-01-31",
+      "dt_start_le": "2026-02-01"
+    },
+
+    "STU-CHM-03-003": {
+      "dt_start_ge": "2026-02-01",
+      "dt_start_le": "2026-02-02"
+    },
+
+    "STU-CHM-03-004": {},
+
+    "STU-CHM-03-005": {
+      "dt_start_ge": "2026-02-30",
+      "dt_start_le": "2026-02-31"
+    }
+  },
+  "student_course_data" : {
+    "STU-CHM-06": {
+      "count": 5
+    },
+    "STU-CHM-06-005": {
+      "offset": 15,
+      "count": 5
+    },
+    "STU-CHM-06-006": {
+      "offset": -12,
+      "count": -34
+    },
+    "STU-CHM-06-007": {
+      "offset": 5,
+      "count": 5
+    }
+  },
+  "classhome_board_data": {
+    "STU-CHM-07-001": {
+      "filter_title": "%%",
+       "skip": 0,
+       "count": 3  
+    },
+    "STU-CHM-07-002": {
+      "filter_title": "%%"
+    },
+    "STU-CHM-07-003": {
+      "filter_title": "%%",
+      "skip": -12,
+      "count": -34
+    }
+  },
+  "emotion_date_data" :{
+    "STU-CHM-08-001": {
+      "filter_record_date": "2026-02-04"
+    },
+    "STU-CHM-08-002~3": {
+      "filter_record_date": "2026-02-01"
+    }
+  }
+}

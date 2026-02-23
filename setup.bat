@@ -34,4 +34,4 @@ if exist requirements.txt (
 echo ==========================================
 echo Setup Complete!
 echo ==========================================
-pause
+cmd /k

@@ -1,0 +1,46 @@
+{
+  "params": {
+    "classroom_id": "a6bd98a3-83ff-4e5d-ba9e-6c04c69592fc"
+  },
+  "cases": {
+    "weekly": {
+      "dt_start_ge": "2026-01-17T15:00:00.000Z",
+      "dt_start_le": "2026-03-14T14:59:59.999Z",
+      "offset": 0,
+      "count": 40
+    },
+    "december_move": {
+    "dt_start_ge": "2025-12-17T15:00:00.000Z",
+    "dt_start_le": "2026-02-14T14:59:59.999Z",
+    "expected_event_keyword": "🎄성탄절☃️"
+    },
+
+    "project_start_jump": {
+    "dt_start_ge": "2025-09-16T15:00:00.000Z",
+    "dt_start_le": "2025-11-14T14:59:59.999Z",
+    "expected_event": "🧪 [CH1] 소프트웨어 테스트 기초 📖",
+    "description": "프로젝트 시작 시점 점프 테스트"
+    },
+
+    "list_view_integrity": {
+    "dt_start_ge": "2025-12-17T15:00:00.000Z",
+    "dt_start_le": "2027-01-14T14:59:59.999Z",
+    "expected_event": "신정",
+    "description": "2월 한 달 데이터로 422 에러 디버깅"
+    },
+
+    "detail_view": {
+      "schedule_id": "bf440c62-cd8b-40ce-b9c9-092a89690618",
+      "expected_title": "2팀 회의실🧑‍💻👩‍💻👨‍💻",
+      "expected_lectureroom_id": 135109
+    },
+    "pagination": {
+     "count": 10,
+     "first_offset": 0,
+     "second_offset": 10
+    },
+    "plus_more_view": {
+    "hidden_schedule_title": "🦁 [코치]이상엽 메인코치님 상주 강의실"
+    }
+  }
+}
