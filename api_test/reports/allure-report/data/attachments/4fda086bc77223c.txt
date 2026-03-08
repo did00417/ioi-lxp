@@ -1,0 +1,1 @@
+CRITICAL tests.test_board:test_board.py:257 🔥 보안 경고: 비밀글(ID: 67183)이 권한 없이 조회되었습니다!

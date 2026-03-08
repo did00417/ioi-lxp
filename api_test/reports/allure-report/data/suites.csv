@@ -1,0 +1,219 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"
+STU_BOARD_03-010: 댓글 최신순 정렬 조회
+STU_BOARD_03-011: 댓글 작성순 정렬 조회
+STU_BOARD_03-012: 댓글 정렬 비정상 입력 검증
+","63","test_get_comment_list_sort_parametrize[valid_asc-ok-200]","api_test.tests","2026-02-23","passed","2026-02-23","","test_board","",""
+"","542","test_schedule_all_data_loaded","api_test.tests","2026-02-23","passed","2026-02-23","","test_schedule","",""
+"","61","test_course_page_with_invalid_token","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"","106","test_fetch_lectures[case0]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"","81","test_review_test_page_with_invalid_parameters[STU-DAB-05-003-\uc18c\uc18d\ub418\uc9c0 \uc54a\uc740 \ud074\ub798\uc2a4\uc758 \ubcf5\uc2b5 \ud14c\uc2a4\ud2b8 \ud559\uc2b5 \ud604\ud669 \uc870\ud68c-student_id-invalid_classroom_id-review_test_id]","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"","146","test_quiz_request_success","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"","98","test_fetch_adjacent_lecture[case3]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"","21","test_quiz_request_fail_missing_params[case1]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"","84","test_chapter_test_page_with_invalid_parameters[STU-DAB-04-005-\uacfc\ubaa9\uacfc \ub9e4\uce6d\ub418\uc9c0 \uc54a\ub294 \ucc55\ud130 \ud14c\uc2a4\ud2b8 \ud559\uc2b5 \ud604\ud669 \uc870\ud68c-student_id-classroom_id-invalid_chapter_test_id]","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"","86","test_fetch_sbj_list_failure_cases[case0]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"","59","test_lecture_page_with_invalid_token","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"","87","test_get_continue_learning_lecture_invalid_classroom_id","api_test.tests","2026-02-23","passed","2026-02-23","","test_classhome","",""
+"통합 강의 콘텐츠(퀴즈/과제/실습) 조회 테스트","39","test_fetch_material_unified[case7]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"","138","test_all_courses_page_with_invalid_parameters[STU-DAB-01-006-\uc720\ud6a8\ud558\uc9c0 \uc54a\uc740 student id\ub85c \uc804\uccb4 \uacfc\ubaa9 \ud559\uc2b5 \ud604\ud669 \uc870\ud68c-invalid_student_id-classroom_id]","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"","24","test_get_user_invalid_token","api_test.tests","2026-02-23","passed","2026-02-23","","test_classhome","",""
+"","71","test_get_lectureroom_location_no_lectureroom_id","api_test.tests","2026-02-23","passed","2026-02-23","","test_classhome","",""
+"","63","test_chapter_test_page_with_invalid_token","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"통합 강의 콘텐츠(퀴즈/과제/실습) 조회 테스트","37","test_fetch_material_unified[case13]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"","60","test_get_learning_status_invalid_offset_count","api_test.tests","2026-02-23","passed","2026-02-23","","test_classhome","",""
+"","94","test_lecture_learning_page_success","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"","107","test_all_courses_pagination[STU-DAB-01-003-2 \ud398\uc774\uc9c0-5-two_course_ids]","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"","100","test_lecture_page_with_invalid_parameters[STU-DAB-03-005-\uacfc\ubaa9\uacfc \ub9e4\uce6d\ub418\uc9c0 \uc54a\ub294 \uc218\uc5c5 \ud604\ud669 \ud398\uc774\uc9c0 \uc870\ud68c-student_id-classroom_id-invalid_lecture_id]","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"","83","test_lecture_page_with_invalid_parameters[STU-DAB-03-003-\uc18c\uc18d\ub418\uc9c0 \uc54a\uc740 \ud074\ub798\uc2a4\uc758 \uc218\uc5c5 \ud604\ud669 \ud398\uc774\uc9c0 \uc870\ud68c-student_id-invalid_classroom_id-lecture_id]","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"","100","test_review_note_page_empty_list_cases[STU-DAB-06-005-\uc720\ud6a8\ud558\uc9c0 \uc54a\uc740 student id\ub85c \uc624\ub2f5 \ub178\ud2b8 \uc870\ud68c-invalid_student_id-classroom_id-course_id]","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"","19","test_get_lectureroom_location_fails_when_parameter_missing","api_test.tests","2026-02-23","passed","2026-02-23","","test_classhome","",""
+"","129","test_chapter_test_page_with_invalid_parameters[STU-DAB-04-004-\uc720\ud6a8\ud558\uc9c0 \uc54a\uc740 student id\ub85c \ucc55\ud130 \ud14c\uc2a4\ud2b8 \ud559\uc2b5 \ud604\ud669 \uc870\ud68c-invalid_student_id-classroom_id-chapter_test_id]","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"
+STU_BOARD_03-007: 댓글 수정 반영 확인
+STU_BOARD_03-008: 댓글 삭제 확인
+","201","test_comment_update_delete","api_test.tests","2026-02-23","passed","2026-02-23","","test_board","",""
+"","72","test_course_page_with_invalid_parameters[STU-DAB-02-004-\uc720\ud6a8\ud558\uc9c0 \uc54a\uc740 student id\ub85c \ud55c \uacfc\ubaa9\uc758 \ud559\uc2b5 \ud604\ud669 \uc870\ud68c-invalid_student_id-classroom_id-course_id]","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"","65","test_get_lectureroom_location","api_test.tests","2026-02-23","passed","2026-02-23","","test_classhome","",""
+"","40","test_fetch_child_lecture_integrated[case1]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"
+STU_BOARD_01-004: 제목 키워드 검색
+STU_BOARD_01-005: 제목 키워드 일치하는 검색 결과 없음
+","189","test_get_article_list_by_filter[valid-1]","api_test.tests","2026-02-23","passed","2026-02-23","","test_board","",""
+"","127","test_get_latest_board_articles","api_test.tests","2026-02-23","passed","2026-02-23","","test_classhome","",""
+"","83","test_review_test_page_with_invalid_parameters[STU-DAB-05-004-\uc720\ud6a8\ud558\uc9c0 \uc54a\uc740 student id\ub85c \ubcf5\uc2b5 \ud14c\uc2a4\ud2b8 \ud559\uc2b5 \ud604\ud669 \uc870\ud68c-invalid_student_id-classroom_id-review_test_id]","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"통합 강의 콘텐츠(퀴즈/과제/실습) 조회 테스트","56","test_fetch_material_unified[case2]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"","487","test_get_class_schedule","api_test.tests","2026-02-23","passed","2026-02-23","","test_classhome","",""
+"통합 강의 콘텐츠(퀴즈/과제/실습) 조회 테스트","44","test_fetch_material_unified[case3]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"","672","test_schedule_jump_verification[december_move]","api_test.tests","2026-02-23","passed","2026-02-23","","test_schedule","",""
+"","68","test_review_test_page_with_invalid_token","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"","483","test_get_no_class_schedule","api_test.tests","2026-02-23","passed","2026-02-23","","test_classhome","",""
+"","124","test_get_student_course_slides[0]","api_test.tests","2026-02-23","passed","2026-02-23","","test_classhome","",""
+"","58","test_all_courses_delete_with_student_account","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"
+STU_BOARD_03-010: 댓글 최신순 정렬 조회
+STU_BOARD_03-011: 댓글 작성순 정렬 조회
+STU_BOARD_03-012: 댓글 정렬 비정상 입력 검증
+","22","test_get_comment_list_sort_parametrize[invalid_key-fail-400]","api_test.tests","2026-02-23","passed","2026-02-23","","test_board","",""
+"","56","test_exercise_submit_fail[case4]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"STU_BOARD_02_003: 게시글 작성 연결 과목 조회","171","test_get_linked_courses","api_test.tests","2026-02-23","passed","2026-02-23","","test_board","",""
+"","98","test_all_courses_page_with_invalid_parameters[STU-DAB-01-005-\uc18c\uc18d\ub418\uc9c0 \uc54a\uc740 \ud074\ub798\uc2a4\uc758 \uc804\uccb4 \uacfc\ubaa9 \ud559\uc2b5 \ud604\ud669 \uc870\ud68c-student_id-invalid_classroom_id]","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"","56","test_quiz_response[case0]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"STU_BOARD_02_011: 제목 최대 글자수 초과 테스트","19","test_create_article_max_title_over_fail","api_test.tests","2026-02-23","passed","2026-02-23","","test_board","",""
+"
+STU_BOARD_02_006: 타인 비밀글 조회
+기대 결과: status 'fail', fail_code 'insufficient_permission' 반환하며 차단되어야 함
+현재 현상: 200 OK와 함께 게시글 내용이 반환됨
+","76","test_get_others_private_article_security_bug[others_private_b]","api_test.tests","2026-02-23","skipped","2026-02-23","","test_board","",""
+"","18","test_get_user_not_access_token","api_test.tests","2026-02-23","passed","2026-02-23","","test_classhome","",""
+"","129","test_fetch_sbj_map_integrated[case0]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"","124","test_review_note_page_empty_list_cases[STU-DAB-06-002-\ud14c\uc2a4\ud2b8 lecture\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\ub294 \uacfc\ubaa9\uc758 \uc624\ub2f5 \ub178\ud2b8 \uc870\ud68c-student_id-classroom_id-no_test_course_id]","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"STU_BOARD_03-009: 특정 게시글 댓글 목록 조회","64","test_get_comment_list_success","api_test.tests","2026-02-23","passed","2026-02-23","","test_board","",""
+"","103","test_get_classhome_student_overall_progress","api_test.tests","2026-02-23","passed","2026-02-23","","test_classhome","",""
+"","83","test_chapter_test_page_with_invalid_parameters[STU-DAB-04-003-\uc18c\uc18d\ub418\uc9c0 \uc54a\uc740 \ud074\ub798\uc2a4\uc758 \ucc55\ud130 \ud14c\uc2a4\ud2b8 \ud559\uc2b5 \ud604\ud669 \uc870\ud68c-student_id-invalid_classroom_id-chapter_test_id]","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"","58","test_get_student_course_slides_no_params","api_test.tests","2026-02-23","passed","2026-02-23","","test_classhome","",""
+"","382","test_get_continue_learning_lecture","api_test.tests","2026-02-23","passed","2026-02-23","","test_classhome","",""
+"","74","test_get_schedule_fails_when_date_parameters_missing","api_test.tests","2026-02-23","passed","2026-02-23","","test_classhome","",""
+"통합 강의 콘텐츠(퀴즈/과제/실습) 조회 테스트","55","test_fetch_material_unified[case10]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"","119","test_all_courses_learning_page_success","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"","87","test_review_test_page_with_invalid_parameters[STU-DAB-05-005-\uacfc\ubaa9\uacfc \ub9e4\uce6d\ub418\uc9c0 \uc54a\ub294 \ubcf5\uc2b5 \ud14c\uc2a4\ud2b8 \ud559\uc2b5 \ud604\ud669 \uc870\ud68c-student_id-classroom_id-invalid_review_test_id]","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"","501","test_schedule_jump_verification[list_view_integrity]","api_test.tests","2026-02-23","passed","2026-02-23","","test_schedule","",""
+"","41","test_fetch_child_lecture_integrated[case2]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"통합 강의 콘텐츠(퀴즈/과제/실습) 조회 테스트","49","test_fetch_material_unified[case12]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"","540","test_schedule_date_update_on_move","api_test.tests","2026-02-23","passed","2026-02-23","","test_schedule","",""
+"","68","test_exercise_submit_success","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"STU_BOARD_02_007: 게시글 수정","59","test_update_article_success","api_test.tests","2026-02-23","passed","2026-02-23","","test_board","",""
+"","20","test_get_continue_learning_lecture_without_classroom_id","api_test.tests","2026-02-23","passed","2026-02-23","","test_classhome","",""
+"","99","test_review_note_page_empty_list_cases[STU-DAB-06-006-\ud074\ub798\uc2a4\ub8f8\uacfc \ub9e4\uce6d\ub418\uc9c0 \uc54a\ub294 course id\ub85c \uc870\ud68c-student_id-classroom_id-invalid_course_id]","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"","95","test_fetch_child_lecture_integrated[case0]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"","65","test_chapter_test_page_with_no_classroom_id","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"","188","test_review_test_page_success","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"
+STU_BOARD_03-001: 게시글 좋아요 정상 동작
+STU_BOARD_03-002: 게시글 좋아요 취소 확인
+","141","test_article_like_add_and_delete_flow","api_test.tests","2026-02-23","passed","2026-02-23","","test_board","",""
+"","52","test_schedule_detail_load_success","api_test.tests","2026-02-23","passed","2026-02-23","","test_schedule","",""
+"STU_BOARD_02_002: 게시글 작성 필수값 누락 검증","20","test_create_article_fail_by_missing_param[content_missing-400]","api_test.tests","2026-02-23","passed","2026-02-23","","test_board","",""
+"","60","test_fetch_sbj_list_failure_cases[case1]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"","80","test_course_page_with_invalid_parameters[STU-DAB-02-003-\uc18c\uc18d\ub418\uc9c0 \uc54a\uc740 \ud074\ub798\uc2a4 \ud648\uc73c\ub85c \ud55c \uacfc\ubaa9\uc758 \ud559\uc2b5 \ud604\ud669 \uc870\ud68c-student_id-invalid_classroom_id-course_id]","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"
+STU_BOARD_02_004: 특정 게시글 조회
+STU_BOARD_02_005: 존재하지 않는 게시글 상세 조회
+","34","test_get_article_detail_cases[not_found_article]","api_test.tests","2026-02-23","passed","2026-02-23","","test_board","",""
+"
+STU_BOARD_03-005: 댓글 좋아요 정상 동작
+STU_BOARD_03-006: 댓글 좋아요 취소 확인
+","125","test_comment_like_add_and_delete","api_test.tests","2026-02-23","passed","2026-02-23","","test_board","",""
+"","122","test_fetch_sbj_detail[case1]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"통합 강의 콘텐츠(퀴즈/과제/실습) 조회 테스트","72","test_fetch_material_unified[case0]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"","88","test_get_classhome_student_overall_progress_no_params","api_test.tests","2026-02-23","passed","2026-02-23","","test_classhome","",""
+"","54","test_review_note_page_without_parameter","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"","111","test_get_learning_status_unauthorized_user","api_test.tests","2026-02-23","skipped","2026-02-23","","test_classhome","",""
+"통합 강의 콘텐츠(퀴즈/과제/실습) 조회 테스트","83","test_fetch_material_unified[case4]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"","20","test_quiz_request_fail_missing_params[case2]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"
+STU_BOARD_03-010: 댓글 최신순 정렬 조회
+STU_BOARD_03-011: 댓글 작성순 정렬 조회
+STU_BOARD_03-012: 댓글 정렬 비정상 입력 검증
+","24","test_get_comment_list_sort_parametrize[missing_field-fail-400]","api_test.tests","2026-02-23","passed","2026-02-23","","test_board","",""
+"
+STU_BOARD_03-003: 댓글 작성 가능 확인
+STU_BOARD_03-004: 존재하지 않는 게시글 댓글 작성
+","46","test_create_comment[invalid_article_comment-fail-400-resource_not_found]","api_test.tests","2026-02-23","passed","2026-02-23","","test_board","",""
+"","107","test_fetch_lectures[case1]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"","19","test_get_emotion_no_token","api_test.tests","2026-02-23","passed","2026-02-23","","test_classhome","",""
+"통합 강의 콘텐츠(퀴즈/과제/실습) 조회 테스트","42","test_fetch_material_unified[case11]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"","156","test_fetch_adjacent_lecture[case0]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"","138","test_get_student_course_slides[5]","api_test.tests","2026-02-23","passed","2026-02-23","","test_classhome","",""
+"","104","test_fetch_lectures[case2]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"통합 강의 콘텐츠(퀴즈/과제/실습) 조회 테스트","48","test_fetch_material_unified[case5]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"","64","test_quiz_response[case1]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"","65","test_get_board_articles_no_classroom_id","api_test.tests","2026-02-23","passed","2026-02-23","","test_classhome","",""
+"
+STU_BOARD_02_006: 타인 비밀글 조회
+기대 결과: status 'fail', fail_code 'insufficient_permission' 반환하며 차단되어야 함
+현재 현상: 200 OK와 함께 게시글 내용이 반환됨
+","67","test_get_others_private_article_security_bug[others_private_a]","api_test.tests","2026-02-23","skipped","2026-02-23","","test_board","",""
+"
+STU_BOARD_03-003: 댓글 작성 가능 확인
+STU_BOARD_03-004: 존재하지 않는 게시글 댓글 작성
+","73","test_create_comment[valid_comment-ok-200-None]","api_test.tests","2026-02-23","passed","2026-02-23","","test_board","",""
+"","107","test_review_note_page_empty_list_cases[STU-DAB-06-004-\uc18c\uc18d\ub418\uc9c0 \uc54a\uc740 \ud074\ub798\uc2a4\uc758 \uc624\ub2f5 \ub178\ud2b8 \uc870\ud68c-student_id-invalid_classroom_id-course_id]","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"","19","test_exercise_submit_fail[case0]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"
+STU_BOARD_03-010: 댓글 최신순 정렬 조회
+STU_BOARD_03-011: 댓글 작성순 정렬 조회
+STU_BOARD_03-012: 댓글 정렬 비정상 입력 검증
+","64","test_get_comment_list_sort_parametrize[valid_desc-ok-200]","api_test.tests","2026-02-23","passed","2026-02-23","","test_board","",""
+"","61","test_get_board_articles_with_invalid_skip_count","api_test.tests","2026-02-23","passed","2026-02-23","","test_classhome","",""
+"","19","test_get_class_schedule_no_token","api_test.tests","2026-02-23","passed","2026-02-23","","test_classhome","",""
+"","137","test_fetch_sbj_detail[case0]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"통합 강의 콘텐츠(퀴즈/과제/실습) 조회 테스트","78","test_fetch_material_unified[case8]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"","59","test_exercise_submit_fail[case3]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"
+챕터 테스트 or 복습 테스트가 존재하는 과목의 오답 노트 관련 API 조회 시 
+응답 바디에 해당 테스트의 각 문제 페이지 id와 채점된 점수가 포함됨
+","111","test_review_note_page_when_exist_test","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"","62","test_all_courses_page_with_invalid_token","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"STU_BOARD_02_002: 게시글 작성 필수값 누락 검증","20","test_create_article_fail_by_missing_param[classroom_id_missing-400]","api_test.tests","2026-02-23","passed","2026-02-23","","test_board","",""
+"","89","test_post_emotion","api_test.tests","2026-02-23","skipped","2026-02-23","","test_classhome","",""
+"","66","test_fetch_lectures[case3]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"
+STU_BOARD_01-004: 제목 키워드 검색
+STU_BOARD_01-005: 제목 키워드 일치하는 검색 결과 없음
+","74","test_get_article_list_by_filter[invalid-0]","api_test.tests","2026-02-23","passed","2026-02-23","","test_board","",""
+"","118","test_course_learning_page_success","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"","77","test_lecture_page_with_invalid_parameters[STU-DAB-03-004-\uc720\ud6a8\ud558\uc9c0 \uc54a\uc740 student id\ub85c \uc218\uc5c5 \ud604\ud669 \ud398\uc774\uc9c0 \uc870\ud68c-invalid_student_id-classroom_id-lecture_id]","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"STU_BOARD_02_001: 게시글 작성","118","test_create_article_success","api_test.tests","2026-02-23","passed","2026-02-23","","test_board","",""
+"","93","test_get_student_course_slides[10]","api_test.tests","2026-02-23","passed","2026-02-23","","test_classhome","",""
+"","62","test_get_schedule_fails_when_date_format_invalid","api_test.tests","2026-02-23","passed","2026-02-23","","test_classhome","",""
+"
+STU_BOARD_01-002: 게시글 최신순 정렬 조회
+STU_BOARD_01-003: 게시글 좋아요순 정렬 조회
+","179","test_articles_sorting_latest_likes[sort_likes-like_count]","api_test.tests","2026-02-23","passed","2026-02-23","","test_board","",""
+"
+STU_BOARD_01-002: 게시글 최신순 정렬 조회
+STU_BOARD_01-003: 게시글 좋아요순 정렬 조회
+","150","test_articles_sorting_latest_likes[sort_latest-created]","api_test.tests","2026-02-23","passed","2026-02-23","","test_board","",""
+"통합 강의 콘텐츠(퀴즈/과제/실습) 조회 테스트","40","test_fetch_material_unified[case9]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"","61","test_get_user_details","api_test.tests","2026-02-23","passed","2026-02-23","","test_classhome","",""
+"","141","test_fetch_sbj_list","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"STU_BOARD_02_002: 게시글 작성 필수값 누락 검증","20","test_create_article_fail_by_missing_param[title_missing-400]","api_test.tests","2026-02-23","passed","2026-02-23","","test_board","",""
+"","78","test_course_page_delete_with_student_account","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"","86","test_get_emotion_empty_list","api_test.tests","2026-02-23","passed","2026-02-23","","test_classhome","",""
+"","59","test_review_note_page_with_weird_parameter","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"","102","test_get_student_course_slides[15]","api_test.tests","2026-02-23","passed","2026-02-23","","test_classhome","",""
+"
+STU_BOARD_02_004: 특정 게시글 조회
+STU_BOARD_02_005: 존재하지 않는 게시글 상세 조회
+","67","test_get_article_detail_cases[valid_article]","api_test.tests","2026-02-23","passed","2026-02-23","","test_board","",""
+"","92","test_fetch_adjacent_lecture[case1]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"","21","test_get_lectureroom_location_no_token","api_test.tests","2026-02-23","passed","2026-02-23","","test_classhome","",""
+"","109","test_chapter_test_page_success","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"","58","test_review_note_page_with_invalid_token","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"","89","test_lecture_page_with_no_course_id","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"
+STU_BOARD_02_010: 타인 게시글 삭제 시도
+기대 결과: status 'fail', fail_code 'insufficient_permission' 반환하며 차단되어야 함
+현재 현상: 200 OK와 함께 타인의 게시글이 삭제됨 (보안 취약점)
+","140","test_delete_others_article_xfail","api_test.tests","2026-02-23","skipped","2026-02-23","","test_board","",""
+"","64","test_fetch_sbj_map_integrated[case1]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"통합 강의 콘텐츠(퀴즈/과제/실습) 조회 테스트","56","test_fetch_material_unified[case6]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"","32","test_exercise_submit_fail[case1]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"","456","test_schedule_jump_verification[project_start_jump]","api_test.tests","2026-02-23","passed","2026-02-23","","test_schedule","",""
+"통합 강의 콘텐츠(퀴즈/과제/실습) 조회 테스트","42","test_fetch_material_unified[case1]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"","65","test_exercise_submit_fail[case2]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"","97","test_all_courses_pagination[STU-DAB-01-002-1 \ud398\uc774\uc9c0-0-one_course_ids]","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""
+"","396","test_weekly_schedule_load_success","api_test.tests","2026-02-23","passed","2026-02-23","","test_schedule","",""
+"","26","test_quiz_request_fail_missing_params[case0]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"","102","test_fetch_adjacent_lecture[case2]","api_test.tests","2026-02-23","passed","2026-02-23","","test_subject","",""
+"
+STU_BOARD_03-010: 댓글 최신순 정렬 조회
+STU_BOARD_03-011: 댓글 작성순 정렬 조회
+STU_BOARD_03-012: 댓글 정렬 비정상 입력 검증
+","25","test_get_comment_list_sort_parametrize[invalid_order-fail-400]","api_test.tests","2026-02-23","passed","2026-02-23","","test_board","",""
+"","90","test_get_emotion","api_test.tests","2026-02-23","passed","2026-02-23","","test_classhome","",""
+"STU_BOARD_02_009: 게시글 삭제","73","test_delete_article_success","api_test.tests","2026-02-23","passed","2026-02-23","","test_board","",""
+"STU_BOARD_01-001: 게시글 목록 조회","108","test_get_article_list","api_test.tests","2026-02-23","passed","2026-02-23","","test_board","",""
+"STU_BOARD_02_008: 타인 게시글 수정 시도","51","test_update_others_article_fail","api_test.tests","2026-02-23","passed","2026-02-23","","test_board","",""
+"","205","test_course_page_with_invalid_parameters[STU-DAB-02-005-\uc18c\uc18d\ub41c \ud074\ub798\uc2a4 \ud648\uacfc \ub9de\uc9c0 \uc54a\ub294 \uacfc\ubaa9\uc758 \ud559\uc2b5 \ud604\ud669 \uc870\ud68c-student_id-classroom_id-invalid_course_id]","api_test.tests","2026-02-23","passed","2026-02-23","","test_dashboard","",""

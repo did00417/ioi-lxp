@@ -1,0 +1,1 @@
+CRITICAL tests.test_board:test_board.py:394 보안 경고: 타인의 게시글(ID: 70384)이 권한 없이 삭제됨!
