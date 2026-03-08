@@ -1,0 +1,1 @@
+WARNING  tests.test_schedule:test_schedule.py:170 참고: 응답 데이터에 202509 패턴이 없습니다. (해당 월에 일정이 없을 수 있음)
